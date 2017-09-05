@@ -12,8 +12,16 @@ high_dimension = 8
 low_dimension = 4
 
 def inner_products_of_vectors(vectors):
+  print "Length of the generators:"
+  for v in vectors:
+    print math.sqrt(np.inner(v, v))
+
+  print "Cosines between the generators:"
   for indices in itertools.combinations(range(len(vectors)), 2):
-    print indices, np.inner(vectors[indices[0]], vectors[indices[1]])
+    v0 = vectors[indices[0]]
+    v1 = vectors[indices[1]]
+    cos = np.inner(v0, v1)/math.sqrt(np.inner(v0, v0) * np.inner(v1, v1))
+    print indices, cos
 
 def shadow_volume(bases):
   _high_dimension = len(bases.T)
@@ -51,7 +59,6 @@ def main():
   print "Volume of max shadow: ", max_shadow
   print "Max achieving bases:"
   print orth_optimal_bases
-  print "Inner products between bases:"
   inner_products_of_vectors(orth_optimal_bases.T)
 
 if __name__ == '__main__':
