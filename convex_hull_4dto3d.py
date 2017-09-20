@@ -192,8 +192,8 @@ def maximize_shadow():
 # vertices = array(get_5_cell_vertices()) # edge first
 # vertices = array(get_cube_vertices(4)) # vertex first
 # vertices = array(get_orthoplex_vertices(4)) # vertex first
-# vertices = array(get_24_cell_vertices()) # what?
-vertices = array(get_120_cell_vertices()) # unclear
+vertices = array(get_24_cell_vertices()) # what? target volume: 7.05533682951
+# vertices = array(get_120_cell_vertices()) # unclear
 # vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
 edges = get_edges(vertices)
 print "vertex count:", len(vertices), "edge count:", len(edges)
@@ -205,18 +205,20 @@ def main():
   # print "Volume of the known bases: ", shadow_volume(known_bases)
 
   # trivial bases
-  known_bases = array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]])
+  # known_bases = array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]])
+  # known_bases = array([[1, 1, 1, 1], [1, -1, -1, 1], [-1, 1, -1, 1]])
 
   # B4
-  # t = 1 + math.sqrt(2.0)
-  # known_bases = array([[t, t, 1, 1], [-1, 1, t, -t], [1, 1, -t, -t]])
+  t = 1 + math.sqrt(2.0)
+  known_bases = array([[t, t, 1, 1], [-1, 1, t, -t], [1, 1, -t, -t]])
 
   # F4
-  a = -1 + math.sqrt(3.0)
+  # a = -1 + math.sqrt(3.0)
   # known_bases = array([[1, 1, a, 0], [1, -1, 0, a], [a, 0, -1, -1]])
 
   print "Volume of the known bases: ", shadow_volume(known_bases)
   print_convex_hull(known_bases)
+  # return
 
   max_shadow, orth_optimal_bases = maximize_shadow()
   print "Volume of max shadow: ", max_shadow
