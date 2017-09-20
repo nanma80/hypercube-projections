@@ -11,9 +11,20 @@ from scipy.spatial import ConvexHull
 import matplotlib.pyplot as plt
 import matplotlib.collections as pltcol
 from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import proj3d
 
 high_dimension = 4
 low_dimension = 3
+ 
+def orthogonal_proj(zfront, zback):
+    a = (zfront+zback)/(zfront-zback)
+    b = -2*(zfront*zback)/(zfront-zback)
+    # -0.0001 added for numerical stability as suggested in:
+    # http://stackoverflow.com/questions/23840756
+    return np.array([[1,0,0,0],
+                        [0,1,0,0],
+                        [0,0,a,b],
+                        [0,0,-0.0001,zback]])
 
 def rotate(l, n):
     return l[-n:] + l[:-n]
@@ -159,6 +170,9 @@ def print_convex_hull(bases):
   for edge in edges:
     line = [list(points[j]) for j in edge]
     ax.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], [line[0][2], line[1][2]], color='k')
+  ax.set_aspect('equal')
+  ax.axis('off')
+  proj3d.persp_transformation = orthogonal_proj
   plt.show()
 
 def shadow_volume(bases):
@@ -178,9 +192,9 @@ def maximize_shadow():
 # vertices = array(get_5_cell_vertices()) # edge first
 # vertices = array(get_cube_vertices(4)) # vertex first
 # vertices = array(get_orthoplex_vertices(4)) # vertex first
-vertices = array(get_24_cell_vertices()) # what?
-# vertices = array(get_120_cell_vertices())
-# vertices = array(get_600_cell_vertices())
+# vertices = array(get_24_cell_vertices()) # what?
+vertices = array(get_120_cell_vertices()) # unclear
+# vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
 edges = get_edges(vertices)
 print "vertex count:", len(vertices), "edge count:", len(edges)
 
@@ -191,18 +205,18 @@ def main():
   # print "Volume of the known bases: ", shadow_volume(known_bases)
 
   # trivial bases
-  # known_bases = array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]])
+  known_bases = array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]])
 
   # B4
-  t = 1 + math.sqrt(2.0)
-  known_bases = array([[t, t, 1, 1], [-1, 1, t, -t], [1, 1, -t, -t]])
+  # t = 1 + math.sqrt(2.0)
+  # known_bases = array([[t, t, 1, 1], [-1, 1, t, -t], [1, 1, -t, -t]])
 
   # F4
-  # a = -1 + math.sqrt(3.0)
-  # known_bases = array([[1, 1, a, 0], [1, -1, 0, a]])
+  a = -1 + math.sqrt(3.0)
+  # known_bases = array([[1, 1, a, 0], [1, -1, 0, a], [a, 0, -1, -1]])
 
   print "Volume of the known bases: ", shadow_volume(known_bases)
-  # print_convex_hull(known_bases)
+  print_convex_hull(known_bases)
 
   max_shadow, orth_optimal_bases = maximize_shadow()
   print "Volume of max shadow: ", max_shadow
