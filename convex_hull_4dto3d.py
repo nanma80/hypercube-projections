@@ -184,7 +184,7 @@ def negative_volume(bases):
 
 def maximize_shadow():
   random_bases = random.rand(low_dimension, high_dimension)
-  res_bh = basinhopping(negative_volume, random_bases, disp = False)
+  res_bh = basinhopping(negative_volume, random_bases, disp = True)
   optimal_bases = res_bh.x.reshape((low_dimension, high_dimension))
   orth_optimal_bases = orth(optimal_bases.T).T
   return (- res_bh.fun, orth_optimal_bases)
@@ -205,12 +205,19 @@ def orth_base(bases):
 # vertices = array(get_orthoplex_vertices(4)) # vertex first
 # 1.3333 [1, 0, 0, 0]
 
-vertices = array(get_24_cell_vertices()) # what?
+# vertices = array(get_24_cell_vertices()) # what?
 # 24-cell: target volume: 7.05533682951 vector [-0.1889823  -0.18898229  0.18898219  0.94491117]
 # 0.94491117/0.18898219 = 5. So the vector is [-1, -1, 1, 5]
 
-# vertices = array(get_120_cell_vertices()) # unclear
+vertices = array(get_120_cell_vertices()) # unclear
+# Volume of max shadow:  87.3688309937
+# [ 0.70167991 -0.58437     0.30712118 -0.2680179 ]
+
 # vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
+# Volume of max shadow:  3.55713925244
+# [ 0.47618417  0.51620227 -0.41143319  0.58095317]
+
+
 edges = get_edges(vertices)
 print "vertex count:", len(vertices), "edge count:", len(edges)
 
@@ -236,8 +243,8 @@ def main():
   known_bases = array([[5, 1, 1, 1], [-1, 5, 1, -1], [-1, -1, 5, 1]])
 
   print "Volume of the known bases: ", shadow_volume(known_bases)
-  print_convex_hull(known_bases)
-  return
+  # print_convex_hull(known_bases)
+  # return
 
   max_shadow, orth_optimal_bases = maximize_shadow()
   print "Volume of max shadow: ", max_shadow
