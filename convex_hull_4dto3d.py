@@ -189,10 +189,26 @@ def maximize_shadow():
   orth_optimal_bases = orth(optimal_bases.T).T
   return (- res_bh.fun, orth_optimal_bases)
 
+def orth_base(bases):
+  known_bases = np.append(bases, [[1] * len(bases[0])], axis = 0)
+  last_base = np.linalg.solve(known_bases, array([0, 0, 0, 1]))
+  last_base = last_base / math.sqrt(np.inner( last_base, last_base)) * math.sqrt(np.inner(known_bases[0], known_bases[0]))
+  return last_base
+
 # vertices = array(get_5_cell_vertices()) # edge first
+# 3.26598632371. [ 0.45643534 -0.45643533 -0.45643571  0.61237244]
+# [1, -1, -1, 3/sqrt(5)]
+
 # vertices = array(get_cube_vertices(4)) # vertex first
+# 2.0  [1, 1, 1, 1]
+
 # vertices = array(get_orthoplex_vertices(4)) # vertex first
-vertices = array(get_24_cell_vertices()) # what? target volume: 7.05533682951
+# 1.3333 [1, 0, 0, 0]
+
+vertices = array(get_24_cell_vertices()) # what?
+# 24-cell: target volume: 7.05533682951 vector [-0.1889823  -0.18898229  0.18898219  0.94491117]
+# 0.94491117/0.18898219 = 5. So the vector is [-1, -1, 1, 5]
+
 # vertices = array(get_120_cell_vertices()) # unclear
 # vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
 edges = get_edges(vertices)
@@ -209,23 +225,29 @@ def main():
   # known_bases = array([[1, 1, 1, 1], [1, -1, -1, 1], [-1, 1, -1, 1]])
 
   # B4
-  t = 1 + math.sqrt(2.0)
-  known_bases = array([[t, t, 1, 1], [-1, 1, t, -t], [1, 1, -t, -t]])
+  # t = 1 + math.sqrt(2.0)
+  # known_bases = array([[t, t, 1, 1], [-1, 1, t, -t], [1, 1, -t, -t]])
 
   # F4
   # a = -1 + math.sqrt(3.0)
   # known_bases = array([[1, 1, a, 0], [1, -1, 0, a], [a, 0, -1, -1]])
 
+  # best base for 24-cell
+  known_bases = array([[5, 1, 1, 1], [-1, 5, 1, -1], [-1, -1, 5, 1]])
+
   print "Volume of the known bases: ", shadow_volume(known_bases)
   print_convex_hull(known_bases)
-  # return
+  return
 
   max_shadow, orth_optimal_bases = maximize_shadow()
   print "Volume of max shadow: ", max_shadow
   print "Max achieving bases:"
   print orth_optimal_bases
+  print "orth vector to the optimal bases:"
+  print orth_base(orth_optimal_bases)
   print_convex_hull(orth_optimal_bases)
-  inner_products_of_vectors(orth_optimal_bases.T)
+  # inner_products_of_vectors(orth_optimal_bases.T)
+
 
 if __name__ == '__main__':
   main()
