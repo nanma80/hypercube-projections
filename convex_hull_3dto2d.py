@@ -13,18 +13,8 @@ import matplotlib.collections as pltcol
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d import proj3d
 
-high_dimension = 4
-low_dimension = 3
- 
-def orthogonal_proj(zfront, zback):
-    a = (zfront+zback)/(zfront-zback)
-    b = -2*(zfront*zback)/(zfront-zback)
-    # -0.0001 added for numerical stability as suggested in:
-    # http://stackoverflow.com/questions/23840756
-    return np.array([[1,0,0,0],
-                        [0,1,0,0],
-                        [0,0,a,b],
-                        [0,0,-0.0001,zback]])
+high_dimension = 3
+low_dimension = 2
 
 def rotate(l, n):
     return l[-n:] + l[:-n]
@@ -38,18 +28,32 @@ def get_cube_vertices(dimension):
     vertices.append(co)
   return vertices
 
+def get_even_perm_2(prototype):
+  prototypes_level1 = []
+  limit = 2 ** 2
+  for i in range(limit):
+    str = "{0:b}".format(i + limit)
+    coefficients = [2.0 * j - 1 for j in [int(ch) for ch in str]]
+    prototypes_level1.append( [prototype[i] * coefficients[i] for i in xrange(3)] )
+
+  prototypes_level2 = []
+  for r in xrange(3):
+    for p in prototypes_level1:
+      prototypes_level2.append(rotate(p, r))
+  return prototypes_level2
+
 def get_even_perm_3(prototype, last):
   prototypes_level1 = []
   limit = 2 ** 3
   for i in range(limit):
     str = "{0:b}".format(i + limit)
     coefficients = [2.0 * j - 1 for j in [int(ch) for ch in str][1:]]
-    prototypes_level1.append( [prototype[i] * coefficients[i] for i in xrange(3)] )
+    prototypes_level1.append( [prototype[i] * coefficients[i] for i in xrange(3)])
 
   prototypes_level2 = []
   for r in xrange(3):
     for p in prototypes_level1:
-      prototypes_level2.append(rotate(p, r) + [last])
+      prototypes_level2.append(rotate(p, r))
 
   prototypes_level3 = []
   for p in prototypes_level2:
@@ -75,6 +79,26 @@ def get_orthoplex_vertices(dimension):
     vertex1[i] = -1
     vertices.append(vertex1)
   return vertices
+
+def get_tetrahedron_vertices():
+  vertices = [
+    [1, 1, 1],
+    [1, -1, -1],
+    [-1, 1, -1],
+    [-1, -1, 1],
+  ]
+  return vertices
+
+def get_dodecahedron_vertices():
+  vertices = []
+  phi = (math.sqrt(5.0) + 1.0) / 2.0
+  vertices.extend(get_even_perm_2([0, phi/2, 1.0/phi/2]))
+  vertices.extend(get_cube_vertices(3))
+  return vertices
+
+def get_icosahedron_vertices():
+  phi = (math.sqrt(5.0) + 1.0) / 2.0
+  return get_even_perm_2([0, 1, phi])
 
 def get_24_cell_vertices():
   vertices = []
@@ -164,15 +188,11 @@ def convex_hull(bases):
 def print_convex_hull(bases):
   hull = convex_hull(bases)
   points = hull.points
-  fig = plt.figure()
-  ax = fig.add_subplot(111, projection='3d')
-  ax.scatter(points[:,0], points[:,1], points[:,2], marker = 'o')
-  for edge in edges:
-    line = [list(points[j]) for j in edge]
-    ax.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], [line[0][2], line[1][2]], color='k')
-  ax.set_aspect('equal')
-  ax.axis('off')
-  proj3d.persp_transformation = orthogonal_proj
+  plt.plot(points[:,0], points[:,1], 'o')
+  lines = [[tuple(points[j]) for j in i] for i in edges]
+  lc = pltcol.LineCollection(lines)
+  plt.axes().add_collection(lc)
+  plt.axes().set_aspect('equal')
   plt.show()
 
 def shadow_volume(bases):
@@ -191,52 +211,32 @@ def maximize_shadow():
 
 def orth_base(bases):
   known_bases = np.append(bases, [[1] * len(bases[0])], axis = 0)
-  last_base = np.linalg.solve(known_bases, array([0, 0, 0, 1]))
-  # last_base = last_base / math.sqrt(np.inner( last_base, last_base)) * math.sqrt(np.inner(known_bases[0], known_bases[0]))
+  last_base = np.linalg.solve(known_bases, array([0, 0, 1]))
   last_base = last_base / max([abs(i) for i in last_base])
   return last_base
 
-# vertices = array(get_5_cell_vertices()) # edge first
-# volume: 3.26598632371
-# [1, -1, -1, 3/sqrt(5)]
+# vertices = array(get_tetrahedron_vertices())
+# edge first, square convex hull, [1, 0, 0]
 
-# vertices = array(get_cube_vertices(4)) # vertex first
-# volume: 2.0  [1, 1, 1, 1]
+# vertices = array(get_cube_vertices(3))
+# vertex first, [1, 1, 1]
 
-# vertices = array(get_orthoplex_vertices(4)) # vertex first
-# 1.3333 [1, 0, 0, 0]
+# vertices = array(get_orthoplex_vertices(3)) 
+# vertex first, [1, 0, 0]
 
-# vertices = array(get_24_cell_vertices()) # what?
-# 24-cell: target volume: 7.05533682951 vector [-0.1889823  -0.18898229  0.18898219  0.94491117]
-# 0.94491117/0.18898219 = 5. So the vector is [-1, -1, 1, 5]
+# vertices = array(get_dodecahedron_vertices())
+# face first, [0, -1/phi, 1]
 
-vertices = array(get_120_cell_vertices()) # unclear
-# Volume of max shadow:  87.3688309937
-# [ 0.14818048 -0.23976104 -0.13253656  1.        ]
-
-# vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
-# Volume of max shadow:  3.55713925244
-# [ 0.30444186  1.         -0.57012138  0.12543673]
+vertices = array(get_icosahedron_vertices())
+# face first, [1, 1, 1]
 
 edges = get_edges(vertices)
 print "vertex count:", len(vertices), "edge count:", len(edges)
 
+
 def main():
-  # trivial bases
-  # known_bases = array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]])
-  # known_bases = array([[1, 1, 1, 1], [1, -1, -1, 1], [-1, 1, -1, 1]])
-
-  # B4
-  # t = 1 + math.sqrt(2.0)
-  # known_bases = array([[t, t, 1, 1], [-1, 1, t, -t], [1, 1, -t, -t]])
-
-  # F4
-  # a = -1 + math.sqrt(3.0)
-  # known_bases = array([[1, 1, a, 0], [1, -1, 0, a], [a, 0, -1, -1]])
-
   # best base for 24-cell
-  b = 1./3 # or 2, 5, 1/3, generating the same volume
-  known_bases = array([[b, 1, 1, 1], [-1, b, 1, -1], [-1, -1, b, 1]])
+  known_bases = array([[1, 1, 1], [1, -1, 0]])
 
   print "Volume of the known bases: ", shadow_volume(known_bases)
   # print_convex_hull(known_bases)
@@ -249,7 +249,6 @@ def main():
   print "orth vector to the optimal bases:"
   print orth_base(orth_optimal_bases)
   print_convex_hull(orth_optimal_bases)
-  # inner_products_of_vectors(orth_optimal_bases.T)
 
 
 if __name__ == '__main__':
