@@ -88,6 +88,16 @@ def get_24_cell_vertices():
           vertices.append(vertex)
   return vertices
 
+# different initial orientation
+def get_24_cell_vertices_2():
+  vertices = []
+  vertices.extend(get_cube_vertices(4))
+  vertices.extend(get_orthoplex_vertices(4))
+  for i in xrange(len(vertices)):
+    vertices[i] = [math.sqrt(2) * x for x in vertices[i]] # to match lengths of the first version
+  return vertices
+
+
 def get_5_cell_vertices():
   vertices = [
     [1, 1, 1, -1 / math.sqrt(5)],
@@ -206,9 +216,12 @@ def orth_base(bases):
 # vertices = array(get_orthoplex_vertices(4)) # vertex first
 # 1.3333 [1, 0, 0, 0]
 
-vertices = array(get_24_cell_vertices()) # what?
+vertices = array(get_24_cell_vertices())
 # 24-cell: target volume: 7.05533682951 vector [-0.1889823  -0.18898229  0.18898219  0.94491117]
 # 0.94491117/0.18898219 = 5. So the vector is [-1, -1, 1, 5]
+
+# vertices = array(get_24_cell_vertices_2()) 
+# different initial orientation, requires different bases to maximize the volume
 
 # vertices = array(get_120_cell_vertices()) # unclear
 # Volume of max shadow:  87.3688309937
@@ -223,7 +236,7 @@ vertices = array(get_24_cell_vertices()) # what?
 # [ -1, 0, 0.795320722, 0.491535219] and note that 0.795320722 = phi * 0.491535219
 
 edges = get_edges(vertices)
-# print "vertex count:", len(vertices), "edge count:", len(edges)
+print "vertex count:", len(vertices), "edge count:", len(edges)
 
 def main():
   # trivial bases
@@ -239,7 +252,7 @@ def main():
   # known_bases = array([[1, 1, a, 0], [1, -1, 0, a], [a, 0, -1, -1]])
 
   # best base for 24-cell
-  b = 1./3 # or 2, 5, 1/3, generating the same volume
+  b = 5 # or 2, 5, 1/3, generating the same volume
   known_bases = array([[b, 1, 1, 1], [-1, b, 1, -1], [-1, -1, b, 1]])
 
   print "Volume of the known bases: ", shadow_volume(known_bases)
