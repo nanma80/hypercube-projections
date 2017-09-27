@@ -15,7 +15,8 @@ from mpl_toolkits.mplot3d import proj3d
 
 high_dimension = 4
 low_dimension = 3
- 
+phi = (1 + math.sqrt(5.0))/2
+
 def orthogonal_proj(zfront, zback):
     a = (zfront+zback)/(zfront-zback)
     b = -2*(zfront*zback)/(zfront-zback)
@@ -113,7 +114,6 @@ def get_120_cell_vertices():
   for v in get_24_cell_vertices():
     vertices.append([2 * i for i in v])
 
-  phi = (math.sqrt(5.0) + 1.0) / 2.0
   prototypes = [[1, 1, 1, math.sqrt(5)], [phi, phi, phi, 1/phi/phi], [1/phi, 1/phi, 1/phi, phi*phi]]
   cube_vertices = get_cube_vertices(4)
 
@@ -134,7 +134,6 @@ def get_120_cell_vertices():
 
 def get_600_cell_vertices():
   vertices = []
-  phi = (math.sqrt(5.0) + 1.0) / 2.0
   prototype = [0.5 * i for i in [phi, 1, 1.0 / phi]]
   vertices.extend(get_even_perm_3(prototype, 0))
   vertices.extend(get_cube_vertices(4))
@@ -224,14 +223,14 @@ def orth_base(bases):
 # vertices = array(get_24_cell_vertices_2()) 
 # different initial orientation, requires different bases to maximize the volume
 
-# vertices = array(get_120_cell_vertices()) # unclear
+vertices = array(get_120_cell_vertices()) # unclear
 # Volume of max shadow:  87.3688309937
 # [ 0.14818048 -0.23976104 -0.13253656  1.        ]
 # [ 1.          0.79944109  0.05013976  0.05013967]
 # [ 0.18033988  1.         -0.78521826  0.61803399]
 # [-0.04095612  1.          0.04095609 -0.30602924]
 
-vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
+# vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
 # Volume of max shadow:  3.55713925244
 # [ 0.30444186  1.         -0.57012138  0.12543673]
 # [ -1, 0, 0.795320722, 0.491535219] and note that 0.795320722 = phi * 0.491535219
@@ -256,11 +255,17 @@ def main():
   # b = 5 # or 2, 5, 1/3, generating the same volume
   # known_bases = array([[b, 1, 1, 1], [-1, b, 1, -1], [-1, -1, b, 1]])
 
-  # H4
-  base1 = [(1+math.sqrt(5))*math.sin(math.pi/30), 1, 0, 0]
-  base2 = [0, 0, 2*math.sin(2*math.pi/15), (1+math.sqrt(5))*math.sin(math.pi/15)]
-  base3 = [1, -(1+math.sqrt(5))*math.sin(math.pi/30), 0, 0]
+  # H3
+  base1 = [1, 0, 0, 0]
+  base2 = [0, -phi, 1, 0]
+  base3 = [0, 1, phi, 0]
   known_bases = array([base1, base2, base3])
+
+  # H4
+  # base1 = [(1+math.sqrt(5))*math.sin(math.pi/30), 1, 0, 0]
+  # base2 = [0, 0, 2*math.sin(2*math.pi/15), (1+math.sqrt(5))*math.sin(math.pi/15)]
+  # base3 = [1, -(1+math.sqrt(5))*math.sin(math.pi/30), 0, 0]
+  # known_bases = array([base1, base2, base3])
 
   print "Volume of the known bases: ", shadow_volume(known_bases)
   print_convex_hull(known_bases)
