@@ -177,8 +177,8 @@ def maximize_shadow():
 # vertices = array(get_cube_vertices(4))
 # vertices = array(get_orthoplex_vertices(4))
 # vertices = array(get_24_cell_vertices())
-# vertices = array(get_120_cell_vertices())
-vertices = array(get_600_cell_vertices())
+vertices = array(get_120_cell_vertices())
+# vertices = array(get_600_cell_vertices())
 edges = get_edges(vertices)
 print "vertex count:", len(vertices), "edge count:", len(edges)
 
@@ -201,8 +201,11 @@ def main():
   # H3 approximation
   # known_bases = array([[-0.56386048, -0.43150524, -0.51330528, -0.48206045], [ 0.63692086, -0.73308252,  0.1136261,  -0.20978786]])
 
-  # H4 approximation
-  known_bases = array([[-0.36865476, -0.43805725, -0.33223487, -0.74954619], [ 0.67667559, -0.46293592, -0.54389678,  0.17882051]])
+  # H4
+  base1 = [(1+math.sqrt(5))*math.sin(math.pi/30), 1, 0, 0]
+  base2 = [0, 0, 2*math.sin(2*math.pi/15), (1+math.sqrt(5))*math.sin(math.pi/15)]
+  base3 = [1, -(1+math.sqrt(5))*math.sin(math.pi/30), 0, 0]
+  known_bases = array([base1, base2])
 
   print "Volume of the known bases: ", shadow_volume(known_bases)
   # print_convex_hull(known_bases)

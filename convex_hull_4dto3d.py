@@ -182,6 +182,7 @@ def print_convex_hull(bases):
     ax.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], [line[0][2], line[1][2]], color='k')
   ax.set_aspect('equal')
   ax.axis('off')
+  ax.view_init(elev=90, azim=0)
   proj3d.persp_transformation = orthogonal_proj
   plt.show()
 
@@ -216,7 +217,7 @@ def orth_base(bases):
 # vertices = array(get_orthoplex_vertices(4)) # vertex first
 # 1.3333 [1, 0, 0, 0]
 
-vertices = array(get_24_cell_vertices())
+# vertices = array(get_24_cell_vertices())
 # 24-cell: target volume: 7.05533682951 vector [-0.1889823  -0.18898229  0.18898219  0.94491117]
 # 0.94491117/0.18898219 = 5. So the vector is [-1, -1, 1, 5]
 
@@ -230,7 +231,7 @@ vertices = array(get_24_cell_vertices())
 # [ 0.18033988  1.         -0.78521826  0.61803399]
 # [-0.04095612  1.          0.04095609 -0.30602924]
 
-# vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
+vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
 # Volume of max shadow:  3.55713925244
 # [ 0.30444186  1.         -0.57012138  0.12543673]
 # [ -1, 0, 0.795320722, 0.491535219] and note that 0.795320722 = phi * 0.491535219
@@ -252,12 +253,18 @@ def main():
   # known_bases = array([[1, 1, a, 0], [1, -1, 0, a], [a, 0, -1, -1]])
 
   # best base for 24-cell
-  b = 5 # or 2, 5, 1/3, generating the same volume
-  known_bases = array([[b, 1, 1, 1], [-1, b, 1, -1], [-1, -1, b, 1]])
+  # b = 5 # or 2, 5, 1/3, generating the same volume
+  # known_bases = array([[b, 1, 1, 1], [-1, b, 1, -1], [-1, -1, b, 1]])
+
+  # H4
+  base1 = [(1+math.sqrt(5))*math.sin(math.pi/30), 1, 0, 0]
+  base2 = [0, 0, 2*math.sin(2*math.pi/15), (1+math.sqrt(5))*math.sin(math.pi/15)]
+  base3 = [1, -(1+math.sqrt(5))*math.sin(math.pi/30), 0, 0]
+  known_bases = array([base1, base2, base3])
 
   print "Volume of the known bases: ", shadow_volume(known_bases)
-  # print_convex_hull(known_bases)
-  # return
+  print_convex_hull(known_bases)
+  return
 
   max_shadow, orth_optimal_bases = maximize_shadow()
   print "Volume of max shadow: ", max_shadow
