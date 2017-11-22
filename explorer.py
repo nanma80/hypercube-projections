@@ -232,6 +232,7 @@ def main():
   # 113 4
   # 119 8
 
+  print "start_index = ", start_index
   v0 = projections[start_index]
 
   enhanced_projections = []
