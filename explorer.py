@@ -254,9 +254,11 @@ def main():
   print "For comparison"
   # Seems to be related to the edges of 24-cell (vertices of rectified 24-cell)
   # comparison_vertices = get_rectified_24_cell_vertices()
-  # comparison_vertices = get_24_cell_vertices()
-  comparison_vertices = [v[2] for v in top_vertices]
-  v0 = comparison_vertices[0]
+  comparison_vertices = get_24_cell_vertices()
+  v0 = array(get_rectified_24_cell_vertices()[0])
+
+  # comparison_vertices = [v[2] for v in top_vertices]
+  
 
   comparison_enhanced_projections = []
   for i, v1 in enumerate(comparison_vertices):
