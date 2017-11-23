@@ -49,7 +49,7 @@ def negative_volume(bases):
 
 def maximize_shadow():
   random_bases = random.rand(low_dimension, high_dimension - 2)
-  res_bh = basinhopping(negative_volume, random_bases, disp = True, niter=20)
+  res_bh = basinhopping(negative_volume, random_bases, disp = True, niter=200)
   optimal_bases = add_columns(res_bh.x.reshape((low_dimension, high_dimension - 2)))
 
   orth_optimal_bases = orth(optimal_bases.T).T

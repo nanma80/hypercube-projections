@@ -205,6 +205,13 @@ def main():
                          [ 0.5708417,   0.60604744,  0.15616942, -0.09854069, -0.21650482,  0.22772449,   0.03706754, -0.41550008],
                          [ 0.15099414,  0.11750736, -0.3665696,  -0.46027767,  0.17204068,  0.13761818,   0.64332522,  0.39339532],
                          [-0.19290317,  0.16173212, -0.44587536,  0.20189433, -0.64199191,  0.40349154,  -0.18845184,  0.29426483]])
+
+    # result from a longer search (200 iterations)
+    known_bases = array([[ 0.12542236,  0.32268806, -0.58899886, -0.27512784, -0.38466971, -0.5561906,  -0.00525121,  0.01342847],
+                         [ 0.58545604,  0.44477297,  0.19303729,  0.55235966,  0.23357982, -0.24945977, 0.01422689, -0.00784373],
+                         [ 0.32550978, -0.41496129, -0.12910519, -0.29029814,  0.53838639, -0.24710893,  -0.3718471,   0.3629275 ],
+                         [ 0.18855797, -0.16079561, -0.31487888,  0.18689634, -0.08723689,  0.25953722,   0.60124842,  0.60666482]])
+
   vertices = get_cube_vertices(high_dimension)
 
   projections = np.dot(vertices, known_bases.T)
@@ -213,8 +220,8 @@ def main():
   convex_hull_vertices = [vertices[index] for index in ch.vertices]
 
   
-  start_index = 119
-  # Good indices:
+  start_index = 7
+  # bases 1: Good indices:
   #   8 8
   # 14 4
   # 26 4
@@ -232,6 +239,26 @@ def main():
   # 113 4
   # 119 8
 
+  # bases 2:
+  #   7 8
+  # 10 4
+  # 14 4
+  # 17 4
+  # 24 4
+  # 33 4
+  # 36 4
+  # 58 8
+  # 69 8
+  # 91 4
+  # 94 4
+  # 103 4
+  # 110 4
+  # 113 4
+  # 117 4
+  # 120 8
+
+
+  # for start_index in xrange(128):
   print "start_index = ", start_index
   v0 = projections[start_index]
 
@@ -244,6 +271,10 @@ def main():
   enhanced_projections.sort(key = lambda x: x[1])
   threshold = enhanced_projections[-2][1]
   top_vertices = [x for x in enhanced_projections if x[1] > threshold - 0.001 and x[1] < threshold + 0.001]
+  # if len(top_vertices) >= 4:
+  #   print start_index, len(top_vertices)
+  # return
+
 
   for enhanced_projection in enhanced_projections:
     print enhanced_projection
