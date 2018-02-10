@@ -8,8 +8,8 @@ from scipy import random, array, dot, zeros
 from scipy.linalg import orth, det
 from scipy.optimize import minimize, basinhopping
 from scipy.spatial import ConvexHull
-# from sympy import sqrt
-from math import sqrt
+from sympy import sqrt
+# from math import sqrt
 import matplotlib.pyplot as plt
 import matplotlib.collections as pltcol
 from mpl_toolkits.mplot3d import Axes3D
