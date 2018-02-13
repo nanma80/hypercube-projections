@@ -57,9 +57,9 @@ for p in points:
 # for p in selected_points:
 # 	print p
 
-# 5-cell -> 30
+# 5-cell -> 30 vertices, 20 cells: 20 rhombohedra. Dual of runcinated 5-cell. 4 cells around north pole, projected to a rhombic dodecahedron just like the vertex first projection of tesseract. 4 cells around south pole. 12 cells along equator, projected to flat rhombi. Edges crossing equator directly connect (x,y,z,w) to (x,y,z,w+4/sqrt(5))
 # 16-cell -> 16 vertices, hypercube
-# 8-cell -> 104 vertices, 40-cell: 24 dihedral rhombic dodecahedron + 16 cubes. Can be seen as the rectified 24-cell with eight cubes augmented by pyramids. A rhombic dodecahedron has eight 60-120 rhombi and four squares
+# 8-cell -> 104 vertices, 40 cells: 24 dihedral rhombic dodecahedron + 16 cubes. Can be seen as the rectified 24-cell with eight cubes augmented by pyramids. A rhombic dodecahedron has eight 60-120 rhombi and four squares
 # 24-cell -> 192 vertices: truncated 24-cell
 # 600-cell -> 7616 (have to use math.sqrt, otherwise too slow)
 # 120-cell didn't try
