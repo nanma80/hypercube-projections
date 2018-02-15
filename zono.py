@@ -1,3 +1,4 @@
+import datetime
 import numpy as np
 import sympy as sp
 from scipy.spatial import ConvexHull
@@ -10,10 +11,10 @@ def convex_hull(points):
 
 dimension = 4
 
-all_vertices = pb.get_5_cell_vertices()
+# all_vertices = pb.get_5_cell_vertices()
 # all_vertices = pb.get_orthoplex_vertices(dimension)
 # all_vertices = pb.get_cube_vertices(dimension)
-# all_vertices = pb.get_24_cell_vertices()
+all_vertices = pb.get_24_cell_vertices()
 # all_vertices = pb.get_600_cell_vertices()
 # all_vertices = pb.get_120_cell_vertices()
 
@@ -34,7 +35,7 @@ for v in all_vertices:
 	points = np.concatenate((new_points1, new_points2), axis = 0)
 	if len(points) > 6 * len(all_vertices):
 		points = convex_hull(points)
-	# print vertex_count, len(points)
+	print datetime.datetime.now(), vertex_count, len(points)
 
 points = convex_hull(points)
 
@@ -44,8 +45,10 @@ points.sort(key=lambda x:x[-1] * 1000000 + x[-2] * 10000 + x[-3] * 100 + x[-4])
 
 print "vertex count:", len(points)
 print "vertices:"
-for p in points:
-	print p
+np.set_printoptions(threshold=np.nan)
+print repr(np.array([list(p) for p in points]))
+# for p in points:
+# 	print p
 
 # investigating zono(tesseract)
 # selected_points = [p for p in points if 
@@ -60,6 +63,7 @@ for p in points:
 # 5-cell -> 30 vertices, 20 cells: 20 rhombohedra. Dual of runcinated 5-cell. 4 cells around north pole, projected to a rhombic dodecahedron just like the vertex first projection of tesseract. 4 cells around south pole. 12 cells along equator, projected to flat rhombi. Edges crossing equator directly connect (x,y,z,w) to (x,y,z,w+4/sqrt(5))
 # 16-cell -> 16 vertices, hypercube
 # 8-cell -> 104 vertices, 40 cells: 24 dihedral rhombic dodecahedron + 16 cubes. Can be seen as the rectified 24-cell with eight cubes augmented by pyramids. A rhombic dodecahedron has eight 60-120 rhombi and four squares
+# Since 8-cell has 16 vertices form 8 pairs, this zonotope can be viewed as a projection from 8D -> 4D
 # 24-cell -> 192 vertices: truncated 24-cell
-# 600-cell -> 7616 (have to use math.sqrt, otherwise too slow)
-# 120-cell didn't try
+# 600-cell -> 7616 vertices
+# 120-cell didn't finish, too slow

@@ -72,29 +72,23 @@ def maximize_shadow():
   # generators = [0.378556, 0.326643, 0.100944, 0.489704 ]
   # generators = [0.711917, 0.203285]
   generators = random.rand(2,1)
+  # generators = [math.pi/4, math.pi/4]
+  print "Initial generator is:"
+  print generators
+  print "Initial bases are:" 
+  print get_bases(generators) * math.sqrt(2) * 2
+  print "Initial Volume is:", shadow_volume(get_bases(generators))
+
   bounds = Bounds([math.pi/4, math.pi/4], [0,0])
-  res_bh = basinhopping(negative_volume, generators, disp = False, niter=20, accept_test=bounds)
-  # bnds = ((0, math.pi/4), (0, math.pi/4))
-  # res_bh = minimize(negative_volume, generators, method='SLSQP', bounds=bnds, options={'gtol': 1e-6, 'disp': True})
+  res_bh = basinhopping(negative_volume, generators, disp = False, niter=50, accept_test=bounds)
+  print "Optimal generator is:"
   print res_bh.x
   optimal_bases = get_bases(res_bh.x)
   return (- res_bh.fun, optimal_bases)
 
 def main():
-  # 6 -> 3
-  # phi = (1 + math.sqrt(5.0))/2
-  # known_bases = array([[1, phi, 0, -1, phi, 0], [phi, 0, 1, phi, 0, -1], [0, 1, phi, 0, -1, phi]])
-  # print "Volume of the known bases: ", shadow_volume(known_bases)
-
-  # 4 -> 2
-  # t = 1 + math.sqrt(2.0)
-  # known_bases = array([[t, t, 1, 1], [1, -1, t, -t]])
-  # print "Volume of the known bases: ", shadow_volume(known_bases)
   max_shadow, orth_optimal_bases = maximize_shadow()
   print "Volume of max shadow: ", max_shadow
-  # print "Max achieving bases:"
-  # print orth_optimal_bases
-  # inner_products_of_vectors(orth_optimal_bases.T)
 
 if __name__ == '__main__':
   main()
