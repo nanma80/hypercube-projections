@@ -1,52 +1,68 @@
+#!/usr/bin/env python
+
 import datetime
 import numpy as np
 import sympy as sp
 from scipy.spatial import ConvexHull
 import polytope_builder as pb
 
-def convex_hull(points):
-	ch = ConvexHull(points)
-	ch_vertices = ch.vertices
-	return [points[index] for index in ch_vertices]
-
 dimension = 4
 
-# all_vertices = pb.get_5_cell_vertices()
+def convex_hull(points):
+  ch = ConvexHull(points)
+  ch_vertices = ch.vertices
+  return [points[index] for index in ch_vertices]
+
+
+def zonohedrify(all_vertices):
+	print "zonohedrifying ", len(all_vertices), " points"
+	points = [ np.array(pb.get_origin(dimension)) ]
+	vertex_count = -1
+	for v in all_vertices:
+		vertex_count += 1
+		negative_v = [ - elem for elem in v]
+		new_points1 = [[sum(x) for x in zip(p, v)] for p in points]
+		new_points2 = [[sum(x) for x in zip(p, negative_v)] for p in points]
+
+		points = np.concatenate((new_points1, new_points2), axis = 0)
+		if len(points) > 6 * len(all_vertices):
+			points = convex_hull(points)
+		print datetime.datetime.now(), vertex_count, len(points)
+
+	points = convex_hull(points)
+
+	scaling = sp.sqrt(1) * 1
+	points = [p * scaling for p in points]
+	points.sort(key=lambda x:x[-1] * 1000000 + x[-2] * 10000 + x[-3] * 100 + x[-4])
+	return points
+
+has_center_symmetry = True
+
+all_vertices, has_center_symmetry = pb.get_5_cell_vertices(), False
 # all_vertices = pb.get_orthoplex_vertices(dimension)
 # all_vertices = pb.get_cube_vertices(dimension)
-all_vertices = pb.get_24_cell_vertices()
+# all_vertices = pb.get_24_cell_vertices()
 # all_vertices = pb.get_600_cell_vertices()
 # all_vertices = pb.get_120_cell_vertices()
 
+# get all edge centers. Note that edge centers of 16-cell are the vertices of 24-cell
+all_vertices = pb.get_edge_centers(all_vertices)
+
+# optimization to remove redundant vertices. 
+# Should not include for 5-cell based points, because they don't have center symmetry
 random_direction = np.array([0.123, 0.23, 0.76, 0.771])
-if len(all_vertices) > 5:
-	all_vertices = [v for v in all_vertices if np.inner(v, random_direction) > 0]
+if has_center_symmetry:
+  all_vertices = [v for v in all_vertices if np.inner(v, random_direction) > 0]
 
+
+
+points = zonohedrify(all_vertices)
 # print all_vertices
-points = [ np.array(pb.get_origin(dimension)) ]
-
-vertex_count = -1
-for v in all_vertices:
-	vertex_count += 1
-	negative_v = [ - elem for elem in v]
-	new_points1 = [[sum(x) for x in zip(p, v)] for p in points]
-	new_points2 = [[sum(x) for x in zip(p, negative_v)] for p in points]
-
-	points = np.concatenate((new_points1, new_points2), axis = 0)
-	if len(points) > 6 * len(all_vertices):
-		points = convex_hull(points)
-	print datetime.datetime.now(), vertex_count, len(points)
-
-points = convex_hull(points)
-
-scaling = sp.sqrt(1) * 2
-points = [p/scaling for p in points]
-points.sort(key=lambda x:x[-1] * 1000000 + x[-2] * 10000 + x[-3] * 100 + x[-4])
 
 print "vertex count:", len(points)
 print "vertices:"
 np.set_printoptions(threshold=np.nan)
-print repr(np.array([list(p) for p in points]))
+# print repr(np.array([list(p) for p in points]))
 # for p in points:
 # 	print p
 

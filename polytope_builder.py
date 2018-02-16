@@ -4,6 +4,7 @@ import sys
 import itertools
 import math
 import numpy as np
+import sympy as sp
 from scipy import random, array, dot, zeros
 from scipy.linalg import orth, det
 from scipy.optimize import minimize, basinhopping
@@ -139,6 +140,15 @@ def get_edges(vertices):
       if abs(inner_prod - target_inner_product) < 0.01:
         edges.append([i, j])
   return edges
+
+def get_edge_centers(vertices):
+  edges = get_edges(vertices)
+  centers = []
+  for edge in edges:
+    endpoints = [vertices[index] for index in edge]
+    center = [sum(x) * sp.sqrt(1)/2 for x in zip(endpoints[0], endpoints[1])]
+    centers.append(center)
+  return centers
 
 def convex_hull(bases):
   _high_dimension = len(bases.T)
