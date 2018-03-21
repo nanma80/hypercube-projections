@@ -1,0 +1,139 @@
+GlowScript 2.7 VPython
+
+phi = (1 + sqrt(5.0))/2
+
+def initialize():
+    scene.fov = 0.001 # simulate orthographic projection
+
+def inner(a, b):
+    if len(a) != len(b):
+        raise ValueError('Lengths do not match: ' + a + ' ' + b)
+    sum = 0.0
+    for i in range(len(a)):
+        sum += 1.0 * a[i] * b[i]
+    return sum
+
+def rotate(l, n):
+    return l[-n:] + l[:-n]
+
+def get_cube_vertices(dimension):
+    vertices = []
+    limit = 2 ** dimension
+    for i in range(limit):
+        str = "{0:b}".format(i + limit)
+        co = [2 * j - 1 for j in [ch for ch in str][1:]]
+        vertices.append(co)
+    return vertices
+
+def get_origin(dimension):
+    v = []
+    for i in range(dimension):
+        v.append(0.0)
+    return v
+
+def get_orthoplex_vertices(dimension):
+    vertices = []
+    for i in range(dimension):
+        vertex0 = get_origin(dimension)
+        vertex0[i] = 1
+        vertices.append(vertex0)
+        vertex1 = get_origin(dimension)
+        vertex1[i] = -1
+        vertices.append(vertex1)
+    return vertices
+
+def get_double_non_zero_vertices(dimension):
+  vertices = []
+  for i in range(dimension):
+    for j in range(i+1, dimension):
+      for k in range(2):
+        for l in range(2):
+          vertex = get_origin(dimension)
+          vertex[i] = k * 2 - 1
+          vertex[j] = l * 2 - 1
+          vertices.append(vertex)
+  return vertices
+
+def project_to_3d(vertices, bases):
+    v3d = []
+    for v in vertices:
+        p = [inner(v, base) for base in bases]
+        v3d.append(vec(p[0], p[1], p[2]))
+    return v3d
+
+def get_edges(vertices, target_inner_product):
+    edges = []
+    for i in range(len(vertices)):
+        for j in range(i+1, len(vertices)):
+            inner_prod = inner(vertices[i], vertices[j])
+            if abs(inner_prod - target_inner_product) < 0.01:
+                edges.append([i, j])
+    return edges
+
+def draw_wireframe(vectors, edges):
+    initialize()
+    vertex_size = 0.2
+    edge_size = vertex_size / 3
+    for v in vectors:
+        sphere(pos = v, radius = vertex_size)
+    
+    for edge in edges:
+        cylinder(pos = vectors[edge[0]], axis = vectors[edge[1]] - vectors[edge[0]], radius = edge_size)
+
+def draw_wireframe(vectors, edges, vertex_is_visible):
+    initialize()
+    vertex_size = 0.4
+    edge_size = vertex_size / 3
+    for v in vectors:
+        sphere(pos = v, radius = vertex_size)
+    
+    for edge in edges:
+        cylinder(pos = vectors[edge[0]], axis = vectors[edge[1]] - vectors[edge[0]], radius = edge_size)
+
+
+def get_edges(vertices):
+  target_inner_product = max([inner(vertices[0], vertices[i]) for i in range(1, len(vertices))])
+  edges = []
+  for i in range(len(vertices)):
+    for j in range(i+1, len(vertices)):
+      inner_prod = inner(vertices[i], vertices[j])
+      if abs(inner_prod - target_inner_product) < 0.01:
+        edges.append([i, j])
+  return edges
+
+def get_bases():
+   base1 = [phi, phi, 0, 0, -1, 1]
+   base2 = [1, -1, phi, -phi, 0, 0]
+   base3 = [0, 0, 1, 1, phi, phi]
+   return [base1, base2, base3]
+
+def get_2_21_vertices():
+  vertices = []
+  vertices.append([0, 0, 0, 0, 0, 4 / sqrt(3)])
+  ring2 = [vector + [1/sqrt(3)] for vector in get_cube_vertices(5) if sum(vector) % 4 == 1]
+  vertices.extend(ring2)
+
+  ring3 = [[2 * el for el in vector] + [ - 2 / sqrt(3)] for vector in get_orthoplex_vertices(5)]
+  vertices.extend(ring3)
+  return vertices
+
+def get_1_22_vertices():
+  vertices = []
+  ring1 = [[2 * el for el in vector] + [0] for vector in get_double_non_zero_vertices(5)]
+  vertices.extend(ring1)
+
+  ring2 = [vector + [sqrt(3)] for vector in get_cube_vertices(5) if sum(vector) % 4 == 3]
+  vertices.extend(ring2)
+  ring3 = [vector + [-sqrt(3)] for vector in get_cube_vertices(5) if sum(vector) % 4 == 1]
+  vertices.extend(ring3)
+  return vertices
+
+
+bases = get_bases()
+# v6d = get_2_21_vertices()
+v6d = get_1_22_vertices()
+v3d = project_to_3d(v6d, bases)
+
+edges = get_edges(v6d)
+
+draw_wireframe(v3d, edges)
