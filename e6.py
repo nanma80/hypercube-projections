@@ -61,7 +61,7 @@ def get_double_non_zero_vertices(dimension):
 def get_2_21_vertices():
   vertices = []
   vertices.append([0, 0, 0, 0, 0, 4 / sqrt(3)])
-  ring2 = [vector + [1/sqrt(3)] for vector in get_cube_vertices(5) if sum(vector) % 4 == 1]
+  ring2 = [vector + [1/sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
   vertices.extend(ring2)
 
   ring3 = [[2 * el for el in vector] + [ - 2 / sqrt(3)] for vector in get_orthoplex_vertices(5)]
@@ -73,9 +73,9 @@ def get_1_22_vertices():
   ring1 = [[2 * el for el in vector] + [0] for vector in get_double_non_zero_vertices(5)]
   vertices.extend(ring1)
 
-  ring2 = [vector + [sqrt(3)] for vector in get_cube_vertices(5) if sum(vector) % 4 == 3]
+  ring2 = [vector + [sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
   vertices.extend(ring2)
-  ring3 = [vector + [-sqrt(3)] for vector in get_cube_vertices(5) if sum(vector) % 4 == 1]
+  ring3 = [vector + [-sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
   vertices.extend(ring3)
   return vertices
 

@@ -107,10 +107,18 @@ def get_bases():
    base3 = [0, 0, 1, 1, phi, phi]
    return [base1, base2, base3]
 
+def get_e6_bases():
+   a = sqrt(3) - 1
+   base1 = [1, 1, a, 0, 0, 0]
+   base2 = [1, -1, 0, a, 0, 0]
+   base3 = [0, 0, 0, 0, 0, 0]
+   return [base1, base2, base3]
+
+
 def get_2_21_vertices():
   vertices = []
   vertices.append([0, 0, 0, 0, 0, 4 / sqrt(3)])
-  ring2 = [vector + [1/sqrt(3)] for vector in get_cube_vertices(5) if sum(vector) % 4 == 1]
+  ring2 = [vector + [1/sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
   vertices.extend(ring2)
 
   ring3 = [[2 * el for el in vector] + [ - 2 / sqrt(3)] for vector in get_orthoplex_vertices(5)]
@@ -122,16 +130,16 @@ def get_1_22_vertices():
   ring1 = [[2 * el for el in vector] + [0] for vector in get_double_non_zero_vertices(5)]
   vertices.extend(ring1)
 
-  ring2 = [vector + [sqrt(3)] for vector in get_cube_vertices(5) if sum(vector) % 4 == 3]
+  ring2 = [vector + [sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
   vertices.extend(ring2)
-  ring3 = [vector + [-sqrt(3)] for vector in get_cube_vertices(5) if sum(vector) % 4 == 1]
+  ring3 = [vector + [-sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
   vertices.extend(ring3)
   return vertices
 
 
-bases = get_bases()
-# v6d = get_2_21_vertices()
-v6d = get_1_22_vertices()
+bases = get_e6_bases()
+v6d = get_2_21_vertices()
+# v6d = get_1_22_vertices()
 v3d = project_to_3d(v6d, bases)
 
 edges = get_edges(v6d)
