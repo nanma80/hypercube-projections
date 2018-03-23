@@ -114,6 +114,26 @@ def get_e6_bases():
    base3 = [0, 0, 0, 0, 0, 0]
    return [base1, base2, base3]
 
+def get_2_21_bases():
+  return [
+    [-0.268831,   -0.61440537,  0.37838379,  0.5570654,   0.01253407, -0.31077755],
+    [-0.1992443,   0.55622989,  0.41359146,  0.34388504,  0.5614607 ,  0.21530695],
+    [-0.76856797, -0.12561368,  0.18676016, -0.41295667, -0.18362164,  0.3929313 ]
+    ]
+
+def get_1_22_bases():
+  return [
+  [  4.84989250e-01,  -1.66784395e-08,   8.48707194e-01,   4.73343185e-02, 2.05526129e-01,  -5.66027314e-08],
+  [ -6.41530225e-01,   3.05536559e-08,   1.93551007e-01,   4.06746492e-01, 6.20914059e-01,  -4.53142517e-08],
+  [ -4.58658012e-01,   9.89070742e-08,   3.15241078e-01,  -8.30337029e-01, -2.82189321e-02,   5.47028903e-08]]
+
+def get_6_demicube_vertices():
+  vertices = [vector for vector in get_cube_vertices(6) if (sum(vector) + 8) % 4 == 0]
+  return vertices
+
+def get_6_demicube_vertices_alt():
+  vertices = [vector for vector in get_cube_vertices(6) if (sum(vector) + 8) % 4 == 2]
+  return vertices
 
 def get_2_21_vertices():
   vertices = []
@@ -137,9 +157,16 @@ def get_1_22_vertices():
   return vertices
 
 
-bases = get_e6_bases()
-v6d = get_2_21_vertices()
-# v6d = get_1_22_vertices()
+# bases = get_bases()
+# bases = get_e6_bases()
+# bases = get_2_21_bases()
+bases = get_1_22_bases()
+
+# v6d = get_cube_vertices(6)
+# v6d = get_6_demicube_vertices()
+# v6d = get_6_demicube_vertices_alt()
+# v6d = get_2_21_vertices()
+v6d = get_1_22_vertices()
 v3d = project_to_3d(v6d, bases)
 
 edges = get_edges(v6d)
