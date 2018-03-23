@@ -22,7 +22,7 @@ from mpl_toolkits.mplot3d import proj3d
 
 
 high_dimension = 6
-low_dimension = 3
+low_dimension = 2
 
 def orthogonal_proj(zfront, zback):
     a = (zfront+zback)/(zfront-zback)
@@ -181,18 +181,28 @@ def get_e6_bases():
   base3 = [0, 0, 0, 0, 1, 0]
   return [base1, base2, base3]
 
-# vertices = array(get_cube_vertices(6))
+def get_bn_bases(dimension):
+  base1 = []
+  base2 = []
+  for index in xrange(dimension):
+    base1.append(math.cos(index * math.pi / dimension + math.pi / dimension / 2))
+    base2.append(math.sin(index * math.pi / dimension + math.pi / dimension / 2))
+  return [base1, base2]
+
+vertices = array(get_cube_vertices(6))
 # vertices = array(get_6_demicube_vertices())
 # vertices = array(get_6_demicube_vertices_alt())
 # vertices = array(get_1_22_vertices())
-vertices = array(get_2_21_vertices())
+# vertices = array(get_2_21_vertices())
 
 print "vertex count: ", len(vertices)
 edges = get_edges(vertices)
 print "edge count: ", len(edges)
 
 # bases = get_e6_bases()
-bases = get_bases()
+# bases = get_bases()
+bases = get_bn_bases(6)
+print bases 
 known_bases = array(bases)
 if low_dimension == 2:
   known_bases = array([bases[0], bases[1]])
@@ -208,7 +218,7 @@ print_convex_hull(orth_optimal_bases)
 
 # 6-cube:
 # 64 vertices, 192 edges
-# max 2D projection: B6
+# max 2D projection: B6, 14.928
 # max 3D projection: get_bases, phi, 1, 0, phi, -1, 0 .... convex hull: rhombic triacontahedron
 # 
 # 6-demicube:
