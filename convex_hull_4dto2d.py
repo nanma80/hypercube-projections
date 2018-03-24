@@ -172,12 +172,21 @@ def maximize_shadow():
   orth_optimal_bases = orth(optimal_bases.T).T
   return (- res_bh.fun, orth_optimal_bases)
 
+def get_an_bases(dimension_subspace):
+  dimension = dimension_subspace + 1
+  base1 = []
+  base2 = []
+  for index in xrange(dimension):
+    base1.append(math.sin(index * 2 * math.pi / dimension))
+    base2.append(math.cos(index * 2 * math.pi / dimension))
+  return [base1, base2]
+
 # vertices = array(get_5_cell_vertices())
 # vertices = array(get_cube_vertices(4))
 # vertices = array(get_orthoplex_vertices(4))
-# vertices = array(get_24_cell_vertices())
+vertices = array(get_24_cell_vertices())
 # vertices = array(get_120_cell_vertices())
-vertices = array(get_600_cell_vertices())
+# vertices = array(get_600_cell_vertices())
 edges = get_edges(vertices)
 print "vertex count:", len(vertices), "edge count:", len(edges)
 
@@ -198,10 +207,15 @@ def main():
 
   # H3 approximation
   # known_bases = array([[-0.56386048, -0.43150524, -0.51330528, -0.48206045], [ 0.63692086, -0.73308252,  0.1136261,  -0.20978786]])
-  base1 = [1, 0, 0, 0]
-  base2 = [0, -phi, 1, 0]
-  base3 = [0, 1, phi, 0]
-  known_bases = array([base1, base2])
+
+  # base1 = [1, 0, 0, 0]
+  # base2 = [0, -phi, 1, 0]
+  # base3 = [0, 1, phi, 0]
+  # known_bases = array([base1, base2])
+
+  # A2 bases for 24-cell
+  a2_bases = get_an_bases(2)
+  known_bases = array([base + [0.0] for base in a2_bases])
 
   # H4
   # base1 = [(1+math.sqrt(5))*math.sin(math.pi/30), 1, 0, 0]
@@ -216,7 +230,7 @@ def main():
   max_shadow, orth_optimal_bases = maximize_shadow()
   print "Volume of max shadow: ", max_shadow
   print "Max achieving bases:"
-  print orth_optimal_bases
+  print repr(orth_optimal_bases)
   print_convex_hull(orth_optimal_bases)
   inner_products_of_vectors(orth_optimal_bases.T)
 

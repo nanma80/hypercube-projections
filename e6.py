@@ -189,11 +189,20 @@ def get_bn_bases(dimension):
     base2.append(math.sin(index * math.pi / dimension + math.pi / dimension / 2))
   return [base1, base2]
 
-vertices = array(get_cube_vertices(6))
+def get_an_bases(dimension_subspace):
+  dimension = dimension_subspace + 1
+  base1 = []
+  base2 = []
+  for index in xrange(dimension):
+    base1.append(math.sin(index * 2 * math.pi / dimension))
+    base2.append(math.cos(index * 2 * math.pi / dimension))
+  return [base1, base2]
+
+# vertices = array(get_cube_vertices(6))
 # vertices = array(get_6_demicube_vertices())
 # vertices = array(get_6_demicube_vertices_alt())
 # vertices = array(get_1_22_vertices())
-# vertices = array(get_2_21_vertices())
+vertices = array(get_2_21_vertices())
 
 print "vertex count: ", len(vertices)
 edges = get_edges(vertices)
@@ -201,8 +210,12 @@ print "edge count: ", len(edges)
 
 # bases = get_e6_bases()
 # bases = get_bases()
-bases = get_bn_bases(6)
-print bases 
+# bases = get_bn_bases(6)
+# bases = get_an_bases(5)
+bases = array([base + [0, 0, 0] for base in get_an_bases(2)])
+
+
+print repr(array(bases))
 known_bases = array(bases)
 if low_dimension == 2:
   known_bases = array([bases[0], bases[1]])
@@ -213,7 +226,7 @@ print_convex_hull(known_bases)
 max_shadow, orth_optimal_bases = maximize_shadow()
 print "Volume of max shadow: ", max_shadow
 print "Max achieving bases:"
-print orth_optimal_bases
+print repr(orth_optimal_bases)
 print_convex_hull(orth_optimal_bases)
 
 # 6-cube:
@@ -223,12 +236,12 @@ print_convex_hull(orth_optimal_bases)
 # 
 # 6-demicube:
 # 32 vertices, 240 edges
-# max 2D projection: A5
+# max 2D projection: A5 original formation (not alt). 13.8564
 # max 3D projection: get_bases, phi, 1, 0, phi, -1, 0 .... project from the alt formation. convex hull: icosahedron 30.38666
 # 
 # 1_22 polytope:
 # 72 vertices, 720 edges
-# max 2D projection: D4/A2
+# max 2D projection: D4/A2, 20.784
 # max 3D projection: D4 projection + another dimension
 # convex hull similar to a hexagon prism
 # Volume of max shadow:  56.442694636
@@ -242,7 +255,10 @@ print_convex_hull(orth_optimal_bases)
 # 
 # 2_21 polytope:
 # 27 vertices, 216 edges
-# max 2D projection: A5
+# max 2D projection: A5, 10.3923048454
+# Max achieving bases: not standard A5, probably because the vertex coordinates are not standard
+# [[-0.15980913, -0.7360112 , -0.41639309, -0.41639299,  0.09677494, -0.27679746],
+#  [ 0.24040475,  0.20401182, -0.27679743, -0.27679744,  0.75760672, 0.41639304]]
 # max 3D projection: D5 projection + another dimension, 
 # convex hull: square pyramid + square antiprism + square pyramid (Gyroelongated square bipyramid)
 # Volume of max shadow:  20.0947570825
