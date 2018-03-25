@@ -196,13 +196,16 @@ def get_an_bases(dimension_subspace):
   for index in xrange(dimension):
     base1.append(math.sin(index * 2 * math.pi / dimension))
     base2.append(math.cos(index * 2 * math.pi / dimension))
+  for index in xrange(high_dimension - dimension):
+    base1.append(0)
+    base2.append(0)
   return [base1, base2]
 
 # vertices = array(get_cube_vertices(6))
 # vertices = array(get_6_demicube_vertices())
 # vertices = array(get_6_demicube_vertices_alt())
-# vertices = array(get_1_22_vertices())
-vertices = array(get_2_21_vertices())
+vertices = array(get_1_22_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
+# vertices = array(get_2_21_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
 
 print "vertex count: ", len(vertices)
 edges = get_edges(vertices)
@@ -211,8 +214,8 @@ print "edge count: ", len(edges)
 # bases = get_e6_bases()
 # bases = get_bases()
 # bases = get_bn_bases(6)
-# bases = get_an_bases(5)
-bases = array([base + [0, 0, 0] for base in get_an_bases(2)])
+bases = get_an_bases(2)
+# bases = array([base + [0, 0, 0] for base in get_an_bases(2)])
 
 
 print repr(array(bases))
