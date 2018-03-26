@@ -201,6 +201,11 @@ def get_an_bases(dimension_subspace):
     base2.append(0)
   return [base1, base2]
 
+def get_a5_special_bases(): # special A5 for 2_21 and 1_22
+  return array([
+    [1,         2,          0, 0,    2,     sqrt(3)],
+    [0,         1,          1, 1,   -1,           0]])
+
 # vertices = array(get_cube_vertices(6))
 # vertices = array(get_6_demicube_vertices())
 # vertices = array(get_6_demicube_vertices_alt())
@@ -214,9 +219,9 @@ print "edge count: ", len(edges)
 # bases = get_e6_bases()
 # bases = get_bases()
 # bases = get_bn_bases(6)
-bases = get_an_bases(2)
+# bases = get_an_bases(5)
 # bases = array([base + [0, 0, 0] for base in get_an_bases(2)])
-
+bases = get_a5_special_bases()
 
 print repr(array(bases))
 known_bases = array(bases)
@@ -260,8 +265,8 @@ print_convex_hull(orth_optimal_bases)
 # 27 vertices, 216 edges
 # max 2D projection: A5, 10.3923048454
 # Max achieving bases: not standard A5, probably because the vertex coordinates are not standard
-# [[-0.15980913, -0.7360112 , -0.41639309, -0.41639299,  0.09677494, -0.27679746],
-#  [ 0.24040475,  0.20401182, -0.27679743, -0.27679744,  0.75760672, 0.41639304]]
+# [[1, 2, 0, 0,  2, sqrt(3)],
+#  [0, 1, 1, 1, -1,       0]]
 # max 3D projection: D5 projection + another dimension, 
 # convex hull: square pyramid + square antiprism + square pyramid (Gyroelongated square bipyramid)
 # Volume of max shadow:  20.0947570825
