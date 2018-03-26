@@ -94,7 +94,7 @@ def get_6_demicube_vertices_alt():
 def get_2_21_vertices():
   vertices = []
   vertices.append([0, 0, 0, 0, 0, 4 / sqrt(3)])
-  ring2 = [vector + [1/sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
+  ring2 = [vector + [1/sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
   vertices.extend(ring2)
 
   ring3 = [[2 * el for el in vector] + [ - 2 / sqrt(3)] for vector in get_orthoplex_vertices(5)]
@@ -106,9 +106,9 @@ def get_1_22_vertices():
   ring1 = [[2 * el for el in vector] + [0] for vector in get_double_non_zero_vertices(5)]
   vertices.extend(ring1)
 
-  ring2 = [vector + [sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
+  ring2 = [vector + [sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
   vertices.extend(ring2)
-  ring3 = [vector + [-sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
+  ring3 = [vector + [-sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
   vertices.extend(ring3)
   return vertices
 
@@ -203,14 +203,17 @@ def get_an_bases(dimension_subspace):
 
 def get_a5_special_bases(): # special A5 for 2_21 and 1_22
   return array([
-    [1,         2,          0, 0,    2,     sqrt(3)],
-    [0,         1,          1, 1,   -1,           0]])
+    [2, 2, 0, 0, 1, sqrt(3)],
+    [1,-1, 1, -1, 0, 0]])
+  # return array([
+  #   [sqrt(3)/2,-sqrt(3)/2, sqrt(3)/2, -sqrt(3)/2, 0, 0],
+  #   [1, 1, 0, 0, 1./2, sqrt(3)/2]]) # normalized
 
 # vertices = array(get_cube_vertices(6))
 # vertices = array(get_6_demicube_vertices())
 # vertices = array(get_6_demicube_vertices_alt())
-vertices = array(get_1_22_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
-# vertices = array(get_2_21_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
+# vertices = array(get_1_22_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
+vertices = array(get_2_21_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
 
 print "vertex count: ", len(vertices)
 edges = get_edges(vertices)
@@ -221,6 +224,9 @@ print "edge count: ", len(edges)
 # bases = get_bn_bases(6)
 # bases = get_an_bases(5)
 # bases = array([base + [0, 0, 0] for base in get_an_bases(2)])
+print repr(array(get_an_bases(5)))
+print repr(get_a5_special_bases())
+
 bases = get_a5_special_bases()
 
 print repr(array(bases))
@@ -231,11 +237,11 @@ if low_dimension == 2:
 print "Volume of the known bases: ", shadow_volume(known_bases)
 print_convex_hull(known_bases)
 
-max_shadow, orth_optimal_bases = maximize_shadow()
-print "Volume of max shadow: ", max_shadow
-print "Max achieving bases:"
-print repr(orth_optimal_bases)
-print_convex_hull(orth_optimal_bases)
+# max_shadow, orth_optimal_bases = maximize_shadow()
+# print "Volume of max shadow: ", max_shadow
+# print "Max achieving bases:"
+# print repr(orth_optimal_bases)
+# print_convex_hull(orth_optimal_bases)
 
 # 6-cube:
 # 64 vertices, 192 edges
@@ -253,13 +259,6 @@ print_convex_hull(orth_optimal_bases)
 # max 3D projection: D4 projection + another dimension
 # convex hull similar to a hexagon prism
 # Volume of max shadow:  56.442694636
-# Max achieving bases:
-# [[  4.84989250e-01  -1.66784395e-08   8.48707194e-01   4.73343185e-02
-#     2.05526129e-01  -5.66027314e-08]
-#  [ -6.41530225e-01   3.05536559e-08   1.93551007e-01   4.06746492e-01
-#     6.20914059e-01  -4.53142517e-08]
-#  [ -4.58658012e-01   9.89070742e-08   3.15241078e-01  -8.30337029e-01
-#    -2.82189321e-02   5.47028903e-08]]
 # 
 # 2_21 polytope:
 # 27 vertices, 216 edges
@@ -270,8 +269,4 @@ print_convex_hull(orth_optimal_bases)
 # max 3D projection: D5 projection + another dimension, 
 # convex hull: square pyramid + square antiprism + square pyramid (Gyroelongated square bipyramid)
 # Volume of max shadow:  20.0947570825
-# Max achieving bases:
-# [[-0.268831   -0.61440537  0.37838379  0.5570654   0.01253407 -0.31077755]
-#  [-0.1992443   0.55622989  0.41359146  0.34388504  0.5614607   0.21530695]
-#  [-0.76856797 -0.12561368  0.18676016 -0.41295667 -0.18362164  0.3929313 ]]
 # 
