@@ -21,7 +21,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d import proj3d
 
 
-high_dimension = 6
+high_dimension = 8
 low_dimension = 2
 
 def orthogonal_proj(zfront, zback):
@@ -93,23 +93,37 @@ def get_6_demicube_vertices_alt():
 
 def get_2_21_vertices():
   vertices = []
-  vertices.append([0, 0, 0, 0, 0, 4 / sqrt(3)])
-  ring2 = [vector + [1/sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
-  vertices.extend(ring2)
-
-  ring3 = [[2 * el for el in vector] + [ - 2 / sqrt(3)] for vector in get_orthoplex_vertices(5)]
-  vertices.extend(ring3)
+  if high_dimension == 6:
+    vertices.append([0, 0, 0, 0, 0, 4 / sqrt(3)])
+    ring2 = [vector + [1/sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
+    vertices.extend(ring2)
+    ring3 = [[2 * el for el in vector] + [ - 2 / sqrt(3)] for vector in get_orthoplex_vertices(5)]
+    vertices.extend(ring3)
+  elif high_dimension == 8:
+    vertices.append([0, 0, 0, 0, 0] + [4/3.] * 3)
+    ring2 = [vector + [1/3.]*3 for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
+    vertices.extend(ring2)
+    ring3 = [[2 * el for el in vector] + [ - 2/3.]*3 for vector in get_orthoplex_vertices(5)]
+    vertices.extend(ring3)
   return vertices
 
 def get_1_22_vertices():
   vertices = []
-  ring1 = [[2 * el for el in vector] + [0] for vector in get_double_non_zero_vertices(5)]
-  vertices.extend(ring1)
+  if high_dimension == 6:
+    ring1 = [[2 * el for el in vector] + [0] for vector in get_double_non_zero_vertices(5)]
+    vertices.extend(ring1)
+    ring2 = [vector + [sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
+    vertices.extend(ring2)
+    ring3 = [vector + [-sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
+    vertices.extend(ring3)
+  elif high_dimension == 8:
+    ring1 = [[2 * el for el in vector] + [0]*3 for vector in get_double_non_zero_vertices(5)]
+    vertices.extend(ring1)
+    ring2 = [vector + [1]*3 for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
+    vertices.extend(ring2)
+    ring3 = [vector + [-1]*3 for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
+    vertices.extend(ring3)
 
-  ring2 = [vector + [sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
-  vertices.extend(ring2)
-  ring3 = [vector + [-sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
-  vertices.extend(ring3)
   return vertices
 
 def convex_hull(bases):
@@ -222,12 +236,9 @@ print "edge count: ", len(edges)
 # bases = get_e6_bases()
 # bases = get_bases()
 # bases = get_bn_bases(6)
-# bases = get_an_bases(5)
+bases = get_an_bases(5)
 # bases = array([base + [0, 0, 0] for base in get_an_bases(2)])
-print repr(array(get_an_bases(5)))
-print repr(get_a5_special_bases())
-
-bases = get_a5_special_bases()
+# bases = get_a5_special_bases()
 
 print repr(array(bases))
 known_bases = array(bases)
