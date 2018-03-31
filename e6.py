@@ -181,19 +181,24 @@ def maximize_shadow():
   orth_optimal_bases = orth(optimal_bases.T).T
   return (- res_bh.fun, orth_optimal_bases)
 
+def pad(vectors, target_length):
+  for vector_index in range(len(vectors)):
+    vectors[vector_index] = vectors[vector_index] + [0] * (target_length - len(vectors[vector_index]))
+  return vectors
+
 def get_bases():
   phi = (1 + sqrt(5))/2
   base1 = [phi, phi, 0, 0, -1, 1]
   base2 = [1, -1, phi, -phi, 0, 0]
   base3 = [0, 0, 1, 1, phi, phi]
-  return [base1, base2, base3]
+  return pad([base1, base2, base3], high_dimension)
 
 def get_e6_bases():
   a = sqrt(3) - 1
   base1 = [1, 1, a, 0, 0, 0]
   base2 = [1, -1, 0, a, 0, 0]
   base3 = [0, 0, 0, 0, 1, 0]
-  return [base1, base2, base3]
+  return pad([base1, base2, base3], high_dimension)
 
 def get_bn_bases(dimension):
   base1 = []
@@ -201,7 +206,7 @@ def get_bn_bases(dimension):
   for index in xrange(dimension):
     base1.append(math.cos(index * math.pi / dimension + math.pi / dimension / 2))
     base2.append(math.sin(index * math.pi / dimension + math.pi / dimension / 2))
-  return [base1, base2]
+  return pad([base1, base2], high_dimension)
 
 def get_an_bases(dimension_subspace):
   dimension = dimension_subspace + 1
@@ -210,10 +215,7 @@ def get_an_bases(dimension_subspace):
   for index in xrange(dimension):
     base1.append(math.sin(index * 2 * math.pi / dimension))
     base2.append(math.cos(index * 2 * math.pi / dimension))
-  for index in xrange(high_dimension - dimension):
-    base1.append(0)
-    base2.append(0)
-  return [base1, base2]
+  return pad([base1, base2], high_dimension)
 
 def get_a5_special_bases(): # special A5 for 2_21 and 1_22
   return array([
@@ -226,8 +228,8 @@ def get_a5_special_bases(): # special A5 for 2_21 and 1_22
 # vertices = array(get_cube_vertices(6))
 # vertices = array(get_6_demicube_vertices())
 # vertices = array(get_6_demicube_vertices_alt())
-# vertices = array(get_1_22_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
-vertices = array(get_2_21_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
+vertices = array(get_1_22_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
+# vertices = array(get_2_21_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
 
 print "vertex count: ", len(vertices)
 edges = get_edges(vertices)

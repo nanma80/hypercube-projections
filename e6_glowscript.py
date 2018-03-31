@@ -1,6 +1,7 @@
 GlowScript 2.7 VPython
 
 phi = (1 + sqrt(5.0))/2
+high_dimension = 8
 
 def initialize():
     scene.fov = 0.001 # simulate orthographic projection
@@ -101,11 +102,16 @@ def get_edges(vertices):
         edges.append([i, j])
   return edges
 
+def pad(vectors, target_length):
+  for vector_index in range(len(vectors)):
+    vectors[vector_index] = vectors[vector_index] + [0] * (target_length - len(vectors[vector_index]))
+  return vectors
+
 def get_bases():
    base1 = [phi, phi, 0, 0, -1, 1]
    base2 = [1, -1, phi, -phi, 0, 0]
    base3 = [0, 0, 1, 1, phi, phi]
-   return [base1, base2, base3]
+   return pad([base1, base2, base3], high_dimension)
 
 def get_e6_bases():
    a = sqrt(3) - 1
@@ -137,36 +143,49 @@ def get_6_demicube_vertices_alt():
 
 def get_2_21_vertices():
   vertices = []
-  vertices.append([0, 0, 0, 0, 0, 4 / sqrt(3)])
-  ring2 = [vector + [1/sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
-  vertices.extend(ring2)
-
-  ring3 = [[2 * el for el in vector] + [ - 2 / sqrt(3)] for vector in get_orthoplex_vertices(5)]
-  vertices.extend(ring3)
+  if high_dimension == 6:
+    vertices.append([0, 0, 0, 0, 0, 4 / sqrt(3)])
+    ring2 = [vector + [1/sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
+    vertices.extend(ring2)
+    ring3 = [[2 * el for el in vector] + [ - 2 / sqrt(3)] for vector in get_orthoplex_vertices(5)]
+    vertices.extend(ring3)
+  elif high_dimension == 8:
+    vertices.append([0, 0, 0, 0, 0] + [4/3.] * 3)
+    ring2 = [vector + [1/3.]*3 for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
+    vertices.extend(ring2)
+    ring3 = [[2 * el for el in vector] + [ - 2/3.]*3 for vector in get_orthoplex_vertices(5)]
+    vertices.extend(ring3)
   return vertices
 
 def get_1_22_vertices():
   vertices = []
-  ring1 = [[2 * el for el in vector] + [0] for vector in get_double_non_zero_vertices(5)]
-  vertices.extend(ring1)
+  if high_dimension == 6:
+    ring1 = [[2 * el for el in vector] + [0] for vector in get_double_non_zero_vertices(5)]
+    vertices.extend(ring1)
+    ring2 = [vector + [sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
+    vertices.extend(ring2)
+    ring3 = [vector + [-sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
+    vertices.extend(ring3)
+  elif high_dimension == 8:
+    ring1 = [[2 * el for el in vector] + [0]*3 for vector in get_double_non_zero_vertices(5)]
+    vertices.extend(ring1)
+    ring2 = [vector + [1]*3 for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
+    vertices.extend(ring2)
+    ring3 = [vector + [-1]*3 for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
+    vertices.extend(ring3)
 
-  ring2 = [vector + [sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
-  vertices.extend(ring2)
-  ring3 = [vector + [-sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
-  vertices.extend(ring3)
   return vertices
 
-
-# bases = get_bases()
+bases = get_bases()
 # bases = get_e6_bases()
 # bases = get_2_21_bases()
-bases = get_1_22_bases()
+# bases = get_1_22_bases()
 
 # v6d = get_cube_vertices(6)
 # v6d = get_6_demicube_vertices()
 # v6d = get_6_demicube_vertices_alt()
-# v6d = get_2_21_vertices()
-v6d = get_1_22_vertices()
+v6d = get_2_21_vertices()
+# v6d = get_1_22_vertices()
 v3d = project_to_3d(v6d, bases)
 
 edges = get_edges(v6d)
