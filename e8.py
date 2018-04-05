@@ -92,7 +92,7 @@ def get_4_21_vertices():
   vertices = []
   ring1 = [[2 * el for el in vector] for vector in get_double_non_zero_vertices(8)]
   vertices.extend(ring1)
-  ring2 = get_demicube_vertices(8)
+  ring2 = get_demicube_vertices(8, True)
   vertices.extend(ring2)
   return vertices
 
@@ -194,9 +194,9 @@ def get_an_bases(dimension_subspace):
     base2.append(math.cos(index * 2 * math.pi / dimension))
   return pad([base1, base2], high_dimension)
 
-for dim in [3, 4, 5, 6, 7, 8]:
-  vertices = array(get_demicube_vertices(dim))
-  print dim, len(vertices)
+# for dim in [3, 4, 5, 6, 7, 8]:
+#   vertices = array(get_demicube_vertices(dim))
+#   print dim, len(vertices)
 # vertices = array(get_cube_vertices(8))
 # vertices = array(get_demicube_vertices(8))
 vertices = array(get_4_21_vertices())
@@ -221,14 +221,6 @@ if low_dimension == 3:
 
 print "Volume of the known bases: ", shadow_volume(known_bases)
 print_convex_hull(known_bases)
-ch = convex_hull(known_bases)
-points_on_convex_hull = [ch.points[index] for index in ch.vertices]
-edge_length = min([dist(points_on_convex_hull[0], points_on_convex_hull[i]) for i in xrange(1, len(points_on_convex_hull))])
-# for v in points_on_convex_hull:
-#   print repr(v)
-
-print edge_length
-print 26.475425 * (edge_length ** 4), ch.volume
 
 # max_shadow, orth_optimal_bases = maximize_shadow()
 # print "Volume of max shadow: ", max_shadow
