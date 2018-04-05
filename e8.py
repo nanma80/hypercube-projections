@@ -21,8 +21,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d import proj3d
 
 
-high_dimension = 6
-low_dimension = 2
+high_dimension = 8
+low_dimension = 4
 
 def orthogonal_proj(zfront, zback):
     a = (zfront+zback)/(zfront-zback)
@@ -88,39 +88,12 @@ def get_demicube_vertices(dimension, alt_mode = False):
   vertices = [vector for vector in get_cube_vertices(dimension) if (sum(vector) + 8) % 4 == remainder]
   return vertices
 
-def get_2_21_vertices():
+def get_4_21_vertices():
   vertices = []
-  if high_dimension == 6:
-    vertices.append([0, 0, 0, 0, 0, 4 / sqrt(3)])
-    ring2 = [vector + [1/sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
-    vertices.extend(ring2)
-    ring3 = [[2 * el for el in vector] + [ - 2 / sqrt(3)] for vector in get_orthoplex_vertices(5)]
-    vertices.extend(ring3)
-  elif high_dimension == 8:
-    vertices.append([0, 0, 0, 0, 0] + [4/3.] * 3)
-    ring2 = [vector + [1/3.]*3 for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
-    vertices.extend(ring2)
-    ring3 = [[2 * el for el in vector] + [ - 2/3.]*3 for vector in get_orthoplex_vertices(5)]
-    vertices.extend(ring3)
-  return vertices
-
-def get_1_22_vertices():
-  vertices = []
-  if high_dimension == 6:
-    ring1 = [[2 * el for el in vector] + [0] for vector in get_double_non_zero_vertices(5)]
-    vertices.extend(ring1)
-    ring2 = [vector + [sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
-    vertices.extend(ring2)
-    ring3 = [vector + [-sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
-    vertices.extend(ring3)
-  elif high_dimension == 8:
-    ring1 = [[2 * el for el in vector] + [0]*3 for vector in get_double_non_zero_vertices(5)]
-    vertices.extend(ring1)
-    ring2 = [vector + [1]*3 for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
-    vertices.extend(ring2)
-    ring3 = [vector + [-1]*3 for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 1]
-    vertices.extend(ring3)
-
+  ring1 = [[2 * el for el in vector] for vector in get_double_non_zero_vertices(8)]
+  vertices.extend(ring1)
+  ring2 = get_demicube_vertices(8)
+  vertices.extend(ring2)
   return vertices
 
 def convex_hull(bases):
@@ -130,6 +103,9 @@ def convex_hull(bases):
   v2d = np.dot(vertices, orth_bases)
   hull = ConvexHull(v2d)
   return hull
+
+def dist(x, y):
+  return np.sqrt(np.sum((x-y)**2))
 
 def print_convex_hull_2d(bases):
   hull = convex_hull(bases)
@@ -185,10 +161,14 @@ def pad(vectors, target_length):
 
 def get_bases():
   phi = (1 + sqrt(5))/2
-  base1 = [phi, phi, 0, 0, -1, 1]
-  base2 = [1, -1, phi, -phi, 0, 0]
-  base3 = [0, 0, 1, 1, phi, phi]
-  return pad([base1, base2, base3], high_dimension)
+  bases = [
+      [1, phi, 0, -1, phi, 0, 0, 0], 
+      [phi, 0, 1, phi, 0, -1, 0, 0], 
+      [0, 1, phi, 0, -1, phi, 0, 0],
+      [0, 0, 0, 0, 0, 0, phi+1, phi-1]
+    ]
+
+  return pad(bases, high_dimension)
 
 def get_e6_bases():
   a = sqrt(3) - 1
@@ -214,38 +194,41 @@ def get_an_bases(dimension_subspace):
     base2.append(math.cos(index * 2 * math.pi / dimension))
   return pad([base1, base2], high_dimension)
 
-def get_a5_special_bases(): # special A5 for 2_21 and 1_22
-  return array([
-    [2, 2, 0, 0, 1, sqrt(3)],
-    [1,-1, 1, -1, 0, 0]])
-  # return array([
-  #   [sqrt(3)/2,-sqrt(3)/2, sqrt(3)/2, -sqrt(3)/2, 0, 0],
-  #   [1, 1, 0, 0, 1./2, sqrt(3)/2]]) # normalized
+for dim in [3, 4, 5, 6, 7, 8]:
+  vertices = array(get_demicube_vertices(dim))
+  print dim, len(vertices)
+# vertices = array(get_cube_vertices(8))
+# vertices = array(get_demicube_vertices(8))
+vertices = array(get_4_21_vertices())
 
-# vertices = array(get_cube_vertices(6))
-vertices = array(get_demicube_vertices(6, False))
-# vertices = array(get_demicube_vertices(6, True))
-# vertices = array(get_1_22_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
-# vertices = array(get_2_21_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
-
+# for v in vertices:
+#   print repr(v)
 print "vertex count: ", len(vertices)
 edges = get_edges(vertices)
 print "edge count: ", len(edges)
 
 # bases = get_e6_bases()
-# bases = get_bases()
-# bases = get_bn_bases(6)
-bases = get_an_bases(5)
-# bases = array([base + [0, 0, 0] for base in get_an_bases(2)])
-# bases = get_a5_special_bases()
+bases = get_bases()
+# bases = get_bn_bases(5)
+# bases = get_an_bases(7)
 
 print repr(array(bases))
 known_bases = array(bases)
 if low_dimension == 2:
   known_bases = array([bases[0], bases[1]])
+if low_dimension == 3:
+  known_bases = array([bases[0], bases[1], bases[2]])
 
 print "Volume of the known bases: ", shadow_volume(known_bases)
 print_convex_hull(known_bases)
+ch = convex_hull(known_bases)
+points_on_convex_hull = [ch.points[index] for index in ch.vertices]
+edge_length = min([dist(points_on_convex_hull[0], points_on_convex_hull[i]) for i in xrange(1, len(points_on_convex_hull))])
+# for v in points_on_convex_hull:
+#   print repr(v)
+
+print edge_length
+print 26.475425 * (edge_length ** 4), ch.volume
 
 # max_shadow, orth_optimal_bases = maximize_shadow()
 # print "Volume of max shadow: ", max_shadow
@@ -253,30 +236,16 @@ print_convex_hull(known_bases)
 # print repr(orth_optimal_bases)
 # print_convex_hull(orth_optimal_bases)
 
-# 6-cube:
-# 64 vertices, 192 edges
-# max 2D projection: B6, 14.928
-# max 3D projection: get_bases, phi, 1, 0, phi, -1, 0 .... convex hull: rhombic triacontahedron
-# 
-# 6-demicube:
-# 32 vertices, 240 edges
-# max 2D projection: A5 original formation (not alt). 13.8564
-# max 3D projection: get_bases, phi, 1, 0, phi, -1, 0 .... project from the alt formation. convex hull: icosahedron 30.38666
-# 
-# 1_22 polytope:
-# 72 vertices, 720 edges
-# max 2D projection: D4/A2, 20.784
-# max 3D projection: D4 projection + another dimension
-# convex hull similar to a hexagon prism
-# Volume of max shadow:  56.442694636
-# 
-# 2_21 polytope:
-# 27 vertices, 216 edges
-# max 2D projection: A5, 10.3923048454
-# Max achieving bases: not standard A5, probably because the vertex coordinates are not standard
-# [[1, 2, 0, 0,  2, sqrt(3)],
-#  [0, 1, 1, 1, -1,       0]]
-# max 3D projection: D5 projection + another dimension, 
-# convex hull: square pyramid + square antiprism + square pyramid (Gyroelongated square bipyramid)
-# Volume of max shadow:  20.0947570825
-# 
+
+# 4_21:
+# bases based on phi: Volume of the known bases:  129.4427191
+# optimal bases: Volume of max shadow:  142.08103671
+# Max achieving bases:
+# array([[-0.20428321, -0.59858509,  0.06389811, -0.59506347,  0.24978869,
+#          0.05710992,  0.24540529, -0.34044246],
+#        [ 0.42419816, -0.46386136, -0.06555465, -0.18770753, -0.15416367,
+#         -0.46957864, -0.41506279,  0.38575818],
+#        [ 0.55479698, -0.11375784, -0.11333372, -0.08582672, -0.06081787,
+#          0.60916705,  0.40573804,  0.3458931 ],
+#        [ 0.27089508,  0.12824633,  0.76264977,  0.02096803,  0.55432917,
+#         -0.08949402,  0.00405637,  0.11308381]])
