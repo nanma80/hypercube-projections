@@ -22,7 +22,7 @@ from mpl_toolkits.mplot3d import proj3d
 
 
 high_dimension = 6
-low_dimension = 2
+low_dimension = 3
 
 def orthogonal_proj(zfront, zback):
     a = (zfront+zback)/(zfront-zback)
@@ -36,6 +36,7 @@ def orthogonal_proj(zfront, zback):
 
 def get_edges(vertices):
   target_inner_product = max([np.inner(vertices[0], vertices[i]) for i in xrange(1, len(vertices))])
+  print target_inner_product/np.inner(vertices[0], vertices[0])
   edges = []
   for i in xrange(len(vertices)):
     for j in xrange(i+1, len(vertices)):
@@ -123,6 +124,26 @@ def get_1_22_vertices():
 
   return vertices
 
+def get_omega_powers():
+  return [
+    [1, 0],
+    [- 1.0/2.0, sqrt(3)/2.0],
+    [- 1.0/2.0, -sqrt(3)/2.0]
+  ]
+
+def get_hessian_vertices():
+  # The real representation of the Hessian polytope is 2_21
+  vertices = []
+  for index1 in xrange(3):
+    for index2 in xrange(3):
+      part1 = [0, 0]
+      part2 = get_omega_powers()[index1]
+      part3 = [-x for x in get_omega_powers()[index2]]
+      vertices.append(part1 + part2 + part3)
+      vertices.append(part2 + part3 + part1)
+      vertices.append(part3 + part1 + part2)
+  return vertices
+
 def convex_hull(bases):
   _high_dimension = len(bases.T)
   _low_dimension = len(bases)
@@ -190,6 +211,13 @@ def get_bases():
   base3 = [0, 0, 1, 1, phi, phi]
   return pad([base1, base2, base3], high_dimension)
 
+def get_bases_rearranged():
+  phi = (1 + sqrt(5))/2
+  base1 = [phi, 0, 1, phi, 0, -1]
+  base2 = [0, 1, phi, 0, -1, phi]
+  base3 = [1, phi, 0, -1, phi, 0]
+  return pad([base1, base2, base3], high_dimension)
+
 def get_e6_bases():
   a = sqrt(3) - 1
   base1 = [1, 1, a, 0, 0, 0]
@@ -223,19 +251,23 @@ def get_a5_special_bases(): # special A5 for 2_21 and 1_22
   #   [1, 1, 0, 0, 1./2, sqrt(3)/2]]) # normalized
 
 # vertices = array(get_cube_vertices(6))
-vertices = array(get_demicube_vertices(6, False))
+# vertices = array(get_demicube_vertices(6, False))
 # vertices = array(get_demicube_vertices(6, True))
 # vertices = array(get_1_22_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
 # vertices = array(get_2_21_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
+# vertices = array(get_hessian_vertices()) # equivalent to 2_21?
 
 print "vertex count: ", len(vertices)
+# for v in vertices:
+#   print repr(v)
 edges = get_edges(vertices)
 print "edge count: ", len(edges)
 
-# bases = get_e6_bases()
+bases = get_e6_bases()
 # bases = get_bases()
+# bases = get_bases_rearranged()
 # bases = get_bn_bases(6)
-bases = get_an_bases(5)
+# bases = get_an_bases(5)
 # bases = array([base + [0, 0, 0] for base in get_an_bases(2)])
 # bases = get_a5_special_bases()
 
