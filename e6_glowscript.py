@@ -1,7 +1,7 @@
 GlowScript 2.7 VPython
 
 phi = (1 + sqrt(5.0))/2
-high_dimension = 8
+high_dimension = 7
 
 def initialize():
     scene.fov = 0.001 # simulate orthographic projection
@@ -141,6 +141,11 @@ def get_6_demicube_vertices_alt():
   vertices = [vector for vector in get_cube_vertices(6) if (sum(vector) + 8) % 4 == 2]
   return vertices
 
+def get_demicube_vertices(dimension, alt_mode = False):
+  remainder = ((0 if alt_mode else 2) + dimension) % 4
+  vertices = [vector for vector in get_cube_vertices(dimension) if (sum(vector) + 8) % 4 == remainder]
+  return vertices
+
 def get_2_21_vertices():
   vertices = []
   if high_dimension == 6:
@@ -176,6 +181,27 @@ def get_1_22_vertices():
 
   return vertices
 
+def get_4_21_vertices():
+  vertices = []
+  ring1 = [[2 * el for el in vector] for vector in get_double_non_zero_vertices(8)]
+  vertices.extend(ring1)
+  ring2 = get_demicube_vertices(8, True)
+  vertices.extend(ring2)
+  return vertices
+
+def get_2_31_vertices():
+  vertices = []
+  if high_dimension == 7:
+    vertices.append([0, 0, 0, 0, 0, 0, 2 * sqrt(2)])
+    vertices.append([0, 0, 0, 0, 0, 0, - 2 * sqrt(2)])
+    ring1 = [[2 * el for el in vector] + [0] for vector in get_double_non_zero_vertices(6)]
+    vertices.extend(ring1)
+    ring2 = [vector + [sqrt(2)] for vector in get_demicube_vertices(6, True)]
+    vertices.extend(ring2)
+    ring3 = [vector + [-sqrt(2)] for vector in get_demicube_vertices(6, True)]
+    vertices.extend(ring3)
+  return vertices
+
 bases = get_bases()
 # bases = get_e6_bases()
 # bases = get_2_21_bases()
@@ -184,7 +210,10 @@ bases = get_bases()
 # v6d = get_cube_vertices(6)
 # v6d = get_6_demicube_vertices()
 # v6d = get_6_demicube_vertices_alt()
-v6d = get_2_21_vertices()
+# v6d = get_2_21_vertices()
+# v6d = get_4_21_vertices()
+v6d = get_2_31_vertices()
+
 # v6d = get_1_22_vertices()
 v3d = project_to_3d(v6d, bases)
 

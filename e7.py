@@ -209,9 +209,9 @@ def get_a5_special_bases(): # special A5 for 2_21 and 1_22
   #   [1, 1, 0, 0, 1./2, sqrt(3)/2]]) # normalized
 
 # vertices = array(get_cube_vertices(7))
-# vertices = array(get_demicube_vertices(7, False))
+vertices = array(get_demicube_vertices(7, False))
 # vertices = array(get_demicube_vertices(7, True))
-vertices = array(get_2_31_vertices())
+# vertices = array(get_2_31_vertices())
 
 print "vertex count: ", len(vertices)
 # for v in vertices:
@@ -235,15 +235,50 @@ if low_dimension == 2:
 print "Volume of the known bases: ", shadow_volume(known_bases)
 print_convex_hull(known_bases)
 
-# max_shadow, orth_optimal_bases = maximize_shadow()
-# print "Volume of max shadow: ", max_shadow
-# print "Max achieving bases:"
-# print repr(orth_optimal_bases)
-# print_convex_hull(orth_optimal_bases)
+max_shadow, orth_optimal_bases = maximize_shadow()
+print "Volume of max shadow: ", max_shadow
+print "Max achieving bases:"
+print repr(orth_optimal_bases)
+print_convex_hull(orth_optimal_bases)
 
 # 7-cube:
-# 
+# Projection to 2D: B7/A6, Volume of max shadow:  17.5251450701
+# Projection to 3D: 
+# Volume of max shadow:  44.8310806031
+# Max achieving bases:
+# array([[-0.42186143, -0.31731367,  0.11278828,  0.00672709,  0.49525002,
+#          0.64509627,  0.21715603],
+#        [-0.36990147,  0.26681348, -0.11609854, -0.63633067,  0.27102376,
+#         -0.11121148, -0.53643826],
+#        [ 0.34138303, -0.51379829, -0.63650359,  0.10145105,  0.34111507,
+#         -0.08572404, -0.28342848]])
+
 # 7-demicube:
+# Projection to 2D: B7/A6, Volume of max shadow:  15.7896101137
+# Projection to 3D: 
+# Volume of max shadow:  39.1981082676
+# Max achieving bases:
+# array([[-0.53319699, -0.14035373, -0.02392288,  0.45808228,  0.55648033,
+#         -0.41798626,  0.03474544],
+#        [-0.2396595 , -0.60797219, -0.48020182, -0.40420859,  0.19432319,
+#          0.36157606,  0.10225468],
+#        [ 0.28599597, -0.19284761,  0.44916599,  0.21548184,  0.2980004 ,
+#          0.3605986 ,  0.64342677]])
 # 
 # 2_31 polytope:
 # 126 vertices, 2016 edges
+# When projected by get_bases, the convex hull is an icosidodecahedron. 
+# It contains less points than the projection of 4_21 
+# (not icosidodecahedron, but the canonical projection of 600-cell)
+# Projection to 2D:
+# Volume of max shadow:  20.7846096908
+# D4/B3/A2/G2
+# Projection to 3D:
+# Volume of max shadow:  56.442694636
+# Max achieving bases:
+# array([[-0.43995093, -0.38346406, -0.35522075, -0.16798342, -0.38346409,
+#         -0.25271383, -0.54230001],
+#        [-0.52059141,  0.11384073,  0.43105663,  0.33704509,  0.11384064,
+#         -0.61460286,  0.16099472],
+#        [ 0.24942623,  0.09817574,  0.02255056, -0.77411475,  0.09817611,
+#         -0.54723891,  0.13884137]])
