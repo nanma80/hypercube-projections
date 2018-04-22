@@ -108,10 +108,20 @@ def pad(vectors, target_length):
   return vectors
 
 def get_bases():
-   base1 = [phi, phi, 0, 0, -1, 1]
-   base2 = [1, -1, phi, -phi, 0, 0]
-   base3 = [0, 0, 1, 1, phi, phi]
-   return pad([base1, base2, base3], high_dimension)
+  # on an icosahedron, take one vertex and its 5 neighbors
+  phi = (1 + sqrt(5))/2
+  base1 = [phi, phi, 0,   0,   -1,   1]
+  base2 = [1,   -1,  phi, -phi, 0,   0]
+  base3 = [0,    0,  1,    1,   phi, phi]
+  return pad([base1, base2, base3], high_dimension)
+
+def get_bases_rearranged():
+  # common way to project 6-cube
+  phi = (1 + sqrt(5))/2
+  base1 = [phi, 0, 1, phi, 0, -1]
+  base2 = [0, 1, phi, 0, -1, phi]
+  base3 = [1, phi, 0, -1, phi, 0]
+  return pad([base1, base2, base3], high_dimension)
 
 def get_e6_bases():
    a = sqrt(3) - 1
@@ -202,7 +212,19 @@ def get_2_31_vertices():
     vertices.extend(ring3)
   return vertices
 
-bases = get_bases()
+def get_3_21_vertices(alt_mode = False):
+  vertices = []
+  if high_dimension == 7:
+    ring1 = [[2 * el for el in vector] + [sqrt(2)] for vector in get_orthoplex_vertices(6)]
+    vertices.extend(ring1)
+    ring2 = [[2 * el for el in vector] + [-sqrt(2)] for vector in get_orthoplex_vertices(6)]
+    vertices.extend(ring2)
+    ring3 = [vector + [0] for vector in get_demicube_vertices(6, alt_mode)]
+    vertices.extend(ring3)
+  return vertices
+
+# bases = get_bases()
+bases = get_bases_rearranged()
 # bases = get_e6_bases()
 # bases = get_2_21_bases()
 # bases = get_1_22_bases()
@@ -212,7 +234,8 @@ bases = get_bases()
 # v6d = get_6_demicube_vertices_alt()
 # v6d = get_2_21_vertices()
 # v6d = get_4_21_vertices()
-v6d = get_2_31_vertices()
+# v6d = get_2_31_vertices()
+v6d = get_3_21_vertices()
 
 # v6d = get_1_22_vertices()
 v3d = project_to_3d(v6d, bases)
@@ -220,3 +243,6 @@ v3d = project_to_3d(v6d, bases)
 edges = get_edges(v6d)
 
 draw_wireframe(v3d, edges)
+print(len(v6d))
+print(len(edges))
+

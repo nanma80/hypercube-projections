@@ -102,6 +102,17 @@ def get_2_31_vertices():
     vertices.extend(ring3)
   return vertices
 
+def get_3_21_vertices(alt_mode = False):
+  vertices = []
+  if high_dimension == 7:
+    ring1 = [[2 * el for el in vector] + [sqrt(2)] for vector in get_orthoplex_vertices(6)]
+    vertices.extend(ring1)
+    ring2 = [[2 * el for el in vector] + [-sqrt(2)] for vector in get_orthoplex_vertices(6)]
+    vertices.extend(ring2)
+    ring3 = [vector + [0] for vector in get_demicube_vertices(6, alt_mode)]
+    vertices.extend(ring3)
+  return vertices
+
 def convex_hull(bases):
   _high_dimension = len(bases.T)
   _low_dimension = len(bases)
@@ -126,6 +137,8 @@ def print_convex_hull_3d(bases):
   fig = plt.figure()
   ax = fig.add_subplot(111, projection='3d')
   ax.scatter(points[:,0], points[:,1], points[:,2], marker = 'o')
+  # for p in points:
+  #   print p
   for edge in edges:
     line = [list(points[j]) for j in edge]
     ax.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], [line[0][2], line[1][2]], color='k')
@@ -163,13 +176,15 @@ def pad(vectors, target_length):
   return vectors
 
 def get_bases():
+  # on an icosahedron, take one vertex and its 5 neighbors
   phi = (1 + sqrt(5))/2
-  base1 = [phi, phi, 0, 0, -1, 1]
-  base2 = [1, -1, phi, -phi, 0, 0]
-  base3 = [0, 0, 1, 1, phi, phi]
+  base1 = [phi, phi, 0,   0,   -1,   1]
+  base2 = [1,   -1,  phi, -phi, 0,   0]
+  base3 = [0,    0,  1,    1,   phi, phi]
   return pad([base1, base2, base3], high_dimension)
 
 def get_bases_rearranged():
+  # common way to project 6-cube
   phi = (1 + sqrt(5))/2
   base1 = [phi, 0, 1, phi, 0, -1]
   base2 = [0, 1, phi, 0, -1, phi]
@@ -209,9 +224,10 @@ def get_a5_special_bases(): # special A5 for 2_21 and 1_22
   #   [1, 1, 0, 0, 1./2, sqrt(3)/2]]) # normalized
 
 # vertices = array(get_cube_vertices(7))
-vertices = array(get_demicube_vertices(7, False))
+# vertices = array(get_demicube_vertices(7, False))
 # vertices = array(get_demicube_vertices(7, True))
 # vertices = array(get_2_31_vertices())
+vertices = array(get_3_21_vertices(True))
 
 print "vertex count: ", len(vertices)
 # for v in vertices:
@@ -222,8 +238,8 @@ print "edge count: ", len(edges)
 # bases = get_e6_bases()
 bases = get_bases()
 # bases = get_bases_rearranged()
-# bases = get_bn_bases(7)
-# bases = get_an_bases(6)
+# bases = get_bn_bases(6)
+# bases = get_an_bases(5)
 # bases = array([base + [0, 0, 0] for base in get_an_bases(2)])
 # bases = get_a5_special_bases()
 
@@ -235,11 +251,11 @@ if low_dimension == 2:
 print "Volume of the known bases: ", shadow_volume(known_bases)
 print_convex_hull(known_bases)
 
-max_shadow, orth_optimal_bases = maximize_shadow()
-print "Volume of max shadow: ", max_shadow
-print "Max achieving bases:"
-print repr(orth_optimal_bases)
-print_convex_hull(orth_optimal_bases)
+# max_shadow, orth_optimal_bases = maximize_shadow()
+# print "Volume of max shadow: ", max_shadow
+# print "Max achieving bases:"
+# print repr(orth_optimal_bases)
+# print_convex_hull(orth_optimal_bases)
 
 # 7-cube:
 # Projection to 2D: B7/A6, Volume of max shadow:  17.5251450701
@@ -282,3 +298,16 @@ print_convex_hull(orth_optimal_bases)
 #         -0.61460286,  0.16099472],
 #        [ 0.24942623,  0.09817574,  0.02255056, -0.77411475,  0.09817611,
 #         -0.54723891,  0.13884137]])
+# 3_21 polytope:
+# 56 vertices, 756 edges
+# Projection to 2D: Volume of max shadow:  13.8564064606
+# A projection not seen on wikipedia, with a hexagonal convex hull
+# array([[ -4.51287703e-01,  -5.37500505e-01,  -8.62129927e-02,
+#          -4.51287626e-01,  -8.62128480e-02,  -5.37500473e-01,
+#           1.08402204e-08],
+#        [  3.60101095e-01,  -2.10775828e-01,  -5.70877022e-01,
+#           3.60101052e-01,  -5.70877254e-01,  -2.10776113e-01,
+#           1.25545035e-07]])
+# Projection to 3D: Volume of max shadow:  30.3866603888
+# Achieved by the bases based on phi
+# convex hull is an icosahedron but not a dodecahedron (depending on if it's alt_mode). 
