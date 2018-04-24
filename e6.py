@@ -21,7 +21,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d import proj3d
 
 
-high_dimension = 6
+high_dimension = 7
 low_dimension = 3
 
 def orthogonal_proj(zfront, zback):
@@ -96,6 +96,13 @@ def get_2_21_vertices():
     ring2 = [vector + [1/sqrt(3)] for vector in get_cube_vertices(5) if (sum(vector) + 8) % 4 == 3]
     vertices.extend(ring2)
     ring3 = [[2 * el for el in vector] + [ - 2 / sqrt(3)] for vector in get_orthoplex_vertices(5)]
+    vertices.extend(ring3)
+  elif high_dimension == 7:
+    ring1 = [[- 6 * el + 1 for el in vector] + [3 * sqrt(2)] for vector in get_orthoplex_vertices(6) if sum(vector) > 0]
+    ring2 = [[- 6 * el + 1 for el in vector] + [-3 * sqrt(2)] for vector in get_orthoplex_vertices(6) if sum(vector) > 0]
+    vertices.extend(ring1)
+    vertices.extend(ring2)
+    ring3 = [[ 6 * el - 2 for el in vector] + [0] for vector in get_double_non_zero_vertices(6) if sum(vector) > 1.5]
     vertices.extend(ring3)
   elif high_dimension == 8:
     vertices.append([0, 0, 0, 0, 0] + [4/3.] * 3)
@@ -254,7 +261,7 @@ def get_a5_special_bases(): # special A5 for 2_21 and 1_22
 # vertices = array(get_demicube_vertices(6, False))
 # vertices = array(get_demicube_vertices(6, True))
 # vertices = array(get_1_22_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
-# vertices = array(get_2_21_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
+vertices = array(get_2_21_vertices()) # doesn't work well with A5, B6 projections. vertices of the last dimension is probably not standard
 # vertices = array(get_hessian_vertices()) # equivalent to 2_21?
 
 print "vertex count: ", len(vertices)
@@ -263,9 +270,9 @@ print "vertex count: ", len(vertices)
 edges = get_edges(vertices)
 print "edge count: ", len(edges)
 
-bases = get_e6_bases()
+# bases = get_e6_bases()
 # bases = get_bases()
-# bases = get_bases_rearranged()
+bases = get_bases_rearranged()
 # bases = get_bn_bases(6)
 # bases = get_an_bases(5)
 # bases = array([base + [0, 0, 0] for base in get_an_bases(2)])
