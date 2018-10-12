@@ -127,11 +127,12 @@ def get_bases_v2():
 
   a = 2 * phi
   b = 2
-  base1 = [0, 0, a, 0, 0, b]
-  base2 = [0, a, 0, b, 0, 0]
-  base3 = [a, 0, 0, 0, b, 0]
+  base1 = [0, 0, a, 0, 0, b, 0, 0]
+  base2 = [0, a, 0, b, 0, 0, 0, 0]
+  base3 = [a, 0, 0, 0, b, 0, 0, 0]
+  base4 = [0, 0, 0, 0, 0, 0, b, a]
 
-  return pad([base1, base2, base3], high_dimension)
+  return pad([base1, base2, base4], high_dimension)
 
 
 def get_bases_rearranged():
