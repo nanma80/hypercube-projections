@@ -113,7 +113,26 @@ def get_bases():
   base1 = [phi, phi, 0,   0,   -1,   1]
   base2 = [1,   -1,  phi, -phi, 0,   0]
   base3 = [0,    0,  1,    1,   phi, phi]
+  # base1 = [1,   0,   phi, phi, 0,   -1]
+  # base2 = [0,   phi, 1,   -1,  phi, 0]
+  # base3 = [phi, 1,   0,    0,  -1,  phi]
   return pad([base1, base2, base3], high_dimension)
+
+def get_bases_v2():
+  # project the v2 421 vertices into the most symmetric projection
+  phi = (1 + sqrt(5))/2
+  # base1 = [1, 2*phi, -1, 1, 0, 1]
+  # base2 = [phi-1, 0, phi+1, -phi+1, 0, phi+1]
+  # base3 = [phi, 0, phi, phi, 2, -phi]
+
+  a = 2 * phi
+  b = 2
+  base1 = [0, 0, a, 0, 0, b]
+  base2 = [0, a, 0, b, 0, 0]
+  base3 = [a, 0, 0, 0, b, 0]
+
+  return pad([base1, base2, base3], high_dimension)
+
 
 def get_bases_rearranged():
   # common way to project 6-cube
@@ -200,6 +219,7 @@ def get_4_21_vertices():
   return vertices
 
 def get_4_21_vertices_v2():
+  # from integral octonions
   return [
     [-2, 0, 0, 0, 0, 0, 0, 0],
     [-1, -1, -1, 0, 0, 0, 0, -1],
@@ -467,7 +487,8 @@ def get_3_21_vertices(alt_mode = False):
     vertices.extend(ring3)
   return vertices
 
-bases = get_bases()
+# bases = get_bases()
+bases = get_bases_v2()
 # bases = get_bases_rearranged()
 # bases = get_e6_bases()
 # bases = get_2_21_bases()
@@ -478,6 +499,7 @@ bases = get_bases()
 # v6d = get_6_demicube_vertices_alt()
 # v6d = get_2_21_vertices()
 v6d = get_4_21_vertices_v2()
+# v6d = get_4_21_vertices()
 # v6d = get_2_31_vertices()
 # v6d = get_3_21_vertices()
 
@@ -487,6 +509,6 @@ v3d = project_to_3d(v6d, bases)
 edges = get_edges(v6d)
 
 draw_wireframe(v3d, edges)
-print(len(v6d))
-print(len(edges))
+# print(len(v6d))
+# print(len(edges))
 
