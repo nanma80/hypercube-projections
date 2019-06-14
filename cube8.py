@@ -1,0 +1,307 @@
+#!/usr/bin/env python
+
+import datetime
+import numpy as np
+# import sympy as sp
+# from scipy.spatial import ConvexHull
+# import polytope_builder as pb
+# from sympy import sqrt
+from math import sqrt
+
+import sys
+import itertools
+import math
+from scipy import random, array, dot, zeros
+from scipy.linalg import orth, det
+from scipy.optimize import minimize, basinhopping
+from scipy.spatial import ConvexHull
+# import matplotlib.pyplot as plt
+# import matplotlib.collections as pltcol
+# from mpl_toolkits.mplot3d import Axes3D
+# from mpl_toolkits.mplot3d import proj3d
+
+
+high_dimension = 8
+low_dimension = 4
+
+def orthogonal_proj(zfront, zback):
+    a = (zfront+zback)/(zfront-zback)
+    b = -2*(zfront*zback)/(zfront-zback)
+    # -0.0001 added for numerical stability as suggested in:
+    # http://stackoverflow.com/questions/23840756
+    return np.array([[1,0,0,0],
+                        [0,1,0,0],
+                        [0,0,a,b],
+                        [0,0,-0.0001,zback]])
+
+def get_edges(vertices):
+  target_inner_product = max([np.inner(vertices[0], vertices[i]) for i in xrange(1, len(vertices))])
+  edges = []
+  for i in xrange(len(vertices)):
+    for j in xrange(i+1, len(vertices)):
+      inner_prod = np.inner(vertices[i], vertices[j])
+      if abs(inner_prod - target_inner_product) < 0.01:
+        edges.append([i, j])
+  return edges
+
+
+def get_origin(dimension):
+  v = []
+  for i in range(dimension):
+    v.append(0)
+  return v
+
+def get_cube_vertices(dimension):
+  vertices = []
+  limit = 2 ** dimension
+  for i in range(limit):
+    str = "{0:b}".format(i + limit)
+    # co = [2 * j - 1 for j in [int(ch) for ch in str][1:]]
+    co = [j - 0.5 for j in [int(ch) for ch in str][1:]]
+    vertices.append(co)
+  return vertices
+
+def get_orthoplex_vertices(dimension):
+  vertices = []
+  for i in range(dimension):
+    vertex0 = get_origin(dimension)
+    vertex0[i] = 1
+    vertices.append(vertex0)
+    vertex1 = get_origin(dimension)
+    vertex1[i] = -1
+    vertices.append(vertex1)
+  return vertices
+
+def get_double_non_zero_vertices(dimension):
+  vertices = []
+  for i in range(dimension):
+    for j in range(i+1, dimension):
+      for k in range(2):
+        for l in range(2):
+          vertex = get_origin(dimension)
+          vertex[i] = k * 2 - 1
+          vertex[j] = l * 2 - 1
+          vertices.append(vertex)
+  return vertices
+
+def get_demicube_vertices(dimension, alt_mode = False):
+  remainder = ((0 if alt_mode else 2) + dimension) % 4
+  vertices = [vector for vector in get_cube_vertices(dimension) if (sum(vector) + 8) % 4 == remainder]
+  return vertices
+
+def get_4_21_vertices():
+  vertices = []
+  ring1 = [[2 * el for el in vector] for vector in get_double_non_zero_vertices(8)]
+  vertices.extend(ring1)
+  ring2 = get_demicube_vertices(8, True)
+  vertices.extend(ring2)
+  return vertices
+
+def convex_hull(bases):
+  _high_dimension = len(bases.T)
+  _low_dimension = len(bases)
+  orth_bases = orth(bases.T)
+  v2d = np.dot(vertices, orth_bases)
+  hull = ConvexHull(v2d)
+  return hull
+
+def dist(x, y):
+  return np.sqrt(np.sum((x-y)**2))
+
+def print_convex_hull_2d(bases):
+  hull = convex_hull(bases)
+  points = hull.points
+  plt.plot(points[:,0], points[:,1], 'o')
+  lines = [[tuple(points[j]) for j in i] for i in edges]
+  lc = pltcol.LineCollection(lines)
+  plt.axes().add_collection(lc)
+  plt.axes().set_aspect('equal')
+  plt.show()
+
+def print_convex_hull_3d(bases):
+  hull = convex_hull(bases)
+  points = hull.points
+  fig = plt.figure()
+  ax = fig.add_subplot(111, projection='3d')
+  ax.scatter(points[:,0], points[:,1], points[:,2], marker = 'o')
+  for edge in edges:
+    line = [list(points[j]) for j in edge]
+    ax.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], [line[0][2], line[1][2]], color='k')
+  ax.set_aspect('equal')
+  ax.axis('off')
+  ax.view_init(elev=90, azim=0)
+  proj3d.persp_transformation = orthogonal_proj
+  plt.show()
+
+def print_convex_hull(bases):
+  if low_dimension == 2:
+    print_convex_hull_2d(bases)
+  elif low_dimension == 3:
+    print_convex_hull_3d(bases)
+  else:
+    print "low_dimension = ", low_dimension, "not supported"
+
+def shadow_volume(bases):
+  return convex_hull(bases).volume
+
+def negative_volume(bases):
+  bases = bases.reshape((low_dimension, high_dimension))
+  return - shadow_volume(bases)
+
+def maximize_shadow():
+  random_bases = random.rand(low_dimension, high_dimension)
+  res_bh = basinhopping(negative_volume, random_bases, disp = False)
+  optimal_bases = res_bh.x.reshape((low_dimension, high_dimension))
+  orth_optimal_bases = orth(optimal_bases.T).T
+  return (- res_bh.fun, orth_optimal_bases)
+
+def pad(vectors, target_length):
+  for vector_index in range(len(vectors)):
+    vectors[vector_index] = vectors[vector_index] + [0] * (target_length - len(vectors[vector_index]))
+  return vectors
+
+def get_bases():
+  phi = (1 + sqrt(5))/2
+  bases = [
+      [1, phi, 0, -1, phi, 0, 0, 0], 
+      [phi, 0, 1, phi, 0, -1, 0, 0], 
+      [0, 1, phi, 0, -1, phi, 0, 0],
+      [0, 0, 0, 0, 0, 0, phi+1, phi-1]
+    ]
+
+  return pad(bases, high_dimension)
+
+def get_e6_bases():
+  a = sqrt(3) - 1
+  base1 = [1, 1, a, 0, 0, 0]
+  base2 = [1, -1, 0, a, 0, 0]
+  base3 = [0, 0, 0, 0, 1, 0]
+  return pad([base1, base2, base3], high_dimension)
+
+def get_bn_bases(dimension):
+  base1 = []
+  base2 = []
+  for index in xrange(dimension):
+    base1.append(math.cos(index * math.pi / dimension + math.pi / dimension / 2))
+    base2.append(math.sin(index * math.pi / dimension + math.pi / dimension / 2))
+  return pad([base1, base2], high_dimension)
+
+def get_an_bases(dimension_subspace):
+  dimension = dimension_subspace + 1
+  base1 = []
+  base2 = []
+  for index in xrange(dimension):
+    base1.append(math.sin(index * 2 * math.pi / dimension))
+    base2.append(math.cos(index * 2 * math.pi / dimension))
+  return pad([base1, base2], high_dimension)
+
+# for dim in [3, 4, 5, 6, 7, 8]:
+#   vertices = array(get_demicube_vertices(dim))
+#   print dim, len(vertices)
+vertices = array(get_cube_vertices(8))
+# vertices = array(get_demicube_vertices(8))
+# vertices = array(get_4_21_vertices())
+
+# for v in vertices:
+#   print repr(v)
+print "vertex count: ", len(vertices)
+# edges = get_edges(vertices)
+# print "edge count: ", len(edges)
+
+# bases = get_e6_bases()
+bases = get_bases()
+# bases = get_bn_bases(5)
+# bases = get_an_bases(7)
+
+print repr(array(bases))
+known_bases = array(bases)
+print "Volume of the known bases: ", shadow_volume(known_bases)
+
+hull = convex_hull(known_bases)
+hull_vertices = [hull.points[vertex_index] for vertex_index in hull.vertices]
+hull_vertices.sort(key=lambda x:x[3])
+
+print "# vertices in the convex hull:", len(hull.vertices)
+hull_edges = get_edges(hull_vertices)
+print "# edges in the convex hull:", len(hull_edges)
+for index, vertex in enumerate(hull_vertices):
+  print index+1, ':', vertex
+  # pass
+
+# vertices in the convex hull: 64
+# edges in the convex hull: 120
+
+#
+# 1 : [ 5.55111512e-17  6.01500955e-01  6.01500955e-01 -9.73248989e-01]
+# 2 : [ 5.55111512e-17  6.01500955e-01 -6.01500955e-01 -9.73248989e-01]
+# 3 : [-3.71748034e-01 -5.55111512e-17  6.01500955e-01 -9.73248989e-01]
+# 4 : [-3.71748034e-01 -5.55111512e-17 -6.01500955e-01 -9.73248989e-01]
+# 5 : [ 3.71748034e-01 -5.55111512e-17  6.01500955e-01 -9.73248989e-01]
+# 6 : [ 3.71748034e-01 -5.55111512e-17 -6.01500955e-01 -9.73248989e-01]
+# 7 : [ 5.55111512e-17 -6.01500955e-01  6.01500955e-01 -9.73248989e-01]
+# 8 : [ 5.55111512e-17 -6.01500955e-01 -6.01500955e-01 -9.73248989e-01]
+# 
+
+# 9 : [-0.60150096  0.60150096  0.60150096 -0.60150096]
+# 10 : [-0.60150096  0.60150096 -0.60150096 -0.60150096]
+# 11 : [-0.97324899  0.          0.60150096 -0.60150096]
+# 12 : [-0.97324899  0.         -0.60150096 -0.60150096]
+# 13 : [-0.60150096 -0.60150096  0.60150096 -0.60150096]
+# 14 : [-0.60150096 -0.60150096 -0.60150096 -0.60150096]
+# 15 : [ 0.60150096  0.60150096  0.60150096 -0.60150096]
+# 16 : [ 0.60150096  0.60150096 -0.60150096 -0.60150096]
+# 17 : [ 9.73248989e-01 -5.55111512e-17  6.01500955e-01 -6.01500955e-01]
+# 18 : [ 9.73248989e-01 -5.55111512e-17 -6.01500955e-01 -6.01500955e-01]
+# 19 : [ 0.60150096 -0.60150096  0.60150096 -0.60150096]
+# 20 : [ 0.60150096 -0.60150096 -0.60150096 -0.60150096]
+
+# 21 : [-5.55111512e-17  9.73248989e-01  6.01500955e-01 -3.71748034e-01]
+# 22 : [-5.55111512e-17  9.73248989e-01 -6.01500955e-01 -3.71748034e-01]
+# 23 : [ 5.55111512e-17 -9.73248989e-01  6.01500955e-01 -3.71748034e-01]
+# 24 : [ 5.55111512e-17 -9.73248989e-01 -6.01500955e-01 -3.71748034e-01]
+
+# 25 : [-0.60150096  0.97324899  0.60150096  0.        ]
+# 26 : [-0.60150096  0.97324899 -0.60150096  0.        ]
+# 27 : [-0.97324899  0.37174803  0.60150096  0.        ]
+# 28 : [-0.97324899  0.37174803 -0.60150096  0.        ]
+# 29 : [-0.97324899 -0.37174803  0.60150096  0.        ]
+# 30 : [-0.97324899 -0.37174803 -0.60150096  0.        ]
+# 31 : [-0.60150096 -0.97324899  0.60150096  0.        ]
+# 32 : [-0.60150096 -0.97324899 -0.60150096  0.        ]
+# 33 : [0.60150096 0.97324899 0.60150096 0.        ]
+# 34 : [ 0.60150096  0.97324899 -0.60150096  0.        ]
+# 35 : [0.97324899 0.37174803 0.60150096 0.        ]
+# 36 : [ 0.97324899  0.37174803 -0.60150096  0.        ]
+# 37 : [ 0.97324899 -0.37174803  0.60150096  0.        ]
+# 38 : [ 0.97324899 -0.37174803 -0.60150096  0.        ]
+# 39 : [ 0.60150096 -0.97324899  0.60150096  0.        ]
+# 40 : [ 0.60150096 -0.97324899 -0.60150096  0.        ]
+
+# 41 : [-5.55111512e-17  9.73248989e-01  6.01500955e-01  3.71748034e-01]
+# 42 : [-5.55111512e-17  9.73248989e-01 -6.01500955e-01  3.71748034e-01]
+# 43 : [ 5.55111512e-17 -9.73248989e-01  6.01500955e-01  3.71748034e-01]
+# 44 : [ 5.55111512e-17 -9.73248989e-01 -6.01500955e-01  3.71748034e-01]
+
+# 45 : [-0.60150096  0.60150096  0.60150096  0.60150096]
+# 46 : [-0.60150096  0.60150096 -0.60150096  0.60150096]
+# 47 : [-9.73248989e-01  5.55111512e-17  6.01500955e-01  6.01500955e-01]
+# 48 : [-9.73248989e-01  5.55111512e-17 -6.01500955e-01  6.01500955e-01]
+# 49 : [-0.60150096 -0.60150096  0.60150096  0.60150096]
+# 50 : [-0.60150096 -0.60150096 -0.60150096  0.60150096]
+# 51 : [0.60150096 0.60150096 0.60150096 0.60150096]
+# 52 : [ 0.60150096  0.60150096 -0.60150096  0.60150096]
+# 53 : [0.97324899 0.         0.60150096 0.60150096]
+# 54 : [ 0.97324899  0.         -0.60150096  0.60150096]
+# 55 : [ 0.60150096 -0.60150096  0.60150096  0.60150096]
+# 56 : [ 0.60150096 -0.60150096 -0.60150096  0.60150096]
+
+# 57 : [-5.55111512e-17  6.01500955e-01  6.01500955e-01  9.73248989e-01]
+# 58 : [-5.55111512e-17  6.01500955e-01 -6.01500955e-01  9.73248989e-01]
+# 59 : [-3.71748034e-01  5.55111512e-17  6.01500955e-01  9.73248989e-01]
+# 60 : [-3.71748034e-01  5.55111512e-17 -6.01500955e-01  9.73248989e-01]
+# 61 : [3.71748034e-01 5.55111512e-17 6.01500955e-01 9.73248989e-01]
+# 62 : [ 3.71748034e-01  5.55111512e-17 -6.01500955e-01  9.73248989e-01]
+# 63 : [-5.55111512e-17 -6.01500955e-01  6.01500955e-01  9.73248989e-01]
+# 64 : [-5.55111512e-17 -6.01500955e-01 -6.01500955e-01  9.73248989e-01]
+
+

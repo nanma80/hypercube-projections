@@ -39,7 +39,7 @@ def negative_volume(bases):
 
 def maximize_shadow():
   random_bases = random.rand(low_dimension, high_dimension)
-  res_bh = basinhopping(negative_volume, random_bases, disp = False)
+  res_bh = basinhopping(negative_volume, random_bases, disp = True)
   optimal_bases = res_bh.x.reshape((low_dimension, high_dimension))
   orth_optimal_bases = orth(optimal_bases.T).T
   return (- res_bh.fun, orth_optimal_bases)
@@ -55,6 +55,17 @@ def main():
   # t = 1 + math.sqrt(2.0)
   # known_bases = array([[t, t, 1, 1], [1, -1, t, -t]])
   # print "Volume of the known bases: ", shadow_volume(known_bases)
+
+  # 8 -> 4
+  phi = (1 + math.sqrt(5.0))/2
+  known_bases = array([
+      [1, phi, 0, -1, phi, 0, 0, 0], 
+      [phi, 0, 1, phi, 0, -1, 0, 0], 
+      [0, 1, phi, 0, -1, phi, 0, 0],
+      [0, 0, 0, 0, 0, 0, phi+1, phi-1]
+    ])
+  print "Volume of the known bases: ", shadow_volume(known_bases)
+
   max_shadow, orth_optimal_bases = maximize_shadow()
   print "Volume of max shadow: ", max_shadow
   print "Max achieving bases:"
