@@ -15,10 +15,10 @@ from scipy import random, array, dot, zeros
 from scipy.linalg import orth, det
 from scipy.optimize import minimize, basinhopping
 from scipy.spatial import ConvexHull
-import matplotlib.pyplot as plt
-import matplotlib.collections as pltcol
-from mpl_toolkits.mplot3d import Axes3D
-from mpl_toolkits.mplot3d import proj3d
+# import matplotlib.pyplot as plt
+# import matplotlib.collections as pltcol
+# from mpl_toolkits.mplot3d import Axes3D
+# from mpl_toolkits.mplot3d import proj3d
 
 
 high_dimension = 8
@@ -149,7 +149,7 @@ def negative_volume(bases):
 
 def maximize_shadow():
   random_bases = random.rand(low_dimension, high_dimension)
-  res_bh = basinhopping(negative_volume, random_bases, disp = False)
+  res_bh = basinhopping(negative_volume, random_bases, disp = True)
   optimal_bases = res_bh.x.reshape((low_dimension, high_dimension))
   orth_optimal_bases = orth(optimal_bases.T).T
   return (- res_bh.fun, orth_optimal_bases)
@@ -214,6 +214,15 @@ bases = get_bases()
 
 print repr(array(bases))
 known_bases = array(bases)
+# known_bases = array([[-0.20428321, -0.59858509,  0.06389811, -0.59506347,  0.24978869,
+#          0.05710992,  0.24540529, -0.34044246],
+#        [ 0.42419816, -0.46386136, -0.06555465, -0.18770753, -0.15416367,
+#         -0.46957864, -0.41506279,  0.38575818],
+#        [ 0.55479698, -0.11375784, -0.11333372, -0.08582672, -0.06081787,
+#          0.60916705,  0.40573804,  0.3458931 ],
+#        [ 0.27089508,  0.12824633,  0.76264977,  0.02096803,  0.55432917,
+#         -0.08949402,  0.00405637,  0.11308381]])
+
 if low_dimension == 2:
   known_bases = array([bases[0], bases[1]])
 if low_dimension == 3:
@@ -222,15 +231,27 @@ if low_dimension == 3:
 print "Volume of the known bases: ", shadow_volume(known_bases)
 print_convex_hull(known_bases)
 
+
+
 # max_shadow, orth_optimal_bases = maximize_shadow()
 # print "Volume of max shadow: ", max_shadow
 # print "Max achieving bases:"
 # print repr(orth_optimal_bases)
 # print_convex_hull(orth_optimal_bases)
 
+hull = convex_hull(known_bases)
+hull_vertices = [hull.points[vertex_index] for vertex_index in hull.vertices]
+hull_vertices.sort(key=lambda x:x[3])
+
+print "# vertices in the convex hull:", len(hull.vertices)
+hull_edges = get_edges(hull_vertices)
+print "# edges in the convex hull:", len(hull_edges)
+for index, vertex in enumerate(hull_vertices):
+  print ''.join(["%02d" % (index+1), ': ['] + ["{:10.4f}".format(x) for x in vertex] + ['] '] + ["{:10.4f}".format(np.inner(vertex, vertex))])
 
 # 4_21:
 # bases based on phi: Volume of the known bases:  129.4427191
+# convex hull of the known bases: 600 cell. 600 vertices, 720 edges, all same norm
 # optimal bases: Volume of max shadow:  142.08103671
 # Max achieving bases:
 # array([[-0.20428321, -0.59858509,  0.06389811, -0.59506347,  0.24978869,
@@ -241,3 +262,4 @@ print_convex_hull(known_bases)
 #          0.60916705,  0.40573804,  0.3458931 ],
 #        [ 0.27089508,  0.12824633,  0.76264977,  0.02096803,  0.55432917,
 #         -0.08949402,  0.00405637,  0.11308381]])
+# convex hull of the optimal bases: 48 vertices, 144 edges. Not all vertices have the same norm.
