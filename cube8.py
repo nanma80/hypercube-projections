@@ -102,8 +102,8 @@ def convex_hull(bases):
   _low_dimension = len(bases)
   norm = np.inner(bases[0], bases[0])
   normalizing_factor = math.sqrt(norm)
-  phi = (1 + sqrt(5))/2
-  normalizing_factor = phi
+  # phi = (1 + sqrt(5))/2
+  # normalizing_factor = phi
   normalized_bases = bases.T / normalizing_factor
 
   v2d = np.dot(vertices, normalized_bases)
@@ -165,7 +165,7 @@ def pad(vectors, target_length):
     vectors[vector_index] = vectors[vector_index] + [0] * (target_length - len(vectors[vector_index]))
   return vectors
 
-def get_bases():
+def get_phi_bases():
   phi = (1 + sqrt(5))/2
   bases = [
       [1, phi, 0, -1, phi, 0, 0, 0], 
@@ -175,6 +175,19 @@ def get_bases():
     ]
 
   return pad(bases, high_dimension)
+
+def get_optimal_bases(generators):
+  x,y = generators
+  a = math.cos(x)/2
+  b = math.sin(x)/2
+  c = math.cos(y)/2
+  d = math.sin(y)/2
+
+  return array([
+    [a,  a,  a,  a, b, b, b,  b],
+    [b,  b, -b, -b, a, a, -a, -a],
+    [c, -c, d, -d, d, -d, c, -c],
+    [d, -d, c, -c, -c, c, -d, d]])
 
 def get_e6_bases():
   a = sqrt(3) - 1
@@ -214,16 +227,23 @@ print "vertex count: ", len(vertices)
 # print "edge count: ", len(edges)
 
 # bases = get_e6_bases()
-bases = get_bases()
+phi_bases = array(get_phi_bases())
 # bases = get_bn_bases(5)
 # bases = get_an_bases(7)
 
-print repr(array(bases))
-known_bases = array(bases)
+# print repr(array(phi_bases))
+
+
+generators = [0.71191743, 0.20328551]
+optimal_bases = get_optimal_bases(generators)
+
 # phi = (1 + sqrt(5))/2
 # known_bases = known_bases / phi
 
-print "Volume of the known bases: ", shadow_volume(known_bases)
+print "Volume of the known bases: ", shadow_volume(phi_bases)
+print "Volume of the optimal bases: ", shadow_volume(optimal_bases)
+
+known_bases = optimal_bases
 
 hull = convex_hull(known_bases)
 hull_vertices = [hull.points[vertex_index] for vertex_index in hull.vertices]
@@ -236,6 +256,10 @@ for index, vertex in enumerate(hull_vertices):
   print ''.join(["%02d" % (index+1), ': ['] + ["{:10.4f}".format(x) for x in vertex] + [']'])
   # pass
 
+# phi bases:
 # vertices in the convex hull: 64
 # edges in the convex hull: 120
 
+# optimal bases:
+# vertices in ch: 128
+# edges of max length: 48. But there must be other edges
