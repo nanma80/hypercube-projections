@@ -235,8 +235,8 @@ print "vertex count: ", len(vertices)
 edges = get_edges(vertices)
 print "edge count: ", len(edges)
 
-bases = get_e6_bases()
-# bases = get_bases()
+# bases = get_e6_bases()
+bases = get_bases()
 # bases = get_bases_rearranged()
 # bases = get_bn_bases(6)
 # bases = get_an_bases(5)
@@ -256,6 +256,9 @@ print "Volume of max shadow: ", max_shadow
 print "Max achieving bases:"
 print repr(orth_optimal_bases)
 print_convex_hull(orth_optimal_bases)
+
+print "Ratio of max / initial shadow:"
+print max_shadow/shadow_volume(known_bases)
 
 # 7-cube:
 # Projection to 2D: B7/A6, Volume of max shadow:  17.5251450701
