@@ -151,6 +151,7 @@ def convex_hull(bases):
 def print_convex_hull(bases):
   hull = convex_hull(bases)
   points = hull.points
+  print "The number of boundary points of this convex hull: ", len(hull.vertices)
   plt.plot(points[:,0], points[:,1], 'o')
   lines = [[tuple(points[j]) for j in i] for i in edges]
   lc = pltcol.LineCollection(lines)
@@ -182,9 +183,9 @@ def get_an_bases(dimension_subspace):
   return [base1, base2]
 
 # vertices = array(get_5_cell_vertices())
-# vertices = array(get_cube_vertices(4))
+vertices = array(get_cube_vertices(4))
 # vertices = array(get_orthoplex_vertices(4))
-vertices = array(get_24_cell_vertices())
+# vertices = array(get_24_cell_vertices())
 # vertices = array(get_120_cell_vertices())
 # vertices = array(get_600_cell_vertices())
 edges = get_edges(vertices)
