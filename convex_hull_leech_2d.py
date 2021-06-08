@@ -17,6 +17,7 @@ high_dimension = 24
 low_dimension = 2
 phi = (1 + math.sqrt(5.0))/2
 vertex_limit = -1
+vertex_limit = 1000
 
 def rotate(l, n):
     return l[-n:] + l[:-n]
@@ -91,9 +92,8 @@ def negative_volume(bases):
   bases = bases.reshape((low_dimension, high_dimension))
   return - shadow_volume(bases)
 
-def maximize_shadow():
-  random_bases = random.rand(low_dimension, high_dimension)
-  res_bh = basinhopping(negative_volume, random_bases, T=100, niter=100, disp = True)
+def maximize_shadow(known_bases):
+  res_bh = basinhopping(negative_volume, known_bases, T=100, niter=100, disp = True)
   optimal_bases = res_bh.x.reshape((low_dimension, high_dimension))
   orth_optimal_bases = orth(optimal_bases.T).T
   return (- res_bh.fun, orth_optimal_bases)
@@ -136,9 +136,11 @@ def get_leech_vertices():
   return vertices
 
 all_vertices = get_leech_vertices()
-# vertices = sample(all_vertices, vertex_limit)
-vertices = all_vertices
-# edges = get_edges(vertices)
+vertices = []
+if vertex_limit > 0:
+  vertices = sample(all_vertices, vertex_limit)
+else:
+  vertices = all_vertices
 print "vertex count:", len(vertices)
 
 def main():
@@ -167,7 +169,7 @@ def main():
   print_convex_hull(known_bases)
   # return
 
-  max_shadow, orth_optimal_bases = maximize_shadow()
+  max_shadow, orth_optimal_bases = maximize_shadow(known_bases)
   print "Volume of max shadow: ", max_shadow
   print "Max achieving bases:"
   print repr(orth_optimal_bases)
