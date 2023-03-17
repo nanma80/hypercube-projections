@@ -10,10 +10,22 @@ from scipy.optimize import minimize, basinhopping
 from scipy.spatial import ConvexHull
 import matplotlib.pyplot as plt
 import matplotlib.collections as pltcol
+from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import proj3d
 
 high_dimension = 4
-low_dimension = 2
+low_dimension = 3
 phi = (1 + math.sqrt(5.0))/2
+
+def orthogonal_proj(zfront, zback):
+    a = (zfront+zback)/(zfront-zback)
+    b = -2*(zfront*zback)/(zfront-zback)
+    # -0.0001 added for numerical stability as suggested in:
+    # http://stackoverflow.com/questions/23840756
+    return np.array([[1,0,0,0],
+                        [0,1,0,0],
+                        [0,0,a,b],
+                        [0,0,-0.0001,zback]])
 
 def rotate(l, n):
     return l[-n:] + l[:-n]
@@ -76,6 +88,16 @@ def get_24_cell_vertices():
           vertex[j] = l * 2.0 - 1.0
           vertices.append(vertex)
   return vertices
+
+# different initial orientation
+def get_24_cell_vertices_2():
+  vertices = []
+  vertices.extend(get_cube_vertices(4))
+  vertices.extend(get_orthoplex_vertices(4))
+  for i in xrange(len(vertices)):
+    vertices[i] = [math.sqrt(2) * x for x in vertices[i]] # to match lengths of the first version
+  return vertices
+
 
 def get_5_cell_vertices():
   vertices = [
@@ -151,99 +173,133 @@ def convex_hull(bases):
 def print_convex_hull(bases):
   hull = convex_hull(bases)
   points = hull.points
-  print "The number of boundary points of this convex hull: ", len(hull.vertices)
-  plt.plot(points[:,0], points[:,1], 'o')
-  lines = [[tuple(points[j]) for j in i] for i in edges]
-  lc = pltcol.LineCollection(lines)
-  plt.axes().add_collection(lc)
-  plt.axes().set_aspect('equal')
+  fig = plt.figure()
+  ax = fig.add_subplot(111, projection='3d')
+  ax.scatter(points[:,0], points[:,1], points[:,2], marker = 'o')
+  for edge in edges:
+    line = [list(points[j]) for j in edge]
+    ax.plot([line[0][0], line[1][0]], [line[0][1], line[1][1]], [line[0][2], line[1][2]], color='k')
+  ax.set_aspect('equal')
+  ax.axis('off')
+  ax.view_init(elev=90, azim=0)
+  proj3d.persp_transformation = orthogonal_proj
   plt.show()
 
 def shadow_volume(bases):
   return convex_hull(bases).volume
 
-def negative_volume(bases):
+def bases_from_theta34(theta34):
+  vector3 = [h4base3[i]*math.cos(theta34)+ h4base4[i]*math.sin(theta34) for i in range(len(h4base4))]
+  return array([h4base1, h4base2, vector3])
+
+def negative_volume(theta34):
+  bases = bases_from_theta34(theta34)
   bases = bases.reshape((low_dimension, high_dimension))
   return - shadow_volume(bases)
 
 def maximize_shadow():
-  random_bases = random.rand(low_dimension, high_dimension)
-  res_bh = basinhopping(negative_volume, random_bases, disp = False)
-  optimal_bases = res_bh.x.reshape((low_dimension, high_dimension))
+  theta34 = random.rand()
+  res_bh = basinhopping(negative_volume, theta34, disp = False)
+  print("optimal x of basinhopping:", res_bh.x)
+  optimal_bases = bases_from_theta34(res_bh.x).reshape((low_dimension, high_dimension))
   orth_optimal_bases = orth(optimal_bases.T).T
   return (- res_bh.fun, orth_optimal_bases)
 
-def get_an_bases(dimension_subspace):
-  dimension = dimension_subspace + 1
-  base1 = []
-  base2 = []
-  for index in xrange(dimension):
-    base1.append(math.sin(index * 2 * math.pi / dimension))
-    base2.append(math.cos(index * 2 * math.pi / dimension))
-  return [base1, base2]
+def orth_base(bases):
+  known_bases = np.append(bases, [[1] * len(bases[0])], axis = 0)
+  last_base = np.linalg.solve(known_bases, array([0, 0, 0, 1]))
+  # last_base = last_base / math.sqrt(np.inner( last_base, last_base)) * math.sqrt(np.inner(known_bases[0], known_bases[0]))
+  last_base = last_base / max([abs(i) for i in last_base])
+  return last_base
 
-# vertices = array(get_5_cell_vertices())
-# vertices = array(get_cube_vertices(4))
-# vertices = array(get_orthoplex_vertices(4))
+# vertices = array(get_5_cell_vertices()) # edge first
+# volume: 3.26598632371
+# [1, -1, -1, 3/sqrt(5)]
+
+# vertices = array(get_cube_vertices(4)) # vertex first
+# volume: 2.0  [1, 1, 1, 1]
+
+# vertices = array(get_orthoplex_vertices(4)) # vertex first
+# 1.3333 [1, 0, 0, 0]
+
 # vertices = array(get_24_cell_vertices())
-vertices = array(get_120_cell_vertices())
-# vertices = array(get_600_cell_vertices())
+# 24-cell: target volume: 7.05533682951 vector [-0.1889823  -0.18898229  0.18898219  0.94491117]
+# 0.94491117/0.18898219 = 5. So the vector is [-1, -1, 1, 5]
+
+# vertices = array(get_24_cell_vertices_2()) 
+# different initial orientation, requires different bases to maximize the volume
+
+vertices = array(get_120_cell_vertices()) # unclear
+# Volume of max shadow:  87.3688309937
+# [ 0.14818048 -0.23976104 -0.13253656  1.        ]
+# [ 1.          0.79944109  0.05013976  0.05013967]
+# [ 0.18033988  1.         -0.78521826  0.61803399]
+# [-0.04095612  1.          0.04095609 -0.30602924]
+# looks like the 3D shadow is the max area 2D shadow (petrie polygon 30-gon) + an orthogonal direction
+# vector: [ 0.61803397  0.78521838 -1.         -0.18033987]
+
+# vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
+# Volume of max shadow:  3.55713925244
+# [ 0.30444186  1.         -0.57012138  0.12543673]
+# [ -1, 0, 0.795320722, 0.491535219] and note that 0.795320722 = phi * 0.491535219
+
 edges = get_edges(vertices)
 print "vertex count:", len(vertices), "edge count:", len(edges)
 
+# H4
+h4base1 = [(1+math.sqrt(5))*math.sin(math.pi/30), 1, 0, 0]
+h4base2 = [0, 0, 2*math.sin(2*math.pi/15), (1+math.sqrt(5))*math.sin(math.pi/15)]
+h4base3 = [1, -(1+math.sqrt(5))*math.sin(math.pi/30), 0, 0]
+h4base4 = [0, 0, -(1+math.sqrt(5))*math.sin(math.pi/15), 2*math.sin(2*math.pi/15)]
+
 def main():
-  # 6 -> 3
-  # known_bases = array([[1, phi, 0, -1, phi, 0], [phi, 0, 1, phi, 0, -1], [0, 1, phi, 0, -1, phi]])
-  # print "Volume of the known bases: ", shadow_volume(known_bases)
+  # trivial bases
+  # known_bases = array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]])
+  # known_bases = array([[1, 1, 1, 1], [1, -1, -1, 1], [-1, 1, -1, 1]])
 
   # B4
   # t = 1 + math.sqrt(2.0)
-  # known_bases = array([[t, t, 1, 1], [1, -1, t, -t]])
+  # known_bases = array([[t, t, 1, 1], [-1, 1, t, -t], [1, 1, -t, -t]])
 
   # F4
   # a = -1 + math.sqrt(3.0)
-  # known_bases = array([[1, 1, a, 0], [1, -1, 0, a]])
+  # known_bases = array([[1, 1, a, 0], [1, -1, 0, a], [a, 0, -1, -1]])
 
-  # known_bases = array([[1, 0, 0, 0], [0, 1, 0, 0]])
+  # best base for 24-cell
+  # b = 5 # or 2, 5, 1/3, generating the same volume
+  # known_bases = array([[b, 1, 1, 1], [-1, b, 1, -1], [-1, -1, b, 1]])
 
-  # H3 approximation
-  # known_bases = array([[-0.56386048, -0.43150524, -0.51330528, -0.48206045], [ 0.63692086, -0.73308252,  0.1136261,  -0.20978786]])
-
+  # H3
   # base1 = [1, 0, 0, 0]
   # base2 = [0, -phi, 1, 0]
   # base3 = [0, 1, phi, 0]
-  # known_bases = array([base1, base2])
-
-  # A2 bases for 24-cell
-  # a2_bases = get_an_bases(2)
-  # known_bases = array([base + [0.0] for base in a2_bases])
+  # known_bases = array([base1, base2, base3])
 
   # H4
-  base1 = [(1+math.sqrt(5))*math.sin(math.pi/30), 1, 0, 0]
-  base2 = [0, 0, 2*math.sin(2*math.pi/15), (1+math.sqrt(5))*math.sin(math.pi/15)]
-  base3 = [1, -(1+math.sqrt(5))*math.sin(math.pi/30), 0, 0]
-  base4 = [0, 0, -(1+math.sqrt(5))*math.sin(math.pi/15), 2*math.sin(2*math.pi/15)]
-  known_bases = array([base1, base2])
-  # known_bases = array([base3, base4])
+  # base1 = [(1+math.sqrt(5))*math.sin(math.pi/30), 1, 0, 0]
+  # base2 = [0, 0, 2*math.sin(2*math.pi/15), (1+math.sqrt(5))*math.sin(math.pi/15)]
+  # base3 = [1, -(1+math.sqrt(5))*math.sin(math.pi/30), 0, 0]
+  # base4 = [0, 0, -(1+math.sqrt(5))*math.sin(math.pi/15), 2*math.sin(2*math.pi/15)]
+  known_bases = array([h4base1, h4base2, h4base3])
+  # 120-cell max 2D shadow uses base1 and base2
+  # question: can we use [base1, base2, a linear combination of base3 and base4]
+  # to get the max 3D shadow?
 
   print "Volume of the known bases: ", shadow_volume(known_bases)
   # print_convex_hull(known_bases)
-  return
+  # return
 
   max_shadow, orth_optimal_bases = maximize_shadow()
   print "Volume of max shadow: ", max_shadow
   print "Max achieving bases:"
-  print repr(orth_optimal_bases)
-  print_convex_hull(orth_optimal_bases)
-  inner_products_of_vectors(orth_optimal_bases.T)
+  print orth_optimal_bases
+  print "orth vector to the optimal bases:"
+  print orth_base(orth_optimal_bases)
+  # print_convex_hull(orth_optimal_bases)
+  # inner_products_of_vectors(orth_optimal_bases.T)
+  print "Target volume is", 87.3688309937
+
 
 if __name__ == '__main__':
+  # for i in xrange(10):
   main()
-
-# 120-cell 2D
-# Volume of max shadow:  24.7279388544
-# Max achieving bases:
-# array([[-0.31146922, -0.25394198,  0.26778851,  0.8756653 ],
-#        [-0.07523121, -0.19541302,  0.90863443, -0.36129973]])
-# achieved by the first 2 dimensions of H4, or last two
-
