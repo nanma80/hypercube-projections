@@ -15,6 +15,11 @@ from mpl_toolkits.mplot3d import proj3d
 
 high_dimension = 3
 low_dimension = 2
+maximize = False
+
+sign = 1
+if maximize:
+  sign = -1
 
 def rotate(l, n):
     return l[-n:] + l[:-n]
@@ -200,14 +205,14 @@ def shadow_volume(bases):
 
 def negative_volume(bases):
   bases = bases.reshape((low_dimension, high_dimension))
-  return - shadow_volume(bases)
+  return sign * shadow_volume(bases)
 
 def maximize_shadow():
   random_bases = random.rand(low_dimension, high_dimension)
   res_bh = basinhopping(negative_volume, random_bases, disp = False)
   optimal_bases = res_bh.x.reshape((low_dimension, high_dimension))
   orth_optimal_bases = orth(optimal_bases.T).T
-  return (- res_bh.fun, orth_optimal_bases)
+  return (sign * res_bh.fun, orth_optimal_bases)
 
 def orth_base(bases):
   known_bases = np.append(bases, [[1] * len(bases[0])], axis = 0)
