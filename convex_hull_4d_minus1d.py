@@ -16,6 +16,10 @@ from mpl_toolkits.mplot3d import proj3d
 high_dimension = 4
 low_dimension = 3
 phi = (1 + math.sqrt(5.0))/2
+maximize = False
+sign = 1
+if maximize:
+  sign = -1
 
 def orthogonal_proj(zfront, zback):
     a = (zfront+zback)/(zfront-zback)
@@ -189,8 +193,8 @@ def shadow_volume(bases):
   return convex_hull(bases).volume
 
 def negative_volume(vector):
-  bases = orth_complement(vector, high_dimension - 1)
-  return - shadow_volume(bases)
+  bases = orth_complement(vector, high_dimension - 1)  
+  return sign * shadow_volume(bases)
 
 def maximize_shadow():
   # random_bases = random.rand(low_dimension, high_dimension)
@@ -201,7 +205,7 @@ def maximize_shadow():
   print("optimal argument of basinhopping:", last_base)
   optimal_bases = orth_complement(res_bh.x, high_dimension - 1).reshape((low_dimension, high_dimension))
   orth_optimal_bases = orth(optimal_bases.T).T
-  return (- res_bh.fun, orth_optimal_bases)
+  return (sign * res_bh.fun, orth_optimal_bases)
 
 def orth_base(bases):
   known_bases = np.append(bases, [[1] * len(bases[0])], axis = 0)
@@ -220,7 +224,7 @@ def orth_base(bases):
 # vertices = array(get_orthoplex_vertices(4)) # vertex first
 # 1.3333 [1, 0, 0, 0]
 
-vertices = array(get_24_cell_vertices())
+# vertices = array(get_24_cell_vertices())
 # 24-cell: target volume: 7.05533682951 vector [-0.1889823  -0.18898229  0.18898219  0.94491117]
 # 0.94491117/0.18898219 = 5. So the vector is [-1, -1, 1, 5]
 
@@ -236,7 +240,7 @@ def orth_complement(vector, n):
   normal_orths = orth(orths.T).T
   return normal_orths
 
-# vertices = array(get_120_cell_vertices()) # unclear
+# vertices = array(get_120_cell_vertices())
 # Volume of max shadow:  87.3688309937
 # [ 0.14818048 -0.23976104 -0.13253656  1.        ]
 # [ 1.          0.79944109  0.05013976  0.05013967]
@@ -245,7 +249,7 @@ def orth_complement(vector, n):
 # looks like the 3D shadow is the max area 2D shadow (petrie polygon 30-gon) + an orthogonal direction
 # vector: [ 0.61803397  0.78521838 -1.         -0.18033987]
 
-# vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
+vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
 # Volume of max shadow:  3.55713925244
 # [ 0.30444186  1.         -0.57012138  0.12543673]
 # [ -1, 0, 0.795320722, 0.491535219] and note that 0.795320722 = phi * 0.491535219
@@ -283,12 +287,14 @@ def main():
   base4 = [0, 0, -(1+math.sqrt(5))*math.sin(math.pi/15), 2*math.sin(2*math.pi/15)]
   known_bases = array([base1, base2, base3])
 
+  print "Volume of the known bases: ", negative_volume(array([1, 1, 0, 0]))
+
   # optimal for 120-cell
-  # print "Volume of the known bases: ", -negative_volume(array([1., 2*phi - 5, 2., -1]))
+  # print "Volume of the known bases: ", negative_volume(array([1., 2*phi - 5, 2., -1]))
   # optimal for 600-cell
-  # print "Volume of the known bases: ", -negative_volume(array([0, phi, -0.889991127,1]))
+  # print "Volume of the known bases: ", negative_volume(array([0, phi, (-25+5*phi)/19,1]))
   # optimal for 24-cell
-  print "Volume of the known bases: ", -negative_volume(array([1,1,1,5]))
+  # print "Volume of the known bases: ", negative_volume(array([1,1,1,5]))
 
   # print_convex_hull(known_bases)
   # return
@@ -307,9 +313,18 @@ if __name__ == '__main__':
   # for i in xrange(10):
   main()
 
+# max shadow
 # one of the normal vector for the 120-cell is
-# (1, 2*phi - 5, 2, -1)
+# (1, 2*phi - 5, 2, -1). 87.3688309937
 # one of the special vector for the 600-cell is
-# [0, phi -0.889991127,1]
+# [0, phi -0.889991127,1]. 3.55713925244
 # 24-cell with vertices as perms of (+/-1, +/-1,0,0):
 # [ 1, 1,  1,  5]
+
+# min shadow
+# 120-cell, min shadow 83.4164078766, [1, 0, 0, 0]
+# 600-cell, min shadow 3.51583105121, [1, 1, 0, 0]
+# 24-cell, min shadow 5.65685425188, [1, 1, 0, 0], vertex first projection
+# hypercube, min shadow 1.0. cube
+# 16-cell, min shadow 0.942809041852, [1, 1, 0, 0]. edge first
+# 5-cell, min shadow 2.10818510797. [ 0, -1, 1, 0] or [1, 1, 0, 0]. cell first?
