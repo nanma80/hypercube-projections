@@ -220,11 +220,11 @@ def orth_base(bases):
 # vertices = array(get_orthoplex_vertices(4)) # vertex first
 # 1.3333 [1, 0, 0, 0]
 
-# vertices = array(get_24_cell_vertices())
+vertices = array(get_24_cell_vertices())
 # 24-cell: target volume: 7.05533682951 vector [-0.1889823  -0.18898229  0.18898219  0.94491117]
 # 0.94491117/0.18898219 = 5. So the vector is [-1, -1, 1, 5]
 
-# vertices = array(get_24_cell_vertices_2()) 
+# vertices = array(get_24_cell_vertices_2())
 # different initial orientation, requires different bases to maximize the volume
 
 def orth_single_vector(base1, vector):
@@ -236,7 +236,7 @@ def orth_complement(vector, n):
   normal_orths = orth(orths.T).T
   return normal_orths
 
-vertices = array(get_120_cell_vertices()) # unclear
+# vertices = array(get_120_cell_vertices()) # unclear
 # Volume of max shadow:  87.3688309937
 # [ 0.14818048 -0.23976104 -0.13253656  1.        ]
 # [ 1.          0.79944109  0.05013976  0.05013967]
@@ -283,7 +283,13 @@ def main():
   base4 = [0, 0, -(1+math.sqrt(5))*math.sin(math.pi/15), 2*math.sin(2*math.pi/15)]
   known_bases = array([base1, base2, base3])
 
-  print "Volume of the known bases: ", shadow_volume(known_bases)
+  # optimal for 120-cell
+  # print "Volume of the known bases: ", -negative_volume(array([1., 2*phi - 5, 2., -1]))
+  # optimal for 600-cell
+  # print "Volume of the known bases: ", -negative_volume(array([0, phi, -0.889991127,1]))
+  # optimal for 24-cell
+  print "Volume of the known bases: ", -negative_volume(array([1,1,1,5]))
+
   # print_convex_hull(known_bases)
   # return
 
@@ -293,7 +299,7 @@ def main():
   print orth_optimal_bases
   print "orth vector to the optimal bases:"
   print orth_base(orth_optimal_bases)
-  # print_convex_hull(orth_optimal_bases)
+  print_convex_hull(orth_optimal_bases)
   # inner_products_of_vectors(orth_optimal_bases.T)
 
 
@@ -301,6 +307,9 @@ if __name__ == '__main__':
   # for i in xrange(10):
   main()
 
-# one of the special vector for 120-cell is
-# [ 0.49999989 -0.881966    1.         -0.49999998]
-# twice: {1., -1.76393, 2., -1.}
+# one of the normal vector for the 120-cell is
+# (1, 2*phi - 5, 2, -1)
+# one of the special vector for the 600-cell is
+# [0, phi -0.889991127,1]
+# 24-cell with vertices as perms of (+/-1, +/-1,0,0):
+# [ 1, 1,  1,  5]
