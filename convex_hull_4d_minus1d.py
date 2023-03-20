@@ -16,7 +16,8 @@ from mpl_toolkits.mplot3d import proj3d
 high_dimension = 4
 low_dimension = 3
 phi = (1 + math.sqrt(5.0))/2
-maximize = False
+maximize = True
+
 sign = 1
 if maximize:
   sign = -1
@@ -225,8 +226,9 @@ def orth_base(bases):
 # 1.3333 [1, 0, 0, 0]
 
 # vertices = array(get_24_cell_vertices())
-# 24-cell: target volume: 7.05533682951 vector [-0.1889823  -0.18898229  0.18898219  0.94491117]
-# 0.94491117/0.18898219 = 5. So the vector is [-1, -1, 1, 5]
+# 24-cell: target volume: 7.05533682951
+# vertices: permutations of (+/-1, +/-1, 0, 0)
+# The vector is [1, 1, 1, 5]
 
 # vertices = array(get_24_cell_vertices_2())
 # different initial orientation, requires different bases to maximize the volume
@@ -240,19 +242,13 @@ def orth_complement(vector, n):
   normal_orths = orth(orths.T).T
   return normal_orths
 
-# vertices = array(get_120_cell_vertices())
+vertices = array(get_120_cell_vertices())
 # Volume of max shadow:  87.3688309937
-# [ 0.14818048 -0.23976104 -0.13253656  1.        ]
-# [ 1.          0.79944109  0.05013976  0.05013967]
-# [ 0.18033988  1.         -0.78521826  0.61803399]
-# [-0.04095612  1.          0.04095609 -0.30602924]
-# looks like the 3D shadow is the max area 2D shadow (petrie polygon 30-gon) + an orthogonal direction
-# vector: [ 0.61803397  0.78521838 -1.         -0.18033987]
+# vector [1, 1, 2, 5-2*phi]
 
-vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
+# vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
 # Volume of max shadow:  3.55713925244
-# [ 0.30444186  1.         -0.57012138  0.12543673]
-# [ -1, 0, 0.795320722, 0.491535219] and note that 0.795320722 = phi * 0.491535219
+# [0, 1, phi, (25-5*phi)/19]
 
 edges = get_edges(vertices)
 print "vertex count:", len(vertices), "edge count:", len(edges)
@@ -287,14 +283,14 @@ def main():
   base4 = [0, 0, -(1+math.sqrt(5))*math.sin(math.pi/15), 2*math.sin(2*math.pi/15)]
   known_bases = array([base1, base2, base3])
 
-  print "Volume of the known bases: ", negative_volume(array([1, 1, 0, 0]))
+  print "Volume of the known bases: ", sign * negative_volume(array([1, 0, 0, 0]))
 
   # optimal for 120-cell
-  # print "Volume of the known bases: ", negative_volume(array([1., 2*phi - 5, 2., -1]))
+  # print "Volume of the known bases: ", sign * negative_volume(array([1, 1, 2, 5-2*phi]))
   # optimal for 600-cell
-  # print "Volume of the known bases: ", negative_volume(array([0, phi, (-25+5*phi)/19,1]))
+  # print "Volume of the known bases: ", sign * negative_volume(array([0, 1, phi, (25-5*phi)/19]))
   # optimal for 24-cell
-  # print "Volume of the known bases: ", negative_volume(array([1,1,1,5]))
+  # print "Volume of the known bases: ", sign * negative_volume(array([1,1,1,5]))
 
   # print_convex_hull(known_bases)
   # return
@@ -305,7 +301,7 @@ def main():
   print orth_optimal_bases
   print "orth vector to the optimal bases:"
   print orth_base(orth_optimal_bases)
-  print_convex_hull(orth_optimal_bases)
+  # print_convex_hull(orth_optimal_bases)
   # inner_products_of_vectors(orth_optimal_bases.T)
 
 
@@ -315,16 +311,16 @@ if __name__ == '__main__':
 
 # max shadow
 # one of the normal vector for the 120-cell is
-# (1, 2*phi - 5, 2, -1). 87.3688309937
+# [1, 1, 2, 5-2*phi]. 87.3688309937
 # one of the special vector for the 600-cell is
-# [0, phi -0.889991127,1]. 3.55713925244
+# [0, 1, phi, (25-5*phi)/19]
 # 24-cell with vertices as perms of (+/-1, +/-1,0,0):
-# [ 1, 1,  1,  5]
+# [ 1, 1, 1, 5]
 
 # min shadow
 # 120-cell, min shadow 83.4164078766, [1, 0, 0, 0]
-# 600-cell, min shadow 3.51583105121, [1, 1, 0, 0]
+# 600-cell, min shadow 3.51583105121, [1, 1, 0, 0] cell first
 # 24-cell, min shadow 5.65685425188, [1, 1, 0, 0], vertex first projection
 # hypercube, min shadow 1.0. cube
 # 16-cell, min shadow 0.942809041852, [1, 1, 0, 0]. edge first
-# 5-cell, min shadow 2.10818510797. [ 0, -1, 1, 0] or [1, 1, 0, 0]. cell first?
+# 5-cell, min shadow 2.10818510797. [ 0, -1, 1, 0] or [1, 1, 0, 0]. Midpoint between a vertex and a cell center (opposite of vertex)?
