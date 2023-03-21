@@ -226,7 +226,8 @@ def orth_base(bases):
 # 1.3333 [1, 0, 0, 0]
 
 # vertices = array(get_24_cell_vertices())
-# 24-cell: target volume: 7.05533682951
+# 24-cell: target volume: 7.05533682951, 8*sqrt(7)/3
+# volume of each cell
 # vertices: permutations of (+/-1, +/-1, 0, 0)
 # The vector is [1, 1, 1, 5]
 
@@ -242,11 +243,11 @@ def orth_complement(vector, n):
   normal_orths = orth(orths.T).T
   return normal_orths
 
-vertices = array(get_120_cell_vertices())
+# vertices = array(get_120_cell_vertices())
 # Volume of max shadow:  87.3688309937
 # vector [1, 1, 2, 5-2*phi]
 
-# vertices = array(get_600_cell_vertices()) # close to vertex first (3.55 vs 3.53)
+vertices = array(get_600_cell_vertices())
 # Volume of max shadow:  3.55713925244
 # [0, 1, phi, (25-5*phi)/19]
 
@@ -283,17 +284,20 @@ def main():
   base4 = [0, 0, -(1+math.sqrt(5))*math.sin(math.pi/15), 2*math.sin(2*math.pi/15)]
   known_bases = array([base1, base2, base3])
 
-  print "Volume of the known bases: ", sign * negative_volume(array([1, 0, 0, 0]))
+  # print "Volume of the known bases: ", sign * negative_volume(array([1, 0, 0, 0]))
 
   # optimal for 120-cell
   # print "Volume of the known bases: ", sign * negative_volume(array([1, 1, 2, 5-2*phi]))
+  # print "Volume of the known bases: ", sign * negative_volume(array([1, 1, 3 + 2 * math.sqrt(5), 11 + 6 * math.sqrt(5)]))
   # optimal for 600-cell
   # print "Volume of the known bases: ", sign * negative_volume(array([0, 1, phi, (25-5*phi)/19]))
+  # print "Volume of the known bases: ", sign * negative_volume(array([(9 + math.sqrt(5))/10, 1, (7 + 5 * math.sqrt(5))/10, 0]))
+  print "Volume of the known bases: ", sign * negative_volume(array([4+phi, 5, 1+5*phi,0]))
   # optimal for 24-cell
   # print "Volume of the known bases: ", sign * negative_volume(array([1,1,1,5]))
 
   # print_convex_hull(known_bases)
-  # return
+  return
 
   max_shadow, orth_optimal_bases = maximize_shadow()
   print "Volume of max shadow: ", max_shadow
@@ -310,12 +314,27 @@ if __name__ == '__main__':
   main()
 
 # max shadow
-# one of the normal vector for the 120-cell is
-# [1, 1, 2, 5-2*phi]. 87.3688309937
-# one of the special vector for the 600-cell is
-# [0, 1, phi, (25-5*phi)/19]
 # 24-cell with vertices as perms of (+/-1, +/-1,0,0):
 # [ 1, 1, 1, 5]
+# volume of each cell = 4/3
+# max sum dot products in the positive direction = 2*sqrt(7).
+# total max volume: 8 sqrt(7)/3 = 7.05534
+
+# one of the normal vector for the 120-cell is
+# [1, 1, 2, 5-2*phi]. 
+# max volume is 87.3688309937, == 4 Sqrt[410 + 30 Sqrt[5]]
+# volume of each cell = 6 Sqrt[5] - 10
+# max sum dot products in the positive direction = 2 Sqrt[83 + 36 Sqrt[5]]
+# another maximizing vector {1, 1, 3 + 2 Sqrt[5], 11 + 6 Sqrt[5]}
+
+# one of the special vector for the 600-cell is
+# [0, 1, phi, (25-5*phi)/19]
+# max volume is 3.55713925244 == 1/6 Sqrt[5/2 (95 + 39 Sqrt[5])]
+# note that the coordinates for 600-cell here is 1/2 of the one on wikipedia. Volume is 1/8
+# volume of each cell is 1/(6 Sqrt[18 + 8 Sqrt[5]])
+# max sum dot is Sqrt[8175 + 3655 Sqrt[5]]
+# also achievable by {(9 + Sqrt[5])/10, 1, (7 + 5 Sqrt[5])/10, 0}
+# another form {4+phi, 5, 1+5 phi, 0}
 
 # min shadow
 # 120-cell, min shadow 83.4164078766, [1, 0, 0, 0]
