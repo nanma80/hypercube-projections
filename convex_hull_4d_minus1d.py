@@ -251,6 +251,9 @@ vertices = array(get_600_cell_vertices())
 # Volume of max shadow:  3.55713925244
 # [0, 1, phi, (25-5*phi)/19]
 
+print vertices[0]
+exit()
+
 edges = get_edges(vertices)
 print "vertex count:", len(vertices), "edge count:", len(edges)
 
@@ -316,25 +319,30 @@ if __name__ == '__main__':
 # max shadow
 # 24-cell with vertices as perms of (+/-1, +/-1,0,0):
 # [ 1, 1, 1, 5]
+# norm of vertices: sqrt(2)
 # volume of each cell = 4/3
 # max sum dot products in the positive direction = 2*sqrt(7).
 # total max volume: 8 sqrt(7)/3 = 7.05534
 
 # one of the normal vector for the 120-cell is
 # [1, 1, 2, 5-2*phi]. 
+# norm of vertices: sqrt(8)
 # max volume is 87.3688309937, == 4 Sqrt[410 + 30 Sqrt[5]]
 # volume of each cell = 6 Sqrt[5] - 10
 # max sum dot products in the positive direction = 2 Sqrt[83 + 36 Sqrt[5]]
-# another maximizing vector {1, 1, 3 + 2 Sqrt[5], 11 + 6 Sqrt[5]}
+# another maximizing vector {1, 1, 3 + 2 Sqrt[5], 11 + 6 Sqrt[5]} == {1, 1, 1 + 4 phi, 5 + 12 phi}
 
 # one of the special vector for the 600-cell is
 # [0, 1, phi, (25-5*phi)/19]
+# norm of vertices: 1
 # max volume is 3.55713925244 == 1/6 Sqrt[5/2 (95 + 39 Sqrt[5])]
 # note that the coordinates for 600-cell here is 1/2 of the one on wikipedia. Volume is 1/8
 # volume of each cell is 1/(6 Sqrt[18 + 8 Sqrt[5]])
 # max sum dot is Sqrt[8175 + 3655 Sqrt[5]]
-# also achievable by {(9 + Sqrt[5])/10, 1, (7 + 5 Sqrt[5])/10, 0}
-# another form {4+phi, 5, 1+5 phi, 0}
+# also achievable by {(9 + Sqrt[5])/10, 1, (7 + 5 Sqrt[5])/10, 0} == {4 + phi, 5, 1+5 phi, 0}
+# in this python script, we have vertices like [0.80901699, 0.5, 0.30901699, 0]
+# if we follow a diff convention and swap two dimensions in the vertex coordinates, 
+# then we need to swap two dimensions in the projection direction as well
 
 # min shadow
 # 120-cell, min shadow 83.4164078766, [1, 0, 0, 0]
