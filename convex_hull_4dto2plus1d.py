@@ -188,20 +188,19 @@ def print_convex_hull(bases):
 def shadow_volume(bases):
   return convex_hull(bases).volume
 
-def bases_from_theta34(theta34):
-  vector3 = [h4base3[i]*math.cos(theta34)+ h4base4[i]*math.sin(theta34) for i in range(len(h4base4))]
-  return array([h4base1, h4base2, vector3])
+def bases_2dplus1d(base3):
+  return array([optimal_2d_base1, optimal_2d_base2, base3])
 
-def negative_volume(theta34):
-  bases = bases_from_theta34(theta34)
+def negative_volume(base3):
+  bases = bases_2dplus1d(base3)
   # bases = bases.reshape((low_dimension, high_dimension))
   return - shadow_volume(bases)
 
 def maximize_shadow():
-  theta34 = random.rand()
-  res_bh = basinhopping(negative_volume, theta34, disp = False)
-  print("optimal x of basinhopping:", res_bh.x)
-  optimal_bases = bases_from_theta34(res_bh.x).reshape((low_dimension, high_dimension))
+  random_base_3 = random.rand(1, high_dimension)
+  res_bh = basinhopping(negative_volume, random_base_3, disp = False)
+  print("optimal base 3 of basinhopping:", res_bh.x)
+  optimal_bases = bases_2dplus1d(res_bh.x).reshape((low_dimension, high_dimension))
   orth_optimal_bases = orth(optimal_bases.T).T
   return (- res_bh.fun, orth_optimal_bases)
 
@@ -247,10 +246,22 @@ edges = get_edges(vertices)
 print "vertex count:", len(vertices), "edge count:", len(edges)
 
 # H4
-h4base1 = [(1+math.sqrt(5))*math.sin(math.pi/30), 1, 0, 0]
-h4base2 = [0, 0, 2*math.sin(2*math.pi/15), (1+math.sqrt(5))*math.sin(math.pi/15)]
-h4base3 = [1, -(1+math.sqrt(5))*math.sin(math.pi/30), 0, 0]
-h4base4 = [0, 0, -(1+math.sqrt(5))*math.sin(math.pi/15), 2*math.sin(2*math.pi/15)]
+# h4base1 = [(1+math.sqrt(5))*math.sin(math.pi/30), 1, 0, 0]
+# h4base2 = [0, 0, 2*math.sin(2*math.pi/15), (1+math.sqrt(5))*math.sin(math.pi/15)]
+# h4base3 = [1, -(1+math.sqrt(5))*math.sin(math.pi/30), 0, 0]
+# h4base4 = [0, 0, -(1+math.sqrt(5))*math.sin(math.pi/15), 2*math.sin(2*math.pi/15)]
+
+# 24-cell
+# optimal_2d_base1 = [-8.02566244e-01, -5.31342760e-01,  5.08500612e-08, -2.71223700e-01]
+# optimal_2d_base2 = [ 1.50179861e-01, -6.19952965e-01,  1.96660609e-08, 7.70132670e-01]
+
+# 600-cell
+# optimal_2d_base1 = [ 0.03167347, -0.54055255, -0.79171096, -0.28283121]
+# optimal_2d_base2 = [ 0.52477565, -0.65681835,  0.31112898,  0.4431692 ]
+
+# 120-cell
+optimal_2d_base1 = [-0.64660961, -0.28562123,  0.22889261, -0.66927177]
+optimal_2d_base2 = [ 0.41915654,  0.14523519, -0.59482096, -0.67037494]
 
 def main():
   # trivial bases
@@ -276,11 +287,11 @@ def main():
   # known_bases = array([base1, base2, base3])
 
   # H4
-  # base1 = [(1+math.sqrt(5))*math.sin(math.pi/30), 1, 0, 0]
-  # base2 = [0, 0, 2*math.sin(2*math.pi/15), (1+math.sqrt(5))*math.sin(math.pi/15)]
-  # base3 = [1, -(1+math.sqrt(5))*math.sin(math.pi/30), 0, 0]
-  # base4 = [0, 0, -(1+math.sqrt(5))*math.sin(math.pi/15), 2*math.sin(2*math.pi/15)]
-  known_bases = array([h4base1, h4base2, h4base3])
+  base1 = [(1+math.sqrt(5))*math.sin(math.pi/30), 1, 0, 0]
+  base2 = [0, 0, 2*math.sin(2*math.pi/15), (1+math.sqrt(5))*math.sin(math.pi/15)]
+  base3 = [1, -(1+math.sqrt(5))*math.sin(math.pi/30), 0, 0]
+  base4 = [0, 0, -(1+math.sqrt(5))*math.sin(math.pi/15), 2*math.sin(2*math.pi/15)]
+  known_bases = array([base1, base2, base3])
   # 120-cell max 2D shadow uses base1 and base2
   # question: can we use [base1, base2, a linear combination of base3 and base4]
   # to get the max 3D shadow?
@@ -289,13 +300,13 @@ def main():
   # print_convex_hull(known_bases)
   # return
 
-  for i in range(360/6):
-    theta_deg = i * 6 + 3
-    theta = theta_deg / 180.0 * math.pi
-    print(theta_deg, shadow_volume(bases_from_theta34(theta)))
-    # every 6 degrees, we reached a local max of 87.33. 60 local maxima in the whole circle. However, none of them reaches the max of 87.36
+  # for i in range(360/6):
+  #   theta_deg = i * 6 + 3
+  #   theta = theta_deg / 180.0 * math.pi
+  #   print(theta_deg, shadow_volume(bases_2dplus1d(theta)))
+  #   # every 6 degrees, we reached a local max of 87.33. 60 local maxima in the whole circle. However, none of them reaches the max of 87.36
 
-  return
+  # return
 
   max_shadow, orth_optimal_bases = maximize_shadow()
   print "Volume of max shadow: ", max_shadow
@@ -311,3 +322,6 @@ def main():
 if __name__ == '__main__':
   # for i in xrange(10):
   main()
+
+# 24-cell and 600-cell: the optimal 3d projection can be constructed from the optimal 2d projection, plus a third dimension
+# 120-cell: the optimal 3d projection cannot be constructed this way
