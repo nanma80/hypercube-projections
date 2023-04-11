@@ -231,7 +231,7 @@ def orth_base(bases):
 # vertices: permutations of (+/-1, +/-1, 0, 0)
 # The vector is [1, 1, 1, 5]
 
-# vertices = array(get_24_cell_vertices_2())
+vertices = array(get_24_cell_vertices_2())
 # different initial orientation, requires different bases to maximize the volume
 
 def orth_single_vector(base1, vector):
@@ -247,12 +247,9 @@ def orth_complement(vector, n):
 # Volume of max shadow:  87.3688309937
 # vector [1, 1, 2, 5-2*phi]
 
-vertices = array(get_600_cell_vertices())
+# vertices = array(get_600_cell_vertices())
 # Volume of max shadow:  3.55713925244
 # [0, 1, phi, (25-5*phi)/19]
-
-print vertices[0]
-exit()
 
 edges = get_edges(vertices)
 print "vertex count:", len(vertices), "edge count:", len(edges)
@@ -295,9 +292,12 @@ def main():
   # optimal for 600-cell
   # print "Volume of the known bases: ", sign * negative_volume(array([0, 1, phi, (25-5*phi)/19]))
   # print "Volume of the known bases: ", sign * negative_volume(array([(9 + math.sqrt(5))/10, 1, (7 + 5 * math.sqrt(5))/10, 0]))
-  print "Volume of the known bases: ", sign * negative_volume(array([4+phi, 5, 1+5*phi,0]))
-  # optimal for 24-cell
+  # print "Volume of the known bases: ", sign * negative_volume(array([4+phi, 5, 1+5*phi,0]))
+  # optimal for 24-cell, v1
   # print "Volume of the known bases: ", sign * negative_volume(array([1,1,1,5]))
+  # optimal for 24-cell, v2
+  # print "Volume of the known bases: ", sign * negative_volume(array([3, 0, -2, 1]))
+  print "Volume of the known bases: ", sign * negative_volume(array([0, 1, 2, 3]))
 
   # print_convex_hull(known_bases)
   return
@@ -308,7 +308,7 @@ def main():
   print orth_optimal_bases
   print "orth vector to the optimal bases:"
   print orth_base(orth_optimal_bases)
-  # print_convex_hull(orth_optimal_bases)
+  print_convex_hull(orth_optimal_bases)
   # inner_products_of_vectors(orth_optimal_bases.T)
 
 
@@ -317,12 +317,20 @@ if __name__ == '__main__':
   main()
 
 # max shadow
+# 5-cell, simplex: edge first. back-to-back bipyramid
+# 8-cell, tesseract: vertex first. Rhombic 12-hedron
+# 16-cell, cross polytope: vertex first
+
 # 24-cell with vertices as perms of (+/-1, +/-1,0,0):
 # [ 1, 1, 1, 5]
 # norm of vertices: sqrt(2)
 # volume of each cell = 4/3
 # max sum dot products in the positive direction = 2*sqrt(7).
 # total max volume: 8 sqrt(7)/3 = 7.05534
+
+# 24-cell second orientation get_24_cell_vertices_2
+# [0, 1, 2, 3]
+# same volume
 
 # one of the normal vector for the 120-cell is
 # [1, 1, 2, 5-2*phi]. 
