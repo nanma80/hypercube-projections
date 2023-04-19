@@ -8,8 +8,8 @@ higherDimension = 2 * lowerDimension;
 (* exportToPov = True; *)
 exportToPov = False;
 
-computeSymbolicMax = True;
-(* computeSymbolicMax = False; *)
+(* computeSymbolicMax = True; *)
+computeSymbolicMax = False;
 
 imageSize = {4, 3} * 720 / 3;
 
@@ -142,17 +142,24 @@ Print[Length[verticesInCells]];
 For[cid = 1, cid <= Length[verticesInCells], cid++,
 	verticesInCell = verticesInCells[[cid]];
 
+	(* cellCenter = Mean[verticesInCell]; *)
+	(* relative = Map[(#-cellCenter)&, verticesInCell]; *)
+	(* negativeRelative = Map[(cellCenter-#)&, verticesInCell]; *)
+	(* Print[Length[Union[Join[relative, negativeRelative], SameTest -> ApproxSamePoint]]]; *)
+
 	(* Print[verticesInCell//Length]; *)
 	(* Print[verticesInCell]; *)
 
 	diffs = Map[#[[1]]-#[[2]]&, Subsets[verticesInCell, {2}]];
 	diffs = Map[If[ #.randomDirection < 0, -#, # ]&, diffs];
 
-	tally = Tally[diffs, ApproxSamePoint[#1]==ApproxSamePoint[#2]&];
+	tally = Tally[diffs, ApproxSamePoint[#1, #2]&];
 	tallyCounts = Map[Last, tally];
 	tallyTally = Reverse[Sort[Tally[tallyCounts]]];
 	Print[ {cid, tallyTally} ];
-	(* so random! *)
+	(* {{4, 3}, {2, 6}, {1, 4}}. affine cube, Parallelepiped *)
+
+	(* Exit[]; *)
 ];
 (* Print[tally]; *)
 
