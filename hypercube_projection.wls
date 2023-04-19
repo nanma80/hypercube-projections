@@ -8,14 +8,21 @@ higherDimension = 2 * lowerDimension;
 (* exportToPov = True; *)
 exportToPov = False;
 
+computeSymbolicMax = True;
+(* computeSymbolicMax = False; *)
+
 imageSize = {4, 3} * 720 / 3;
 
 imageFolder = "results";
 
+
 Needs["POVRayRender`"];
 ConfigurePOVRayRender["POVRayPath" -> "C:\\Program Files\\POV-Ray\\v3.7\\bin\\pvengine64.exe"];
 cubeVertices[dimension_] := 2 * Map[IntegerDigits[#, 2][[2;;dimension+1]]&, Table[k, {k, 2^dimension, 2 * 2^dimension - 1}]] - 1;
+ApproxSamePoint[point1_, point2_] := Round[point1, epsilon] == Round[point2, epsilon];
+
 epsilon = 0.00000000001;
+randomDirection = {100, Pi, 1, Exp[-4]}//N;
 
 getProjection4[x_, y_] := Module[
 	{sx, sy, cx, cy},
@@ -45,18 +52,36 @@ projection3 = {
 };
 
 getProjectedVolume[projection_] := Module[
-	{},
+	{norm, normalizedProjection, subsets},
 	(* this is 4 * identity matrix *)
 	(* Print[projection.Transpose[projection]//Simplify]; *)
-	norm = If[lowerDimension ==4, 2, Norm[projection[[1]]]//Simplify];
+	norm = If[lowerDimension == 4, 2, Norm[projection[[1]]]//Simplify];
 	normalizedProjection = Transpose[projection/norm];
 	subsets = Subsets[normalizedProjection, {lowerDimension}];
 	Total[Map[Abs[Det[#]]&, subsets]]
 ];
 
-optimalX = 0.71191742;
-optimalY = 0.20328551;
+getSigns[projection_] := Module[
+	{norm, normalizedProjection, subsets},
+	norm = If[lowerDimension == 4, 2, Norm[projection[[1]]]//Simplify];
+	normalizedProjection = Transpose[projection/norm];
+	subsets = Subsets[normalizedProjection, {lowerDimension}];
+	Map[Sign[Det[#]]&, subsets]
+];
 
+getProjectedVolumeBySigns[projection_, signs_] := Module[
+	{norm, normalizedProjection, subsets},
+	(* this is 4 * identity matrix *)
+	(* Print[projection.Transpose[projection]//Simplify]; *)
+	norm = If[lowerDimension == 4, 2, Norm[projection[[1]]]//Simplify];
+	normalizedProjection = Transpose[projection/norm];
+	subsets = Subsets[normalizedProjection, {lowerDimension}];
+	Total[Table[ signs[[k]] * Det[subsets[[k]] ] , {k, Length[subsets]}]]
+];
+
+
+optimalX = 0.07348073502590648;
+optimalY = 0.20328550320237618;
 projection4 = getProjection4[optimalX, optimalY];
 (* Print[projection4]; *)
 
@@ -70,27 +95,32 @@ vertices = Map[# + Table[0, {k, higherDimension}]&, cubeVertices[higherDimension
 (* projectedVertices = vertices.Transpose[Orthogonalize[projection]]; *)
 (* Print[projectedVertices//Length]; *)
 
-projectedVolume = getProjectedVolume[projection];
-Print["preset value"];
-Print[projectedVolume];
-Print[projectedVolume//N];
-
-maxSolution = NMaximize[ {getProjectedVolume[getProjection4[x, y]], x>0 && y>0}, {x, y} ];
-Print[maxSolution];
-optimum = {x, y, x+y, x-y}/.maxSolution[[2]];
+maxSolutionN = NMaximize[ {getProjectedVolume[getProjection4[x, y]], x>0 && y>0}, {x, y} ];
+Print[maxSolutionN];
+optimumN = {x, y}/.maxSolutionN[[2]];
 Print["optimum"];
-Print[optimum];
-Print[optimum*180/Pi];
+Print[optimumN];
+Print[optimumN*180/Pi];
 
-For[id = 1, id <= 4, id++,
-	Print[{id, Cos[optimum[[id]]], Sin[optimum[[id]]], Tan[optimum[[id]]] }];
+If[computeSymbolicMax,
+	signs = getSigns[Apply[getProjection4, optimumN]];
+	objective[x_, y_] := getProjectedVolumeBySigns[getProjection4[x, y], signs]//FullSimplify;
+	maxSolution = Maximize[ {objective[x, y], x>0&&y>0&&x<2/10&&y<3/10}, {x, y} ]//FullSimplify;
+	Print[maxSolution];
+
+	Print["maximum"];
+	maximum = maxSolution[[1]];
+	Print[maximum];
+	Print[N[maximum]];
+
+	Print["optimal parameters"];
+	optimum = {x, y}/.maxSolution[[2]]//FullSimplify;
+	Print[optimum];
+	Print[N[optimum]];
 ];
 
-(* Print["4-vectors"]; *)
-(* Map[Print, Transpose[getProjection4[x, y]]/.maxSolution[[2]]]; *)
-
-optimalProjection = getProjection4[x, y]/.maxSolution[[2]];
-(* Map[Print, optimalProjection]; *)
+(* back to numeric *)
+optimalProjection = getProjection4[x, y]/.maxSolutionN[[2]];
 
 projectedVertices = vertices.Transpose[optimalProjection]/2;
 
@@ -103,15 +133,34 @@ vertexIdsInCells = Map[# + 1 &, vertexIdsInCells, {2}];
 convexHullVertices = projectedVertices[[convexHullIndices]];
 convexHullVertices = SortBy[convexHullVertices, Last];
 
-(* Print["convex hull vertices"];
-Map[Print, convexHullVertices];
+verticesInCells = Map[
+	( projectedVertices[[#]] )&
+	, vertexIdsInCells
+];
+Print[Length[verticesInCells]];
 
-Print[convexHullVertices//Length]; *)
+For[cid = 1, cid <= Length[verticesInCells], cid++,
+	verticesInCell = verticesInCells[[cid]];
 
-Print[vertexIdsInCells];
+	(* Print[verticesInCell//Length]; *)
+	(* Print[verticesInCell]; *)
+
+	diffs = Map[#[[1]]-#[[2]]&, Subsets[verticesInCell, {2}]];
+	diffs = Map[If[ #.randomDirection < 0, -#, # ]&, diffs];
+
+	tally = Tally[diffs, ApproxSamePoint[#1]==ApproxSamePoint[#2]&];
+	tallyCounts = Map[Last, tally];
+	tallyTally = Reverse[Sort[Tally[tallyCounts]]];
+	Print[ {cid, tallyTally} ];
+	(* so random! *)
+];
+(* Print[tally]; *)
 
 
 Exit[];
+
+(* Print[vertexIdsInCells]; *)
+
 
 (* maxSolution2 = NMaximize[ getProjectedVolume[getProjection4[0, y]], {y} ]; *)
 (* Print[maxSolution2]; *)
@@ -160,9 +209,17 @@ volume:
 Sqrt[10 + 4*Sqrt[5]]
 
 8->4: 
-target volume: 
-7.844687820407957
 
+maximum
+Root[-6880 + 13420*#1 + 14883*#1^2 + 712*#1^3 - 2597*#1^4 - 1572*#1^5 - 1359*#1^6 - 432*#1^7 + 81*#1^8 & , 4, 0]
+7.844687820407956
+
+optimal parameters
+{ArcTan[Root[{-32820224 + 63857664*#1 - 40975680*#1^2 + 12708864*#1^3 - 2081552*#1^4 + 143040*#1^5 + 6660*#1^6 - 1728*#1^7 + 81*#1^8 & , -42 + 8*#1 + #1^2 + 16*#2 + 4*#1*#2 - 60*#2^2 + 2*#1^2*#2^2 - 16*#2^3 + 4*#1*#2^3 + 6*#2^4 - 8*#1*#2^4 + #1^2*#2^4 & }, {1, 2}]], ArcTan[Root[{-32820224 + 63857664*#1 - 40975680*#1^2 + 12708864*#1^3 - 2081552*#1^4 + 143040*#1^5 + 6660*#1^6 - 1728*#1^7 + 81*#1^8 & , -42 + 8*#1 + #1^2 + 16*#2 + 4*#1*#2 - 60*#2^2 + 2*#1^2*#2^2 - 16*#2^3 + 4*#1*#2^3 + 6*#2^4 - 8*#1*#2^4 + #1^2*#2^4 & , 11 + #1 + 2*#2 - 3*#2^2 + #1*#2^2 + 6*#3 + 6*#2^2*#3 - 3*#3^2 + #1*#3^2 + 2*#2*#3^2 - 5*#2^2*#3^2 + #1*#2^2*#3^2 & }, {1, 2, 2}]]}
+{0.07348073501703127, 0.20328550318676594}
+
+in degrees
+{4.210135992503563, 11.647401369689337}
 
 
  *)

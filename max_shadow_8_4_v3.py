@@ -147,10 +147,10 @@ def main():
   # print unique_equations
   print len(unique_equations)
 
-  offsets = [np.round(v[4], 6) for v in unique_equations]
-  print sorted(np.unique(offsets))
+  # offsets = [np.round(v[4], 6) for v in unique_equations]
+  # print sorted(np.unique(offsets))
 
-  # after dedup, 112 cells, 128 vertices. Each cell has 8 vertices and is an affine cross polytope. Each vertex belong to 7 cells? no. Some vertex belong to more. some fewer.
+  # after dedup, 112 cells, 128 vertices. Each cell has 8 vertices. Each vertex belong to 7 cells? no. Some vertex belong to more. some fewer.
 
   ids_in_cells = []
 
@@ -160,7 +160,7 @@ def main():
     # print ids_in_cell
 
   # print ids_in_cells
-  # each cell has 8 vertices. is an affine cross polytope
+  # each cell has 8 vertices. Each cell has central symmetry.
   cell_centers = []
   for ids in ids_in_cells:
     projected_vertices_in_cell = [projected_vertices[id] for id in ids]
