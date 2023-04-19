@@ -5,11 +5,13 @@ lowerDimension = 4;
 
 higherDimension = 2 * lowerDimension;
 
-(* exportToPov = True; *)
-exportToPov = False;
+exportToPov = True;
+(* exportToPov = False; *)
 
 (* computeSymbolicMax = True; *)
 computeSymbolicMax = False;
+
+shrinkFactor = 0.3;
 
 imageSize = {4, 3} * 720 / 3;
 
@@ -18,11 +20,13 @@ imageFolder = "results";
 
 Needs["POVRayRender`"];
 ConfigurePOVRayRender["POVRayPath" -> "C:\\Program Files\\POV-Ray\\v3.7\\bin\\pvengine64.exe"];
+
+epsilon = 0.0000001;
+randomDirection = {100, Pi, 1, Exp[-4]}//N;
 cubeVertices[dimension_] := 2 * Map[IntegerDigits[#, 2][[2;;dimension+1]]&, Table[k, {k, 2^dimension, 2 * 2^dimension - 1}]] - 1;
 ApproxSamePoint[point1_, point2_] := Round[point1, epsilon] == Round[point2, epsilon];
-
-epsilon = 0.00000000001;
-randomDirection = {100, Pi, 1, Exp[-4]}//N;
+getEdgesFromFace[face_] := Table[{face[[i+1]], face[[Mod[i+1, Length[face]] + 1]]}, {i, 0, Length[face] - 1}];
+sameIds[ids1_, ids2_] := Sort[ids1] == Sort[ids2];
 
 getProjection4[x_, y_] := Module[
 	{sx, sy, cx, cy},
@@ -40,9 +44,7 @@ getProjection4[x_, y_] := Module[
 (* 
 getProjectedVolume[getProjection4[x, y]] is symmetric wrt swapping x <-> y
 *)
-
-
-Map[Print, Transpose[getProjection4[x, y]] ];
+(* Map[Print, Transpose[getProjection4[x, y]] ]; *)
 
 phi = (1 + Sqrt[5])/2;
 projection3 = {
@@ -96,7 +98,7 @@ vertices = Map[# + Table[0, {k, higherDimension}]&, cubeVertices[higherDimension
 (* Print[projectedVertices//Length]; *)
 
 maxSolutionN = NMaximize[ {getProjectedVolume[getProjection4[x, y]], x>0 && y>0}, {x, y} ];
-Print[maxSolutionN];
+(* Print[maxSolutionN]; *)
 optimumN = {x, y}/.maxSolutionN[[2]];
 Print["optimum"];
 Print[optimumN];
@@ -121,8 +123,10 @@ If[computeSymbolicMax,
 
 (* back to numeric *)
 optimalProjection = getProjection4[x, y]/.maxSolutionN[[2]];
+(* symmetricProjection = getProjection4[x, y]/.{x -> 0.2, y -> 0.2}; *)
 
 projectedVertices = vertices.Transpose[optimalProjection]/2;
+(* projectedVertices = vertices.Transpose[symmetricProjection]/2; *)
 
 (* calculated in python *)
 convexHullIndices = {0, 1, 2, 3, 4, 5, 8, 10, 12, 16, 17, 18, 19, 24, 25, 26, 27, 32, 33, 34, 35, 36, 37, 38, 39, 49, 50, 51, 53, 55, 58, 59, 64, 65, 68, 69, 72, 73, 76, 77, 80, 81, 83, 85, 88, 89, 90, 91, 92, 93, 95, 97, 100, 101, 103, 109, 113, 115, 117, 119, 121, 123, 125, 127, 128, 130, 132, 134, 136, 138, 140, 142, 146, 152, 154, 155, 158, 160, 162, 163, 164, 165, 166, 167, 170, 172, 174, 175, 178, 179, 182, 183, 186, 187, 190, 191, 196, 197, 200, 202, 204, 205, 206, 216, 217, 218, 219, 220, 221, 222, 223, 228, 229, 230, 231, 236, 237, 238, 239, 243, 245, 247, 250, 251, 252, 253, 254, 255} + 1;
@@ -133,14 +137,12 @@ vertexIdsInCells = Map[# + 1 &, vertexIdsInCells, {2}];
 convexHullVertices = projectedVertices[[convexHullIndices]];
 convexHullVertices = SortBy[convexHullVertices, Last];
 
-verticesInCells = Map[
-	( projectedVertices[[#]] )&
-	, vertexIdsInCells
-];
-Print[Length[verticesInCells]];
+cells = {};
 
-For[cid = 1, cid <= Length[verticesInCells], cid++,
-	verticesInCell = verticesInCells[[cid]];
+For[cid = 1, cid <= Length[vertexIdsInCells], cid++,
+
+	vertexIdsInCell = vertexIdsInCells[[cid]];
+	verticesInCell = projectedVertices[[vertexIdsInCell]];
 
 	(* cellCenter = Mean[verticesInCell]; *)
 	(* relative = Map[(#-cellCenter)&, verticesInCell]; *)
@@ -156,39 +158,66 @@ For[cid = 1, cid <= Length[verticesInCells], cid++,
 	tally = Tally[diffs, ApproxSamePoint[#1, #2]&];
 	tallyCounts = Map[Last, tally];
 	tallyTally = Reverse[Sort[Tally[tallyCounts]]];
-	Print[ {cid, tallyTally} ];
+	(* Print[ {cid, tallyTally} ]; *)
 	(* {{4, 3}, {2, 6}, {1, 4}}. affine cube, Parallelepiped *)
 
-	(* Exit[]; *)
+	cubeEdges = Map[First, Select[tally, #[[2]]==4 &]];
+	cubeFaceDiagonals = Map[First, Select[tally, #[[2]]==2 &]];
+	(* Print[Map[Round[Norm[#]*Sqrt[2], epsilon]&, cubeEdges]]; *)
+	
+	edgeCandidates = Subsets[vertexIdsInCell, {2}];
+	edges = {};
+	For[eid = 1, eid <= Length[edgeCandidates], eid++,
+		edge = edgeCandidates[[eid]];
+		edgeCoordinates = projectedVertices[[edge]];
+		edgeVector = edgeCoordinates[[1]] - edgeCoordinates[[2]];
+		If[edgeVector.randomDirection < 0, edgeVector = - edgeVector];
+		If[Length[Intersection[{edgeVector}, cubeEdges, SameTest -> ApproxSamePoint ]] > 0,
+			AppendTo[edges, edge];
+		];
+	];
+	edgeGraph = Graph[edges];
+	cycles = FindCycle[edgeGraph, {4}, All];
+	faces = Map[#[[1]]&, cycles, {2}];
+	edgesFromFaces = Union[ Flatten[Map[getEdgesFromFace, faces], 1], SameTest -> sameIds];
+
+	AppendTo[cells, faces];
 ];
 (* Print[tally]; *)
 
+elements = {};
+projectionMatrix = IdentityMatrix[4][[Range[3]]];
 
-Exit[];
+For[cid = 1, cid <= Length[vertexIdsInCells], cid++,
+	cell = cells[[cid]];
+	faces4d = Map[projectedVertices[[#]]&, cell, {2}];
+	faceCenters = Map[Mean, faces4d];
+	cellCenter = Mean[faceCenters];
 
-(* Print[vertexIdsInCells]; *)
+	shrunkFaces4d = Map[ shrinkFactor * cellCenter + (1 - shrinkFactor) *# &, faces4d, {2} ];
 
+	(* Print[cellCenter]; *)
+	(* Exit[]; *)
+	(* Print[faces4d]; *)
+	faces3d = shrunkFaces4d.Transpose[projectionMatrix];
 
-(* maxSolution2 = NMaximize[ getProjectedVolume[getProjection4[0, y]], {y} ]; *)
-(* Print[maxSolution2]; *)
-
-
-(* calculate volume using ConvexHullRegion, which only works for 3D. No longer needed *)
-(* chN = ConvexHullRegion[projectedVertices//N];
-volumeN = Volume[chN];
-Print[volumeN];
-
-
-ch = ConvexHullRegion[projectedVertices];
-volume = Volume[ch];
-Print[volume//FullSimplify];
- *)
-(* Print[vertices.Transpose[projection3]//N]; *)
-
+	(* AppendTo[elements, {Opacity[1], FaceForm[Blue], Map[ Polygon, faces3d ]}]; *)
+	AppendTo[elements, {Opacity[1], Map[ Polygon, faces3d ]}];
+];
 
 target4 = 7.844687820407957;
 (* graph = Plot3D[getProjectedVolume[getProjection4[x, y]], {x, 0, Pi/4}, {y, 0, Pi/4}]; *)
 (* graph = ContourPlot[Log[(target4 - getProjectedVolume[getProjection4[x/180*Pi, y/180*Pi]])], {x, 0, 45}, {y, 0, 45}, Contours -> 100]; *)
+
+lighting = {{"Point", White, {50, -50, 50}}};
+
+graph = Graphics3D[
+		elements,
+		ViewPoint -> {100, -100, 50},
+		ViewVertical -> {0, 0, 1},
+		(* PlotRange -> {{viewCenter[[1]]-range, viewCenter[[1]]+range}, {viewCenter[[2]]-range, viewCenter[[2]]+range}, {viewCenter[[3]]-range, viewCenter[[3]]+range}}, *)
+		Lighting -> lighting
+	];
 
 outputFolderName = "hypercube";
 outputFolder = FileNameJoin[{imageFolder, outputFolderName}];
