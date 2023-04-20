@@ -125,11 +125,18 @@ If[computeSymbolicMax,
 	Print[D[obj2[x, y], x]];
 	Print[D[obj2[x, y], y]];
 
-	solution = Solve[ Cos[x] - 4*Sin[x] - 3*Cos[y]*Sin[x] == 0 && 3*Cos[y] - 4*Sin[y] - 3*Cos[x]*Sin[y] == 0, {x, y}, Reals, InverseFunctions -> True];
-	Print[solution];
+	(* solution = Solve[ Cos[x] - 4*Sin[x] - 3*Cos[y]*Sin[x] == 0 && 3*Cos[y] - 4*Sin[y] - 3*Cos[x]*Sin[y] == 0, {x, y}, Reals, InverseFunctions -> True]; *)
+	(* Print[solution]; *)
 	(* still cannot find closed form expression *)
 
-	(* Exit[]; *)
+	solution=FindInstance[Cos[x] - 4*Sin[x] - 3*Cos[y]*Sin[x] == 0 && 3*Cos[y] - 4*Sin[y] - 3*Cos[x]*Sin[y] == 0 && x>0 && y>0 && x<1 && y<1, {x, y}]//FullSimplify;
+
+	Print[{x, y}/.solution[[1]]//FullSimplify ];
+	Print[{x, y}/.solution[[1]]//N ];
+	Print[objective[x, y]/.solution[[1]]//FullSimplify ];
+	Print[objective[x, y]/.solution[[1]]//N ];
+
+	Exit[];
 
 	maxSolution = Maximize[ {objective[x, y], x>0&&y>0&&x<4/10&&y<6/10}, {x, y} ]//FullSimplify;
 	Print[maxSolution];
@@ -283,14 +290,15 @@ Sqrt[10 + 4*Sqrt[5]]
 
 maximum
 Root[-6880 + 13420*#1 + 14883*#1^2 + 712*#1^3 - 2597*#1^4 - 1572*#1^5 - 1359*#1^6 - 432*#1^7 + 81*#1^8 & , 4, 0]
+
 7.844687820407956
 
 optimal parameters
-{ArcTan[Root[{-32820224 + 63857664*#1 - 40975680*#1^2 + 12708864*#1^3 - 2081552*#1^4 + 143040*#1^5 + 6660*#1^6 - 1728*#1^7 + 81*#1^8 & , -42 + 8*#1 + #1^2 + 16*#2 + 4*#1*#2 - 60*#2^2 + 2*#1^2*#2^2 - 16*#2^3 + 4*#1*#2^3 + 6*#2^4 - 8*#1*#2^4 + #1^2*#2^4 & }, {1, 2}]], ArcTan[Root[{-32820224 + 63857664*#1 - 40975680*#1^2 + 12708864*#1^3 - 2081552*#1^4 + 143040*#1^5 + 6660*#1^6 - 1728*#1^7 + 81*#1^8 & , -42 + 8*#1 + #1^2 + 16*#2 + 4*#1*#2 - 60*#2^2 + 2*#1^2*#2^2 - 16*#2^3 + 4*#1*#2^3 + 6*#2^4 - 8*#1*#2^4 + #1^2*#2^4 & , 11 + #1 + 2*#2 - 3*#2^2 + #1*#2^2 + 6*#3 + 6*#2^2*#3 - 3*#3^2 + #1*#3^2 + 2*#2*#3^2 - 5*#2^2*#3^2 + #1*#2^2*#3^2 & }, {1, 2, 2}]]}
-{0.07348073501703127, 0.20328550318676594}
+{
+2*ArcTan[Root[29 - 464*#1 + 932*#1^2 + 208*#1^3 + 774*#1^4 + 176*#1^5 + 308*#1^6 + 80*#1^7 + 5*#1^8 & , 3, 0]], 
+ArcCos[Root[4096 + 10752*#1 - 28928*#1^2 - 107040*#1^3 - 78272*#1^4 + 58920*#1^5 + 116712*#1^6 + 62640*#1^7 + 11745*#1^8 & , 4, 0]]}
 
-in degrees
-{4.210135992503563, 11.647401369689337}
+{0.14696147003406254, 0.406571006373532}
 
 
  *)
