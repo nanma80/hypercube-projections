@@ -11,7 +11,14 @@ exportToPov = True;
 (* computeSymbolicMax = True; *)
 computeSymbolicMax = False;
 
-shrinkFactor = 0.3;
+(* topView = True; *)
+topView = False;
+
+optimal84 = True;
+(* optimal84 = False; *)
+
+shrinkFactor = 0;
+(* shrinkFactor = 0.3; *)
 
 imageSize = {4, 3} * 720 / 3;
 
@@ -30,10 +37,10 @@ sameIds[ids1_, ids2_] := Sort[ids1] == Sort[ids2];
 
 getProjection4[x_, y_] := Module[
 	{sx, sy, cx, cy},
-	sx = Sin[x];
-	sy = Sin[y];
-	cx = Cos[x];
-	cy = Cos[y];
+	sx = Sin[x/2];
+	sy = Sin[y/2];
+	cx = Cos[x/2];
+	cy = Cos[y/2];
 	{
 		{sx, sx, cx, cx, -sx, -sx, cx, cx},
 		{cx, cx, sx, sx, cx, cx, -sx, -sx},
@@ -98,7 +105,7 @@ vertices = Map[# + Table[0, {k, higherDimension}]&, cubeVertices[higherDimension
 (* Print[projectedVertices//Length]; *)
 
 maxSolutionN = NMaximize[ {getProjectedVolume[getProjection4[x, y]], x>0 && y>0}, {x, y} ];
-(* Print[maxSolutionN]; *)
+Print[maxSolutionN];
 optimumN = {x, y}/.maxSolutionN[[2]];
 Print["optimum"];
 Print[optimumN];
@@ -107,26 +114,47 @@ Print[optimumN*180/Pi];
 If[computeSymbolicMax,
 	signs = getSigns[Apply[getProjection4, optimumN]];
 	objective[x_, y_] := getProjectedVolumeBySigns[getProjection4[x, y], signs]//FullSimplify;
-	maxSolution = Maximize[ {objective[x, y], x>0&&y>0&&x<2/10&&y<3/10}, {x, y} ]//FullSimplify;
+	obj2[x_, y_] := Expand[2 objective[x, y] - 4];
+	Print[ obj2[x, y] ];
+	(* need to maximize this:
+		Sin[x] + 4*Cos[x] + 3*Sin[y] + 4*Cos[y] + 3*Cos[x]*Cos[y]
+		numerical max:
+		11.6893756408159
+	 *)
+
+	Print[D[obj2[x, y], x]];
+	Print[D[obj2[x, y], y]];
+
+	solution = Solve[ Cos[x] - 4*Sin[x] - 3*Cos[y]*Sin[x] == 0 && 3*Cos[y] - 4*Sin[y] - 3*Cos[x]*Sin[y] == 0, {x, y}, Reals, InverseFunctions -> True];
+	Print[solution];
+	(* still cannot find closed form expression *)
+
+	(* Exit[]; *)
+
+	maxSolution = Maximize[ {objective[x, y], x>0&&y>0&&x<4/10&&y<6/10}, {x, y} ]//FullSimplify;
 	Print[maxSolution];
 
 	Print["maximum"];
 	maximum = maxSolution[[1]];
 	Print[maximum];
 	Print[N[maximum]];
+	Print[ToRadicals[maximum]];
 
 	Print["optimal parameters"];
 	optimum = {x, y}/.maxSolution[[2]]//FullSimplify;
 	Print[optimum];
 	Print[N[optimum]];
+	Print[ToRadicals[optimum]];
+
+	(* Exit[]; *)
 ];
 
 (* back to numeric *)
 optimalProjection = getProjection4[x, y]/.maxSolutionN[[2]];
-(* symmetricProjection = getProjection4[x, y]/.{x -> 0.2, y -> 0.2}; *)
+symmetricProjection = getProjection4[x, y]/.{x -> Pi/4, y -> Pi/4};
 
-projectedVertices = vertices.Transpose[optimalProjection]/2;
-(* projectedVertices = vertices.Transpose[symmetricProjection]/2; *)
+(* projectedVertices = vertices.Transpose[optimalProjection]/2; *)
+projectedVertices = vertices.Transpose[If[optimal84, optimalProjection, symmetricProjection]]/2;
 
 (* calculated in python *)
 convexHullIndices = {0, 1, 2, 3, 4, 5, 8, 10, 12, 16, 17, 18, 19, 24, 25, 26, 27, 32, 33, 34, 35, 36, 37, 38, 39, 49, 50, 51, 53, 55, 58, 59, 64, 65, 68, 69, 72, 73, 76, 77, 80, 81, 83, 85, 88, 89, 90, 91, 92, 93, 95, 97, 100, 101, 103, 109, 113, 115, 117, 119, 121, 123, 125, 127, 128, 130, 132, 134, 136, 138, 140, 142, 146, 152, 154, 155, 158, 160, 162, 163, 164, 165, 166, 167, 170, 172, 174, 175, 178, 179, 182, 183, 186, 187, 190, 191, 196, 197, 200, 202, 204, 205, 206, 216, 217, 218, 219, 220, 221, 222, 223, 228, 229, 230, 231, 236, 237, 238, 239, 243, 245, 247, 250, 251, 252, 253, 254, 255} + 1;
@@ -200,22 +228,29 @@ For[cid = 1, cid <= Length[vertexIdsInCells], cid++,
 	(* Exit[]; *)
 	(* Print[faces4d]; *)
 	faces3d = shrunkFaces4d.Transpose[projectionMatrix];
+	edges3d = Apply[Join, Map[getEdgesFromFace, faces3d]];
 
-	(* AppendTo[elements, {Opacity[1], FaceForm[Blue], Map[ Polygon, faces3d ]}]; *)
-	AppendTo[elements, {Opacity[1], Map[ Polygon, faces3d ]}];
+	thickness = 0.003;
+	AppendTo[elements, {Opacity[1], FaceForm[Blue], Map[ Polygon, faces3d ]}];
+
+	(* AppendTo[elements, {Opacity[1], Map[ Polygon, faces3d ]}]; *)
+
+	AppendTo[elements, {Opacity[1], Map[ Cylinder[#, thickness]&, edges3d ]}];
+
 ];
 
 target4 = 7.844687820407957;
 (* graph = Plot3D[getProjectedVolume[getProjection4[x, y]], {x, 0, Pi/4}, {y, 0, Pi/4}]; *)
 (* graph = ContourPlot[Log[(target4 - getProjectedVolume[getProjection4[x/180*Pi, y/180*Pi]])], {x, 0, 45}, {y, 0, 45}, Contours -> 100]; *)
 
+(* graph = ContourPlot[Exp[objective[x/180*Pi, y/180*Pi]], {x, 0, 90}, {y, 0, 90}, Contours -> 100]; *)
+
 lighting = {{"Point", White, {50, -50, 50}}};
 
 graph = Graphics3D[
 		elements,
-		ViewPoint -> {100, -100, 50},
-		ViewVertical -> {0, 0, 1},
-		(* PlotRange -> {{viewCenter[[1]]-range, viewCenter[[1]]+range}, {viewCenter[[2]]-range, viewCenter[[2]]+range}, {viewCenter[[3]]-range, viewCenter[[3]]+range}}, *)
+		ViewPoint -> If[topView, {0, 0, 1000}, {1000, -1000, 500}],
+		ViewVertical -> If[topView, {0, 1, 0}, {0, 0, 1}],
 		Lighting -> lighting
 	];
 
