@@ -180,6 +180,8 @@ def print_convex_hull(bases):
   points = hull.points
   fig = plt.figure()
   ax = fig.add_subplot(111, projection='3d')
+  for point in points:
+    print(np.dot(point, point))
   ax.scatter(points[:,0], points[:,1], points[:,2], marker = 'o')
   for edge in edges:
     line = [list(points[j]) for j in edge]
@@ -215,7 +217,7 @@ def orth_base(bases):
   last_base = last_base / max([abs(i) for i in last_base])
   return last_base
 
-# vertices = array(get_5_cell_vertices()) # edge first
+vertices = array(get_5_cell_vertices()) # edge first
 # volume: 3.26598632371
 # [1, -1, -1, 3/sqrt(5)]
 
@@ -231,7 +233,7 @@ def orth_base(bases):
 # vertices: permutations of (+/-1, +/-1, 0, 0)
 # The vector is [1, 1, 1, 5]
 
-vertices = array(get_24_cell_vertices_2())
+# vertices = array(get_24_cell_vertices_2())
 # different initial orientation, requires different bases to maximize the volume
 
 def orth_single_vector(base1, vector):
@@ -297,10 +299,12 @@ def main():
   # print "Volume of the known bases: ", sign * negative_volume(array([1,1,1,5]))
   # optimal for 24-cell, v2
   # print "Volume of the known bases: ", sign * negative_volume(array([3, 0, -2, 1]))
-  print "Volume of the known bases: ", sign * negative_volume(array([0, 1, 2, 3]))
+  # print "Volume of the known bases: ", sign * negative_volume(array([0, 1, 2, 3]))
+  # optimal for 5-cell
+  print "Volume of the known bases: ", sign * negative_volume(array([1, 1, 1, 3/math.sqrt(5)]))
 
   # print_convex_hull(known_bases)
-  return
+  # return
 
   max_shadow, orth_optimal_bases = maximize_shadow()
   print "Volume of max shadow: ", max_shadow
@@ -318,6 +322,10 @@ if __name__ == '__main__':
 
 # max shadow
 # 5-cell, simplex: edge first. back-to-back bipyramid
+# [1, 1, 1, 3/math.sqrt(5)]
+# after projection, the norms of two vertices are sqrt(2). The norms of other three are sqrt(2.66667)=sqrt(8/3)
+# ratio: 1:sqrt(4/3)=1:1.1547
+
 # 8-cell, tesseract: vertex first. Rhombic 12-hedron
 # 16-cell, cross polytope: vertex first
 
