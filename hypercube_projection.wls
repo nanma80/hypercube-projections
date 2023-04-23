@@ -17,13 +17,20 @@ topView = False;
 optimal84 = True;
 (* optimal84 = False; *)
 
-shrinkFactor = 0;
-(* shrinkFactor = 0.3; *)
+(* shrinkFactor = 0; *)
+shrinkFactor = 0.4;
+
+frameCount = 16;
+(* frameCount = 100; *)
+
+lighting = {{"Point", White, {50, -50, 50}}};
 
 imageSize = {4, 3} * 720 / 3;
 
 imageFolder = "results";
 
+shape = "maxVolume_" <> IntegerString[higherDimension];
+shapeWithParams = shape <> If[optimal84, "", "_symmetric"] <> "_shrink_"<> IntegerString[ Round[shrinkFactor * 100] ];
 
 Needs["POVRayRender`"];
 ConfigurePOVRayRender["POVRayPath" -> "C:\\Program Files\\POV-Ray\\v3.7\\bin\\pvengine64.exe"];
@@ -34,6 +41,11 @@ cubeVertices[dimension_] := 2 * Map[IntegerDigits[#, 2][[2;;dimension+1]]&, Tabl
 ApproxSamePoint[point1_, point2_] := Round[point1, epsilon] == Round[point2, epsilon];
 getEdgesFromFace[face_] := Table[{face[[i+1]], face[[Mod[i+1, Length[face]] + 1]]}, {i, 0, Length[face] - 1}];
 sameIds[ids1_, ids2_] := Sort[ids1] == Sort[ids2];
+
+doubleRotationMatrix[theta_] := ArrayFlatten[{{RotationMatrix[-theta], 0}, {0, RotationMatrix[-theta]}}];
+(* doubleRotationMatrix[theta_] := ArrayFlatten[{{RotationMatrix[-theta], 0}, {0, RotationMatrix[theta]}}]; *)
+(* doubleRotationMatrix[theta_] := ArrayFlatten[{{RotationMatrix[-theta], 0}, {0, IdentityMatrix[2]}}]; *)
+projectionMatrix = IdentityMatrix[4][[Range[3]]];
 
 getProjection4[x_, y_] := Module[
 	{sx, sy, cx, cy},
@@ -48,6 +60,7 @@ getProjection4[x_, y_] := Module[
 		{sy, -sy, cy, -cy, -cy, cy, -sy, sy}
 	}
 ];
+
 (* 
 getProjectedVolume[getProjection4[x, y]] is symmetric wrt swapping x <-> y
 *)
@@ -59,6 +72,22 @@ projection3 = {
 	{phi, 0, 1, phi, 0, -1}, 
 	{0, 1, phi, 0, -1, phi}
 };
+
+orth[target_, ref_] := target - ref * Dot[target, ref]/Dot[ref, ref];
+getVolume[vs_] := Module[
+	{a, b, c, areaAB, height, bOrth, cOrthA},
+	a = vs[[1]];
+	b = vs[[2]];
+	c = vs[[3]];
+
+	bOrth = orth[b, a];
+	areaAB = Norm[a] * Norm[bOrth];
+	cOrthA = orth[c, a];
+	height = orth[cOrthA, bOrth];
+
+	(* Print[Round[N[{Dot[a, b], Dot[a, bOrth], Dot[cOrthA, a], Dot[height, a], Dot[height, b], Dot[height, bOrth] }], epsilon]]; *)
+	areaAB * Norm[height]
+];
 
 getProjectedVolume[projection_] := Module[
 	{norm, normalizedProjection, subsets},
@@ -136,6 +165,9 @@ If[computeSymbolicMax,
 	Print[objective[x, y]/.solution[[1]]//FullSimplify ];
 	Print[objective[x, y]/.solution[[1]]//N ];
 
+	Print[{Sin[x/2], Cos[x/2], Sin[y/2], Cos[y/2]}/.solution[[1]]//FullSimplify];
+	Print[{Sin[x/2], Cos[x/2], Sin[y/2], Cos[y/2]}/.solution[[1]]//N];
+
 	Exit[];
 
 	maxSolution = Maximize[ {objective[x, y], x>0&&y>0&&x<4/10&&y<6/10}, {x, y} ]//FullSimplify;
@@ -153,7 +185,7 @@ If[computeSymbolicMax,
 	Print[N[optimum]];
 	Print[ToRadicals[optimum]];
 
-	(* Exit[]; *)
+	Exit[];
 ];
 
 (* back to numeric *)
@@ -173,9 +205,9 @@ convexHullVertices = projectedVertices[[convexHullIndices]];
 convexHullVertices = SortBy[convexHullVertices, Last];
 
 cells = {};
+cellVolumes = {};
 
 For[cid = 1, cid <= Length[vertexIdsInCells], cid++,
-
 	vertexIdsInCell = vertexIdsInCells[[cid]];
 	verticesInCell = projectedVertices[[vertexIdsInCell]];
 
@@ -199,7 +231,10 @@ For[cid = 1, cid <= Length[vertexIdsInCells], cid++,
 	cubeEdges = Map[First, Select[tally, #[[2]]==4 &]];
 	cubeFaceDiagonals = Map[First, Select[tally, #[[2]]==2 &]];
 	(* Print[Map[Round[Norm[#]*Sqrt[2], epsilon]&, cubeEdges]]; *)
-	
+
+	volume = getVolume[cubeEdges];
+	AppendTo[cellVolumes, volume];
+
 	edgeCandidates = Subsets[vertexIdsInCell, {2}];
 	edges = {};
 	For[eid = 1, eid <= Length[edgeCandidates], eid++,
@@ -218,67 +253,153 @@ For[cid = 1, cid <= Length[vertexIdsInCells], cid++,
 
 	AppendTo[cells, faces];
 ];
-(* Print[tally]; *)
 
-elements = {};
-projectionMatrix = IdentityMatrix[4][[Range[3]]];
+cellVolumesTally = Sort[Tally[cellVolumes//N, ApproxSamePoint[#1, #2]&]];
+distinctVolumes = Map[First, cellVolumesTally];
+(* Print[cellVolumesTally]; *)
 
-For[cid = 1, cid <= Length[vertexIdsInCells], cid++,
-	cell = cells[[cid]];
-	faces4d = Map[projectedVertices[[#]]&, cell, {2}];
-	faceCenters = Map[Mean, faces4d];
-	cellCenter = Mean[faceCenters];
-
-	shrunkFaces4d = Map[ shrinkFactor * cellCenter + (1 - shrinkFactor) *# &, faces4d, {2} ];
-
-	(* Print[cellCenter]; *)
-	(* Exit[]; *)
-	(* Print[faces4d]; *)
-	faces3d = shrunkFaces4d.Transpose[projectionMatrix];
-	edges3d = Apply[Join, Map[getEdgesFromFace, faces3d]];
-
-	thickness = 0.003;
-	AppendTo[elements, {Opacity[1], FaceForm[Blue], Map[ Polygon, faces3d ]}];
-
-	(* AppendTo[elements, {Opacity[1], Map[ Polygon, faces3d ]}]; *)
-
-	AppendTo[elements, {Opacity[1], Map[ Cylinder[#, thickness]&, edges3d ]}];
-
+Print[cellVolumesTally//Length];
+colorMap = <||>;
+colors = {Red, Blue, Green, Orange, Yellow, Purple, Brown};
+For[colorId = 1, colorId <= Length[distinctVolumes], colorId++,
+	(* colorMap[Round[ distinctVolumes[[colorId]], epsilon]] = Hue[ colorId/Length[distinctVolumes] ]; *)
+	colorMap[Round[ distinctVolumes[[colorId]], epsilon]] = colors[[colorId]];
 ];
 
-target4 = 7.844687820407957;
-(* graph = Plot3D[getProjectedVolume[getProjection4[x, y]], {x, 0, Pi/4}, {y, 0, Pi/4}]; *)
-(* graph = ContourPlot[Log[(target4 - getProjectedVolume[getProjection4[x/180*Pi, y/180*Pi]])], {x, 0, 45}, {y, 0, 45}, Contours -> 100]; *)
+(* Print[colorMap]; *)
 
-(* graph = ContourPlot[Exp[objective[x/180*Pi, y/180*Pi]], {x, 0, 90}, {y, 0, 90}, Contours -> 100]; *)
+(* 
+when optimal = false (symmetric)
+4 different volumes
+{{0.0956708580912724, 16}, {0.23096988312782166, 16}, {0.24999999999999994, 16}, {0.30618621784789724, 64}}
 
-lighting = {{"Point", White, {50, -50, 50}}};
+when optimal = true
+7 different volumes
 
-graph = Graphics3D[
-		elements,
-		ViewPoint -> If[topView, {0, 0, 1000}, {1000, -1000, 500}],
-		ViewVertical -> If[topView, {0, 1, 0}, {0, 0, 1}],
-		Lighting -> lighting
+{{0.20855353945134233, 16}, {0.24299911162995522, 16}, {0.25266611333566996, 16}, {0.26883897819123576, 16}, {0.2705365471094385, 16}, {0.2725194114324201, 16}, {0.3374691674463592, 16}}
+ *)
+
+exportFrame[spinAngle_, frameIndex_, outputFolderName_] := Module[
+	{},
+	(* If[frameIndex < 77, Return[]]; *)
+	(* If[Mod[frameIndex, 2] == 1, Return[]]; *)
+	(* Return[]; *)
+
+	elements = {};
+
+	For[cid = 1, cid <= Length[vertexIdsInCells], cid++,
+		cell = cells[[cid]];
+		faces4d = Map[projectedVertices[[#]]&, cell, {2}];
+		faceCenters = Map[Mean, faces4d];
+		cellCenter = Mean[faceCenters];
+
+		shrunkFaces4d = Map[ shrinkFactor * cellCenter + (1 - shrinkFactor) *# &, faces4d, {2} ];
+
+		(* Print[cellCenter]; *)
+		(* Exit[]; *)
+		(* Print[faces4d]; *)
+		faces3d = shrunkFaces4d.doubleRotationMatrix[spinAngle].Transpose[projectionMatrix];
+		edges3d = Apply[Join, Map[getEdgesFromFace, faces3d]];
+		color = colorMap[ Round[cellVolumes[[cid]], epsilon] ]; 
+
+		thickness = 0.003;
+		AppendTo[elements, {Opacity[1], FaceForm[color], Map[ Polygon, faces3d ]}];
+
+		(* AppendTo[elements, {Opacity[1], Map[ Polygon, faces3d ]}]; *)
+
+		AppendTo[elements, {Opacity[1], Map[ Cylinder[#, thickness]&, edges3d ]}];
 	];
 
-outputFolderName = "hypercube";
-outputFolder = FileNameJoin[{imageFolder, outputFolderName}];
-If[!DirectoryQ[outputFolder], CreateDirectory[outputFolder]];
+	(* graph = Plot3D[getProjectedVolume[getProjection4[x, y]], {x, 0, Pi/4}, {y, 0, Pi/4}]; *)
+	(* graph = ContourPlot[Log[(target4 - getProjectedVolume[getProjection4[x/180*Pi, y/180*Pi]])], {x, 0, 45}, {y, 0, 45}, Contours -> 100]; *)
 
-outputFileName = "maxVolume_" <> IntegerString[higherDimension] <> ".png";
-outputFileName = FileNameJoin[{outputFolder, outputFileName}];
+	(* graph = ContourPlot[Exp[objective[x/180*Pi, y/180*Pi]], {x, 0, 90}, {y, 0, 90}, Contours -> 100]; *)
 
-cropCommand = "mogrify -crop " <> IntegerString[imageSize[[2]]] <> "x" <> IntegerString[imageSize[[2]]] <> "+" <> IntegerString[(imageSize[[1]]-imageSize[[2]])/2] <> "+0 " <> outputFileName;
+	graph = Graphics3D[
+			elements,
+			ViewPoint -> If[topView, {0, 0, 1000}, {1000, -1000, 500}],
+			ViewVertical -> If[topView, {0, 1, 0}, {0, 0, 1}],
+			Lighting -> lighting,
+			Boxed -> False
+		];
 
-If[exportToPov,
-  If[FileExistsQ[outputFileName], DeleteFile[outputFileName]];
-  POVRayRender[graph, Method -> "Triangle", OutputPath -> outputFileName, ImageSize -> imageSize, RenderOptions -> "+A0.001 -J +UA"];
-  Run[cropCommand];
-  ,
-  Export[outputFileName, graph];
+	(* outputFolderName = "hypercube"; *)
+	outputFolder = FileNameJoin[{imageFolder, outputFolderName}];
+	If[!DirectoryQ[outputFolder], CreateDirectory[outputFolder]];
+
+	outputFileName = "spinning_frame_" <> IntegerString[frameIndex, 10, 4] <> ".png";
+	outputFileName = FileNameJoin[{outputFolder, outputFileName}];
+
+	cropCommand = "mogrify -crop " <> IntegerString[imageSize[[2]]] <> "x" <> IntegerString[imageSize[[2]]] <> "+" <> IntegerString[(imageSize[[1]]-imageSize[[2]])/2] <> "+0 " <> outputFileName;
+
+	If[exportToPov,
+	  If[FileExistsQ[outputFileName], DeleteFile[outputFileName]];
+	  POVRayRender[graph, Method -> "Triangle", OutputPath -> outputFileName, ImageSize -> imageSize, RenderOptions -> "+A0.001 -J +UA"];
+	  Run[cropCommand];
+	  ,
+	  Export[outputFileName, graph];
+	];
+	Print["Saved an image to " <> outputFileName];
 ];
-Print["Saved an image to " <> outputFileName];
 
+exportAnimation[] := Module[
+	{
+		outputFolder,
+		gifFileName,
+		gifFolder,
+		maxExplosionFactor,
+		explodeStep,
+		explosionFactors,
+		frameIndex,
+		explosionFactor,
+		gifCommand,
+		edges
+	},
+
+	outputFolderName = shapeWithParams <> "_spinning_frames";
+	outputFolder = FileNameJoin[{imageFolder, outputFolderName}];
+	If[!DirectoryQ[outputFolder], CreateDirectory[outputFolder]];
+
+	gifFileName = shapeWithParams <> "_spinning";
+	gifFolder = FileNameJoin[{imageFolder, shape}];
+	If[!DirectoryQ[gifFolder], CreateDirectory[gifFolder]];
+
+	For[frameIndex = 1, frameIndex <= frameCount, frameIndex++,	
+		spinAngle = frameIndex/frameCount * Pi;
+		Print[DateString["ISODateTime"] <> " frameIndex/frameCount: " <> IntegerString[frameIndex] <> " / " <> IntegerString[frameCount] <> " spin angle/Pi: " <> ToString[spinAngle/Pi//N] ];
+
+		exportFrame[spinAngle, frameIndex, outputFolderName];
+	];
+
+	(* Exit[]; *)
+
+	delay = If[frameCount >= 40, 3, Floor[300/frameCount]];
+	(* delay = 2; *)
+
+	gifCommand = "magick convert -quiet +repage -alpha remove -loop 0 -delay " <> IntegerString[delay] <> " -dispose 2 " <> outputFolder <> "\\spinning_frame*.png " <> gifFolder <> "\\" <> gifFileName <> ".gif";
+
+	Print[gifCommand];
+	Run[gifCommand];
+	Print["Saved the animation to " <> gifFolder <> "\\" <> gifFileName <> ".gif"];
+	
+  mp4Command = "ffmpeg -i " <> gifFolder <> "\\" <> gifFileName <> ".gif" 
+      <> " -movflags faststart -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" "
+      <> gifFolder <> "\\" <> gifFileName <> ".mp4";
+
+  mp4FileName = gifFolder <> "\\" <> gifFileName <> ".mp4";
+  If[FileExistsQ[mp4FileName], DeleteFile[mp4FileName]];
+  Print[mp4Command];
+  Run[mp4Command];
+  Print["Saved the video to " <> gifFolder <> "\\" <> gifFileName <> ".mp4"];
+];
+
+exportAnimation[];
+
+
+(* For[id=1, id<=10, id++,
+	exportFrame[id*Pi/2, id, "test"];
+];
+ *)
 (* 
 
 6->3: phi based vertices.
