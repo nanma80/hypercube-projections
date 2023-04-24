@@ -233,6 +233,14 @@ For[cid = 1, cid <= Length[vertexIdsInCells], cid++,
 	(* Print[Map[Round[Norm[#]*Sqrt[2], epsilon]&, cubeEdges]]; *)
 
 	volume = getVolume[cubeEdges];
+	dots = {
+		Dot[cubeEdges[[1]], cubeEdges[[2]]],
+		Dot[cubeEdges[[2]], cubeEdges[[3]]],
+		Dot[cubeEdges[[3]], cubeEdges[[1]]]
+	};
+	dots = Sort[Map[Abs, dots]//N];
+	(* AppendTo[cellVolumes, Join[{volume}, dots]]; *)
+	(* if we include dots, we are getting the same groups as using only volume *)
 	AppendTo[cellVolumes, volume];
 
 	edgeCandidates = Subsets[vertexIdsInCell, {2}];
@@ -256,9 +264,10 @@ For[cid = 1, cid <= Length[vertexIdsInCells], cid++,
 
 cellVolumesTally = Sort[Tally[cellVolumes//N, ApproxSamePoint[#1, #2]&]];
 distinctVolumes = Map[First, cellVolumesTally];
-(* Print[cellVolumesTally]; *)
+(* Map[Print, cellVolumesTally]; *)
 
 Print[cellVolumesTally//Length];
+(* Exit[]; *)
 colorMap = <||>;
 colors = {Red, Blue, Green, Orange, Yellow, Purple, Brown};
 For[colorId = 1, colorId <= Length[distinctVolumes], colorId++,
