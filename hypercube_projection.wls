@@ -283,10 +283,10 @@ Print[ Map[# - 1 &, cellIdGroups, {2}]];
 (* 
 In each group, there are 16 cell centers. We treat them as vertices (dualize). 
 In each group, the convex hull of 16 points have 56 equations (cells)
-Each cell has 4 faces ( I guessed the combination)
-In total 56*4/2 = 112 faces
+Each cell has 4 faces ( based on the assumption that each cell is a tetrahedron )
+In total 56*4/2 = 112 triangular faces
 
-Each cell has 6 edges ( I guessed the combination)
+Each cell has 6 edges ( based on the assumption that each cell is a tetrahedron )
 56*6/2 = 336 before dedup
 72 unique edges. 4.6667 cells around each edge, on average. Not regular.
 4-fold edges x 32
@@ -294,8 +294,9 @@ Each cell has 6 edges ( I guessed the combination)
 6-fold edges x 8
 
 Each cell has 4 points (tetrahedron?)
-56*4/16 = 14 cells per point
+56*4/16 = 14 cells per point. Each point belongs to 14 vertices
 
+each vertex belongs to 9 edges
 
  *)
 Exit[];

@@ -197,6 +197,7 @@ def main():
     cells = []
     faces = []
     edges = []
+    vertices = []
     face_ids = [[1, 2, 3], [0, 2, 3], [0, 1, 3], [0, 1, 2]]
     edge_ids = [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]]
 
@@ -211,17 +212,26 @@ def main():
       cells.append(cell)
       faces.extend( [[ cell[id] for id in ids ] for ids in face_ids ])
       edges.extend( [[ cell[id] for id in ids ] for ids in edge_ids ])
+      vertices.extend(cell)
     
     unique_faces = np.unique(faces, axis = 0)
     unique_edges = np.unique(edges, axis = 0)
-    print sorted([ len([eid for eid in range(len(edges)) if np.array_equal(array(edges[eid]), unique_edge) ]) for unique_edge in unique_edges])
+    unique_vertices = np.unique(vertices)
+    # print sorted([ len([eid for eid in range(len(edges)) if np.array_equal(array(edges[eid]), unique_edge) ]) for unique_edge in unique_edges])
+    vertices_in_edges = []
+    for edge in unique_edges:
+      vertices_in_edges.extend(edge)
+    print sorted([ len([vertex for vertex in vertices_in_edges if vertex == unique_vertex ]) for unique_vertex in unique_vertices])
+    # print sorted([ len([vertex for vertex in vertices if vertex == unique_vertex ]) for unique_vertex in unique_vertices])
 
     # print([
     #   (len(cells)),
     #   (len(faces)),
     #   (len(unique_faces)),
     #   (len(edges)),
-    #   (len(unique_edges))
+    #   (len(unique_edges)),
+    #   (len(vertices)),
+    #   (len(unique_vertices))
     # ])
 
     # (len(faces))
