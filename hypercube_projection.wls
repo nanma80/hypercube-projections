@@ -20,8 +20,8 @@ optimal84 = True;
 (* shrinkFactor = 0; *)
 shrinkFactor = 0.4;
 
-frameCount = 16;
-(* frameCount = 100; *)
+(* frameCount = 16; *)
+frameCount = 400;
 
 lighting = {{"Point", White, {50, -50, 50}}};
 
@@ -279,7 +279,7 @@ cellIdGroups = Values[cellIdsByVolume];
 cellCentersByGroup = Map[ getCellCenter , cellIdGroups, {2}];
 
 (* export to analyze in python *)
-Print[ Map[# - 1 &, cellIdGroups, {2}]];
+(* Print[ Map[# - 1 &, cellIdGroups, {2}]]; *)
 (* 
 In each group, there are 16 cell centers. We treat them as vertices (dualize). 
 In each group, the convex hull of 16 points have 56 equations (cells)
@@ -299,10 +299,10 @@ Each cell has 4 points (tetrahedron?)
 each vertex belongs to 9 edges
 
  *)
-Exit[];
+(* Exit[]; *)
 
 For[gid =1, gid<=Length[cellCentersByGroup], gid++,
-	Print[gid];
+	(* Print[gid]; *)
 	cellCentersInGroup = cellCentersByGroup[[gid]];
 	diffs = Map[#[[1]]-#[[2]]&, Subsets[cellCentersInGroup, {2}]];
 	diffs = Map[If[ #.randomDirection < 0, -#, # ]&, diffs];
@@ -312,15 +312,15 @@ For[gid =1, gid<=Length[cellCentersByGroup], gid++,
 	tallyCounts = Map[Last, tally];
 	tallyTally = Reverse[Sort[Tally[tallyCounts]]];
 
-	Print[tally];
-	Print[tallyTally];
+	(* Print[tally]; *)
+	(* Print[tallyTally]; *)
 	(* Exit[]; *)
 ];
 
 
-Exit[];
+(* Exit[]; *)
 
-Print[cellVolumesTally//Length];
+(* Print[cellVolumesTally//Length]; *)
 (* Exit[]; *)
 colorMap = <||>;
 colors = {Red, Blue, Green, Orange, Yellow, Purple, Brown};
@@ -378,10 +378,13 @@ exportFrame[spinAngle_, frameIndex_, outputFolderName_] := Module[
 
 	(* graph = ContourPlot[Exp[objective[x/180*Pi, y/180*Pi]], {x, 0, 90}, {y, 0, 90}, Contours -> 100]; *)
 
+	range = 0.9;
+
 	graph = Graphics3D[
 			elements,
 			ViewPoint -> If[topView, {0, 0, 1000}, {1000, -1000, 500}],
 			ViewVertical -> If[topView, {0, 1, 0}, {0, 0, 1}],
+			PlotRange -> {{-range, range}, {-range, range}, {-range, range}},
 			Lighting -> lighting,
 			Boxed -> False
 		];
@@ -428,7 +431,7 @@ exportAnimation[] := Module[
 	If[!DirectoryQ[gifFolder], CreateDirectory[gifFolder]];
 
 	For[frameIndex = 1, frameIndex <= frameCount, frameIndex++,	
-		spinAngle = frameIndex/frameCount * Pi;
+		spinAngle = frameIndex/frameCount * Pi + Pi/frameCount/2;
 		Print[DateString["ISODateTime"] <> " frameIndex/frameCount: " <> IntegerString[frameIndex] <> " / " <> IntegerString[frameCount] <> " spin angle/Pi: " <> ToString[spinAngle/Pi//N] ];
 
 		exportFrame[spinAngle, frameIndex, outputFolderName];
@@ -436,7 +439,7 @@ exportAnimation[] := Module[
 
 	(* Exit[]; *)
 
-	delay = If[frameCount >= 40, 3, Floor[300/frameCount]];
+	delay = If[frameCount >= 40, 3, Floor[600/frameCount]];
 	(* delay = 2; *)
 
 	gifCommand = "magick convert -quiet +repage -alpha remove -loop 0 -delay " <> IntegerString[delay] <> " -dispose 2 " <> outputFolder <> "\\spinning_frame*.png " <> gifFolder <> "\\" <> gifFileName <> ".gif";
