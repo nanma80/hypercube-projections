@@ -301,11 +301,49 @@ each vertex belongs to 9 edges
  *)
 (* Exit[]; *)
 
+(* two generators of the symmetry based on *)
+rotationMatrix12 = ArrayFlatten[{{RotationMatrix[Pi/2], 0}, {0, DiagonalMatrix[{1, -1}]}}];
+rotationMatrix34 = ArrayFlatten[{{DiagonalMatrix[{1, -1}], 0}, {0, RotationMatrix[Pi/2]}}];
+(* 
+Map[Print, rotationMatrix12];
+{0, -1, 0, 0}
+{1, 0, 0, 0}
+{0, 0, 1, 0}
+{0, 0, 0, -1}
+
+Map[Print, rotationMatrix34];
+{1, 0, 0, 0}
+{0, -1, 0, 0}
+{0, 0, 0, -1}
+{0, 0, 1, 0}
+ *)
+
+
 For[gid =1, gid<=Length[cellCentersByGroup], gid++,
 	(* Print[gid]; *)
 	cellCentersInGroup = cellCentersByGroup[[gid]];
 	diffs = Map[#[[1]]-#[[2]]&, Subsets[cellCentersInGroup, {2}]];
 	diffs = Map[If[ #.randomDirection < 0, -#, # ]&, diffs];
+
+	(* Map[Print, cellCentersInGroup]; *)
+	rotated12 = Map[#.rotationMatrix12 &, cellCentersInGroup];
+	rotated34 = Map[#.rotationMatrix34 &, cellCentersInGroup];
+
+	seed = cellCentersInGroup[[1]];
+	generated = Flatten[ Table[ seed.MatrixPower[ rotationMatrix12, i].MatrixPower[ rotationMatrix34, j], {i, 0, 3}, {j, 0, 3}], 1 ];
+
+(* 	Print[Tally[Table[
+		Length[Intersection[ cellCentersInGroup, 
+		Flatten[ Table[ cellCentersInGroup[[k]].MatrixPower[ rotationMatrix12, i].MatrixPower[ rotationMatrix34, j], {i, 0, 3}, {j, 0, 3}], 1 ]
+		, SameTest -> ApproxSamePoint ]]
+		, {k, 1, Length[cellCentersInGroup]}]]
+	]; *)
+
+	Print[{
+		Length[Intersection[ cellCentersInGroup, generated, SameTest -> ApproxSamePoint ]],
+		Length[Intersection[ cellCentersInGroup, rotated12, SameTest -> ApproxSamePoint ]],
+		Length[Intersection[ cellCentersInGroup, rotated34, SameTest -> ApproxSamePoint ]]
+	}];
 
 	tally = Tally[diffs, ApproxSamePoint[#1, #2]&];
 	(* tally = Tally[Map[Norm, diffs], ApproxSamePoint[#1, #2]&]; *)
@@ -314,11 +352,11 @@ For[gid =1, gid<=Length[cellCentersByGroup], gid++,
 
 	(* Print[tally]; *)
 	(* Print[tallyTally]; *)
-	(* Exit[]; *)
+	Exit[];
 ];
 
 
-(* Exit[]; *)
+Exit[];
 
 (* Print[cellVolumesTally//Length]; *)
 (* Exit[]; *)
