@@ -165,9 +165,10 @@ def main():
   for ids in ids_in_cells:
     projected_vertices_in_cell = [projected_vertices[id] for id in ids]
     center = array(np.average(projected_vertices_in_cell, axis=0))
-    relative_vertices = array([ np.round(v - center, 10) for v in projected_vertices_in_cell])
-    negative_relative_vertices = array([ np.round(- v + center, 10) for v in projected_vertices_in_cell])
-    all_relative_vertices = np.concatenate((relative_vertices, negative_relative_vertices))
+    cell_centers.append(center)
+    # relative_vertices = array([ np.round(v - center, 10) for v in projected_vertices_in_cell])
+    # negative_relative_vertices = array([ np.round(- v + center, 10) for v in projected_vertices_in_cell])
+    # all_relative_vertices = np.concatenate((relative_vertices, negative_relative_vertices))
     # print(len(all_relative_vertices))
     # print( len(np.unique(all_relative_vertices, axis=0)) )
     # all 8. all cells are cross polytopes
@@ -179,6 +180,58 @@ def main():
     # print(array([ np.linalg.norm(v- center) for v in projected_vertices_in_cell] ))
 
     # break
+
+  cell_id_groups = [[0, 1, 2, 3, 44, 45, 46, 47, 64, 65, 66, 67, 108, 109, 110, 111], [4, 5, 6, 7, 48, 49, 50, 51, 60, 61, 62, 63, 104, 105, 106, 107], [8, 9, 10, 11, 28, 29, 30, 31, 80, 81, 82, 83, 100, 101, 102, 103], [12, 13, 14, 15, 24, 25, 26, 27, 84, 85, 86, 87, 96, 97, 98, 99], [16, 17, 18, 19, 40, 41, 42, 43, 68, 69, 70, 71, 92, 93, 94, 95], [20, 21, 22, 23, 36, 37, 38, 39, 72, 73, 74, 75, 88, 89, 90, 91], [32, 33, 34, 35, 52, 53, 54, 55, 56, 57, 58, 59, 76, 77, 78, 79]]
+
+  for group in cell_id_groups:
+    cell_centers_in_group = [ cell_centers[id] for id in group ]
+    group_hull = ConvexHull(cell_centers_in_group)
+    # rounded_equations = array([[np.round(x, 15) for x in v] for v in group_hull.equations])
+    # rounded_equations = [tuple(row) for row in rounded_equations]
+    # unique_equations = np.unique(rounded_equations, axis=0)
+
+    # print unique_equations
+    # print group_hull.equations
+    # print group_hull.points
+    # print 'length of equations in the group is', len(group_hull.equations)
+    cells = []
+    faces = []
+    edges = []
+    face_ids = [[1, 2, 3], [0, 2, 3], [0, 1, 3], [0, 1, 2]]
+    edge_ids = [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]]
+
+    for equation in group_hull.equations:
+      # for point in group_hull.points:
+        # print(point)
+        # gap = array([dot( np.concatenate((point, array([1]))), equation) ])
+        # print(gap)
+        # return
+      cell = [point_id for point_id in range(len(group_hull.points)) if abs(dot( np.concatenate((group_hull.points[point_id], array([1]))), equation)) < epsilon ]
+      # print(cell)
+      cells.append(cell)
+      faces.extend( [[ cell[id] for id in ids ] for ids in face_ids ])
+      edges.extend( [[ cell[id] for id in ids ] for ids in edge_ids ])
+    
+    unique_faces = np.unique(faces, axis = 0)
+    unique_edges = np.unique(edges, axis = 0)
+    print sorted([ len([eid for eid in range(len(edges)) if np.array_equal(array(edges[eid]), unique_edge) ]) for unique_edge in unique_edges])
+
+    # print([
+    #   (len(cells)),
+    #   (len(faces)),
+    #   (len(unique_faces)),
+    #   (len(edges)),
+    #   (len(unique_edges))
+    # ])
+
+    # (len(faces))
+    # (len(np.unique(faces, axis = 0)))
+
+    # print(len(edges))
+    # print(len(np.unique(edges, axis = 0)))
+
+    # return
+
 
   # for projected_vertex in projected_vertices:
   #   equations_on_vertex = [eid for eid in range(len(unique_equations)) if dot( np.concatenate( (array(projected_vertex), array([1])) ), unique_equations[eid] ) > - epsilon]

@@ -117,6 +117,14 @@ getProjectedVolumeBySigns[projection_, signs_] := Module[
 	Total[Table[ signs[[k]] * Det[subsets[[k]] ] , {k, Length[subsets]}]]
 ];
 
+getCellCenter[cid_] := Module[
+	{cell, faces4d, faceCenters, cellCenter},
+	cell = cells[[cid]];
+	faces4d = Map[projectedVertices[[#]]&, cell, {2}];
+	faceCenters = Map[Mean, faces4d];
+	cellCenter = Mean[faceCenters];
+	cellCenter
+];
 
 optimalX = 0.07348073502590648;
 optimalY = 0.20328550320237618;
@@ -265,6 +273,51 @@ For[cid = 1, cid <= Length[vertexIdsInCells], cid++,
 cellVolumesTally = Sort[Tally[cellVolumes//N, ApproxSamePoint[#1, #2]&]];
 distinctVolumes = Map[First, cellVolumesTally];
 (* Map[Print, cellVolumesTally]; *)
+
+cellIdsByVolume = GroupBy[ Range[Length[cellVolumes]], Round[ cellVolumes[[#]], epsilon]& ];
+cellIdGroups = Values[cellIdsByVolume];
+cellCentersByGroup = Map[ getCellCenter , cellIdGroups, {2}];
+
+(* export to analyze in python *)
+Print[ Map[# - 1 &, cellIdGroups, {2}]];
+(* 
+In each group, there are 16 cell centers. We treat them as vertices (dualize). 
+In each group, the convex hull of 16 points have 56 equations (cells)
+Each cell has 4 faces ( I guessed the combination)
+In total 56*4/2 = 112 faces
+
+Each cell has 6 edges ( I guessed the combination)
+56*6/2 = 336 before dedup
+72 unique edges. 4.6667 cells around each edge, on average. Not regular.
+4-fold edges x 32
+5-fold edges x 32
+6-fold edges x 8
+
+Each cell has 4 points (tetrahedron?)
+56*4/16 = 14 cells per point
+
+
+ *)
+Exit[];
+
+For[gid =1, gid<=Length[cellCentersByGroup], gid++,
+	Print[gid];
+	cellCentersInGroup = cellCentersByGroup[[gid]];
+	diffs = Map[#[[1]]-#[[2]]&, Subsets[cellCentersInGroup, {2}]];
+	diffs = Map[If[ #.randomDirection < 0, -#, # ]&, diffs];
+
+	tally = Tally[diffs, ApproxSamePoint[#1, #2]&];
+	(* tally = Tally[Map[Norm, diffs], ApproxSamePoint[#1, #2]&]; *)
+	tallyCounts = Map[Last, tally];
+	tallyTally = Reverse[Sort[Tally[tallyCounts]]];
+
+	Print[tally];
+	Print[tallyTally];
+	(* Exit[]; *)
+];
+
+
+Exit[];
 
 Print[cellVolumesTally//Length];
 (* Exit[]; *)
