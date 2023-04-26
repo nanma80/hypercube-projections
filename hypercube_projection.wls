@@ -318,8 +318,23 @@ Map[Print, rotationMatrix34];
 {0, 0, 1, 0}
  *)
 
+(* the projection vectors and their opposites share the same symmetry *)
+(* 
+vectors = Join[ Transpose[optimalProjection], Transpose[-optimalProjection] ];
+rotated12 = Map[#.rotationMatrix12 &, vectors];
+rotated34 = Map[#.rotationMatrix34 &, vectors];
+seed = vectors[[1]];
+generated = Flatten[ Table[ seed.MatrixPower[ rotationMatrix12, i].MatrixPower[ rotationMatrix34, j], {i, 0, 3}, {j, 0, 3}], 1 ];
 
-For[gid =1, gid<=Length[cellCentersByGroup], gid++,
+Print[{
+	Length[Intersection[ vectors, generated, SameTest -> ApproxSamePoint ]],
+	Length[Intersection[ vectors, rotated12, SameTest -> ApproxSamePoint ]],
+	Length[Intersection[ vectors, rotated34, SameTest -> ApproxSamePoint ]]
+}];
+ *)
+(* Exit[]; *)
+
+For[gid = 1, gid<=Length[cellCentersByGroup], gid++,
 	(* Print[gid]; *)
 	cellCentersInGroup = cellCentersByGroup[[gid]];
 	diffs = Map[#[[1]]-#[[2]]&, Subsets[cellCentersInGroup, {2}]];
@@ -339,12 +354,12 @@ For[gid =1, gid<=Length[cellCentersByGroup], gid++,
 		, {k, 1, Length[cellCentersInGroup]}]]
 	]; *)
 
-	Print[{
+	(* Print[{
 		Length[Intersection[ cellCentersInGroup, generated, SameTest -> ApproxSamePoint ]],
 		Length[Intersection[ cellCentersInGroup, rotated12, SameTest -> ApproxSamePoint ]],
 		Length[Intersection[ cellCentersInGroup, rotated34, SameTest -> ApproxSamePoint ]]
 	}];
-
+ *)
 	tally = Tally[diffs, ApproxSamePoint[#1, #2]&];
 	(* tally = Tally[Map[Norm, diffs], ApproxSamePoint[#1, #2]&]; *)
 	tallyCounts = Map[Last, tally];
@@ -352,11 +367,11 @@ For[gid =1, gid<=Length[cellCentersByGroup], gid++,
 
 	(* Print[tally]; *)
 	(* Print[tallyTally]; *)
-	Exit[];
+	(* Exit[]; *)
 ];
 
 
-Exit[];
+(* Exit[]; *)
 
 (* Print[cellVolumesTally//Length]; *)
 (* Exit[]; *)
