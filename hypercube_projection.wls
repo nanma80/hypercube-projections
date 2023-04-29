@@ -278,6 +278,31 @@ cellIdsByVolume = GroupBy[ Range[Length[cellVolumes]], Round[ cellVolumes[[#]], 
 cellIdGroups = Values[cellIdsByVolume];
 cellCentersByGroup = Map[ getCellCenter , cellIdGroups, {2}];
 
+Print[Length[cells]];
+Print[ cells[[1]] ];
+allFaces = Flatten[cells, 1];
+uniqueFaces = Union[allFaces, SameTest -> sameIds];
+
+Print[ uniqueFaces//Length ];
+
+allEdges = Apply[Join, Map[getEdgesFromFace, uniqueFaces]];
+uniqueEdges = Union[allEdges, SameTest -> sameIds];
+Print[allEdges//Length];
+Print[uniqueEdges//Length];
+
+allVertices = Apply[Join, uniqueEdges];
+Print[allVertices//Length];
+Print[Union[allVertices]//Length];
+
+(* element count: 
+112 cells,
+336 unique faces,
+352 unique edges,
+128 unique vertices
+ *)
+
+Exit[];
+
 (* export to analyze in python *)
 (* Print[ Map[# - 1 &, cellIdGroups, {2}]]; *)
 (* 
