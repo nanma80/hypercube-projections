@@ -201,8 +201,8 @@ def main():
   # known_bases = array([[t, t, 1, 1], [1, -1, t, -t]])
 
   # F4
-  a = -1 + math.sqrt(3.0)
-  known_bases = array([[1, 1, a, 0], [1, -1, 0, a]])
+  # a = -1 + math.sqrt(3.0)
+  # known_bases = array([[1, 1, a, 0], [1, -1, 0, a]])
 
   # known_bases = array([[1, 0, 0, 0], [0, 1, 0, 0]])
 
@@ -225,6 +225,23 @@ def main():
   # base4 = [0, 0, -(1+math.sqrt(5))*math.sin(math.pi/15), 2*math.sin(2*math.pi/15)]
   # known_bases = array([base1, base2])
   # known_bases = array([base3, base4])
+
+  sqrt3 = math.sqrt(3.0)
+  a = 0
+  b = 1
+  # known_bases = array([[1, 1, 2, 0], [sqrt3, -sqrt3, 0, 0]])
+  known_bases = array([[a, a, sqrt3 * b, -sqrt3 * b], [sqrt3 * a, -sqrt3 * a, b, b]])
+
+  # f4 equivalent
+  # known_bases = array([[sqrt3, sqrt3, sqrt3 - 3, 0], [1, -1, 0, sqrt3 - 1]])
+  # known_bases = array([[1, 1, sqrt3 - 1, 0], [sqrt3, -sqrt3, 0, sqrt3 - 3]])
+
+  # known_bases = np.transpose(array([
+  #     [1.0/2.0, sqrt3/2.0],
+  #     [1.0/2.0, -sqrt3/2.0],
+  #     [0, 1.0],
+  #     [sqrt3/2.0, -1.0/2.0]
+  #   ]))
 
   print 'known_bases:'
   print known_bases
