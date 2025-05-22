@@ -61,10 +61,13 @@ def get_bases(generators):
   cy = math.cos(y)
   sy = math.sin(y)
 
-  return array([[sx, sx, cx, cx, -sx, -sx, cx, cx],
-    [cx, cx, sx, sx, cx, cx, -sx, -sx],
-    [cy, -cy, sy, -sy, sy, -sy, cy, -cy],
-    [sy, -sy, cy, -cy, -cy, cy, -sy, sy]])
+  return array(
+    [
+      [sx,  sx, cx,  cx, -sx, -sx,  cx,  cx],
+      [cx,  cx, sx,  sx,  cx,  cx, -sx, -sx],
+      [sy, -sy, cy, -cy, -cy,  cy,  sy, -sy],
+      [cy, -cy, sy, -sy,  sy, -sy, -cy,  cy]
+    ])
 
 def negative_volume(generators):
   return - shadow_volume(get_bases(generators))
@@ -268,3 +271,12 @@ if __name__ == '__main__':
 # in degrees, a1, a2, sum, diff
 # [11.647401655103769, 4.210135109188659, 15.857536764292428, 7.437266545915109]
 # [4.210136353618086, 11.64740236003748, 15.857538713655567, -7.437266006419395]
+
+# Optimal generator is:
+# [0.07348072421223484, 0.20328550404073642]
+# in degrees, a1, a2, sum, diff
+# [4.210135372925817, 11.64740141772384, 15.857536790649657, -7.437266044798022]
+# Volume of max shadow:  7.84468782041
+# target shadow volume:  7.84468782041
+# convex hull volume:    7.84468782041
+
