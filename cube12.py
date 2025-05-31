@@ -267,6 +267,7 @@ cell24_bases = array(
     [1, -1, -1, 1],
     [1, -1, -1, -1]
   ]).T
+
 print cell24_bases
 print "Volume of the known bases: ", shadow_volume(cell24_bases)
 print "Volume of the optimal bases: ", shadow_volume(optimal_bases)
@@ -291,5 +292,6 @@ print "# edges in the convex hull:", len(hull_edges)
 # Volume of the optimal bases:  19.9506899636
 # 24-cell basis:
 # not really optimal. Volume: 17.6666666667
-# convex hull: truncated 24-cell. zonotope. 
+# the shape of the suboptimal 24-cell basis is the truncated 24-cell. zonotope. 
 # https://en.wikipedia.org/wiki/Truncated_24-cells#Truncated_24-cell
+# the description of the optimal shadow is still unknown
