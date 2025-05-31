@@ -8,8 +8,8 @@ higherDimension = 2 * lowerDimension;
 exportToPov = True;
 (* exportToPov = False; *)
 
-(* computeSymbolicMax = True; *)
-computeSymbolicMax = False;
+computeSymbolicMax = True;
+(* computeSymbolicMax = False; *)
 
 (* topView = True; *)
 topView = False;
@@ -170,6 +170,7 @@ If[computeSymbolicMax,
 
 	Print[{x, y}/.solution[[1]]//FullSimplify ];
 	Print[{x, y}/.solution[[1]]//N ];
+	Print["objective below"];
 	Print[objective[x, y]/.solution[[1]]//FullSimplify ];
 	Print[objective[x, y]/.solution[[1]]//N ];
 
@@ -565,5 +566,17 @@ ArcCos[Root[4096 + 10752*#1 - 28928*#1^2 - 107040*#1^3 - 78272*#1^4 + 58920*#1^5
 
 {0.14696147003406254, 0.406571006373532}
 
+Finding x, y, we need to maximize:
+Sin[x] + 4*Cos[x] + 3*Sin[y] + 4*Cos[y] + 3*Cos[x]*Cos[y]
+(The maximum = 11.6893756408159 + 4)/2 = 7.84468 is the max volume of 8D -> 4D projection.
+
+If we take derivatives, we need to solve the following equations:
+
+Cos[x] - 4*Sin[x] - 3*Cos[y]*Sin[x] == 0 
+3*Cos[y] - 4*Sin[y] - 3*Cos[x]*Sin[y] == 0
+
+However, I didn't find any close form solutions.
+
+Note: In this file, the projection values are Sin and Cos of x/2 and y/2, rather than x and y.
 
  *)
