@@ -73,8 +73,8 @@ def get_edges(vertices, target_inner_product):
 
 def draw_wireframe(vectors, edges):
     initialize()
-    vertex_size = 0.1
-    edge_size = vertex_size / 2
+    vertex_size = 0.15
+    edge_size = vertex_size / 3
     for v in vectors:
         sphere(pos = v, radius = vertex_size)
     
@@ -489,17 +489,23 @@ def get_6to3_projection_2_bases():
    base3 = [0, 0, 1, 1, 0, 0]
    return [base1, base2, base3]
 
+# def get_6to3_projection_3_bases():
+#    base1 = [sqrt(3)/2, -sqrt(3)/2, 0, 0, 0, 0]
+#    base2 = [1/2,   1/2, -1, 0, 0, 0]
+#    base3 = [1/sqrt(8), 1/sqrt(8),1/sqrt(8), -3/sqrt(8), 0, 0]
+#    return [base1, base2, base3]
+
+# def get_6to3_projection_4_bases():
+#    base1 = [0, sqrt(3), 0, 0, 0, 0]
+#    base2 = [-1,   0, 1, 1, 0, 0]
+#    base3 = [1/sqrt(2), 0, -1/sqrt(2), sqrt(2), 0, 0]
+#    return [base1, base2, base3]
+
 def get_6to3_projection_3_bases():
-   b = 2
-   base1 = [b, 1, 1, 1, 0, 0]
-   base2 = [-1, b, 1, -1, 0, 0]
-   base3 = [-1, -1, b, 1, 0, 0]
+   base1 = [1+sqrt(5), -5+3*sqrt(5),1+sqrt(5),2,0,0]
+   base2 = [1+sqrt(5),1+sqrt(5),-3+sqrt(5),-2,0,0]
+   base3 = [3-sqrt(5),-1-sqrt(5),1+sqrt(5),-2,0,0]
    return [base1, base2, base3]
-   # a = -1 + sqrt(3.0)
-   # base1 = [1, 1, a, 0, 0, 0]
-   # base2 = [1, -1, 0, a, 0, 0]
-   # base3 = [a, 0, -1, -1, 0, 0]
-   # return [base1, base2, base3]
 
 # bases = get_bases()
 # bases = get_bases_v2()
@@ -508,17 +514,19 @@ def get_6to3_projection_3_bases():
 # bases = get_2_21_bases()
 # bases = get_1_22_bases()
 # bases = get_6to3_trivial_bases()
-bases = get_6to3_projection_2_bases()
+# bases = get_6to3_projection_2_bases()
+bases = get_6to3_projection_3_bases()
+# bases = get_6to3_projection_4_bases()
 
 # v6d = get_cube_vertices(6)
 # v6d = get_6_demicube_vertices()
 # v6d = get_6_demicube_vertices_alt()
-v6d = get_2_21_vertices()
 # v6d = get_4_21_vertices_v2()
 # v6d = get_4_21_vertices()
 # v6d = get_2_31_vertices()
 # v6d = get_3_21_vertices()
 
+v6d = get_2_21_vertices()
 # v6d = get_1_22_vertices()
 v3d = project_to_3d(v6d, bases)
 
