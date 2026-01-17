@@ -495,17 +495,21 @@ def get_6to3_projection_2_bases():
 #    base3 = [1/sqrt(8), 1/sqrt(8),1/sqrt(8), -3/sqrt(8), 0, 0]
 #    return [base1, base2, base3]
 
-# def get_6to3_projection_4_bases():
-#    base1 = [0, sqrt(3), 0, 0, 0, 0]
-#    base2 = [-1,   0, 1, 1, 0, 0]
-#    base3 = [1/sqrt(2), 0, -1/sqrt(2), sqrt(2), 0, 0]
-#    return [base1, base2, base3]
-
+# approx prismatic projection
 def get_6to3_projection_3_bases():
-   base1 = [1+sqrt(5), -5+3*sqrt(5),1+sqrt(5),2,0,0]
-   base2 = [1+sqrt(5),1+sqrt(5),-3+sqrt(5),-2,0,0]
-   base3 = [3-sqrt(5),-1-sqrt(5),1+sqrt(5),-2,0,0]
+   base1 = [0,     sqrt(3),   0,           0,    0, 0]
+   base2 = [-1,        0,     1,           1,    0, 0]
+   base3 = [1.11812,   0, 1.30896, -0.190838, 0, 0]
    return [base1, base2, base3]
+
+# front triangle up (0,0,0,2)
+# front triangle down (1,+/-1,-1,1)
+
+# def get_6to3_projection_3_bases():
+#    base1 = [1+sqrt(5), -5+3*sqrt(5),1+sqrt(5),2,0,0]
+#    base2 = [1+sqrt(5),1+sqrt(5),-3+sqrt(5),-2,0,0]
+#    base3 = [3-sqrt(5),-1-sqrt(5),1+sqrt(5),-2,0,0]
+#    return [base1, base2, base3]
 
 # bases = get_bases()
 # bases = get_bases_v2()
@@ -516,7 +520,6 @@ def get_6to3_projection_3_bases():
 # bases = get_6to3_trivial_bases()
 # bases = get_6to3_projection_2_bases()
 bases = get_6to3_projection_3_bases()
-# bases = get_6to3_projection_4_bases()
 
 # v6d = get_cube_vertices(6)
 # v6d = get_6_demicube_vertices()
