@@ -502,6 +502,18 @@ def get_6to3_projection_4_bases():
    base3 = [-1,-1, -sqrt(5), 1, 0, 0]
    return [base1, base2, base3]
 
+# create 2_21 vertices from the complex hessian polyhedron
+def get_2_21_hessian_vertices():
+  vertices = []
+  if high_dimension == 6:
+    for k in range(9):
+      i = k // 3
+      j = k % 3
+      vertices.append([0, 0, cos(pi * 2/3 * i), sin(pi * 2/3 * i), cos(pi * 2/3 * j), sin(pi * 2/3 * j)])
+      vertices.append([-cos(pi * 2/3 * i), -sin(pi * 2/3 * i), 0, 0, cos(pi * 2/3 * j), sin(pi * 2/3 * j)])
+      vertices.append([cos(pi * 2/3 * i), sin(pi * 2/3 * i), -cos(pi * 2/3 * j), -sin(pi * 2/3 * j), 0, 0])
+  return vertices
+
 # bases = get_bases()
 # bases = get_bases_v2()
 # bases = get_bases_rearranged()
@@ -523,6 +535,7 @@ bases = get_6to3_projection_3_bases()
 
 v6d = get_2_21_vertices()
 # v6d = get_1_22_vertices()
+# v6d = get_2_21_hessian_vertices()
 v3d = project_to_3d(v6d, bases)
 
 edges = get_edges(v6d)
