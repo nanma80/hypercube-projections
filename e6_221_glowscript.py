@@ -539,10 +539,31 @@ v6d = get_2_21_vertices()
 v3d = project_to_3d(v6d, bases)
 
 edges = get_edges(v6d)
+# select vertex figure wireframe for 2_21 polytope
+focused_index = 0
+
+# select vertex figure wireframe for 1_22 polytope
+# focused_index = 36
+
+neighbors = set()
+neighbors.add(focused_index)
+
+for u, v in edges:
+    if u == focused_index:
+        neighbors.add(v)
+    elif v == focused_index:
+        neighbors.add(u)
+
+selected_edges = []
+
+for u, v in edges:
+    if u in neighbors and v in neighbors:
+        selected_edges.append([u, v])
+
+edges = selected_edges
 
 draw_wireframe(v3d, edges)
 print("vertex count:")
 print(len(v6d))
 print("edge count:")
 print(len(edges))
-
