@@ -502,6 +502,14 @@ def get_6to3_projection_4_bases():
    base3 = [-1,-1, -sqrt(5), 1, 0, 0]
    return [base1, base2, base3]
 
+# from 4D -> 3D, use the vertex first projection of 4-cube
+def get_6to3_projection_5_bases():
+   a = 1/sqrt(3)
+   base1 = [a, a, -a, -a, 0, 0]
+   base2 = [a, -a, a, -a, 0, 0]
+   base3 = [a, -a, -a, a, 0, 0]
+   return [base1, base2, base3]
+
 # create 2_21 vertices from the complex hessian polyhedron
 def get_2_21_hessian_vertices():
   vertices = []
@@ -522,8 +530,9 @@ def get_2_21_hessian_vertices():
 # bases = get_1_22_bases()
 # bases = get_6to3_trivial_bases()
 # bases = get_6to3_projection_2_bases()
-bases = get_6to3_projection_3_bases()
+# bases = get_6to3_projection_3_bases()
 # bases = get_6to3_projection_4_bases()
+bases = get_6to3_projection_5_bases()
 
 # v6d = get_cube_vertices(6)
 # v6d = get_6_demicube_vertices()
