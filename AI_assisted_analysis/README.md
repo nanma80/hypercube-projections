@@ -310,6 +310,52 @@ to full precision: 10.0840429737.
 | Generators | 10 three-fold axes of the icosahedron |
 | Free parameters | **0** (unique up to O(3) rotation) |
 
+**Exact symbolic generators** (φ = (1+√5)/2, N = √((21+9√5)/2)):
+
+Type A — 6 generators from cyclic permutations of (φ, 0, 2+√5)/N:
+
+    g₀ = (+φ,   0,    2+√5)/N        g₄ = (0,    2+√5, +φ)/N
+    g₁ = (−φ,   0,    2+√5)/N        g₇ = (0,    2+√5, −φ)/N
+    g₈ = (2+√5, +φ,   0)/N           g₉ = (2+√5, −φ,   0)/N
+
+Type B — 4 generators of the form (±φ², ±φ², ±φ²)/N (even number of minus signs,
+choosing one from each antipodal pair):
+
+    g₂ = (+φ², +φ², +φ²)/N = (1, 1, 1)/√3
+    g₃ = (−φ², +φ², +φ²)/N
+    g₅ = (+φ², +φ², −φ²)/N
+    g₆ = (−φ², +φ², −φ²)/N
+
+where φ² = (3+√5)/2 = φ+1. All 10 generators are unit vectors (|g|=1) and
+automatically form a tight frame: PP^T = (10/3)I₃.
+
+### Result 14: 8→3 Has D₇ × Z₂ Symmetry with 7+1 Structure
+
+The 8→3 max-volume projection has a **1-parameter family** of solutions
+with D₇ × Z₂ symmetry (order 28, dihedral-7 times central inversion).
+
+**Symbolic parameterization:**
+
+    g_k = a·(sinθ·cos(2πk/7), sinθ·sin(2πk/7), cosθ)   for k = 0,...,6
+    g₇  = (0, 0, b)
+
+    a² = 16 / (21·sin²θ)           (from PP^T = 8/3·I, xy block)
+    b² = 8·(1−3cos²θ) / (3·sin²θ)  (from PP^T = 8/3·I, zz block)
+
+| Property | Value |
+|----------|-------|
+| f-vector | (58, 112, 56) — general position Z(8,3) |
+| Faces | 56 parallelograms |
+| Symmetry | D₇ × Z₂ (order 28) |
+| Free parameters | **1** (θ ≈ 1.06578) |
+| θ_opt | 1.065776577865147 |
+| a (cone generators) | 0.997379512614007 |
+| b (axial generator) | 1.018154582921924 |
+
+The 7 cone generators have equal norm a ≈ 0.997, while the axial generator
+has norm b ≈ 1.018 — the zonotope is **not equilateral**. The algebraic
+degree of cos(θ) over ℚ is very high (>30, not determined by PSLQ).
+
 **Free parameter analysis:** Both the 6→3 and 10→3 solutions have **zero
 free parameters**. In each case:
 - The generators form a **single orbit** under I_h
@@ -345,5 +391,16 @@ free parameters**. In each case:
 | `investigate_sincos_structure.py` | Structural analysis: block decomposition, alternative optima search |
 | `investigate_orbit_symmetry.py` | Orbit under B₈, corrected symmetry, higher-symmetry search |
 | `survey_symmetric_projections.py` | Systematic n→3 and n→4 survey: volume optimization + symmetry computation |
+| `plot_zonotopes_3d.py` | Generate 3D plots of 10→3 and 8→3 zonotopes with documented generators |
+| `../max_shadow_generic.py` | **General-purpose tool**: `python max_shadow_generic.py <n> <k>` computes max shadow for any n→k |
 
-All scripts use Python 3.11+ with numpy, scipy, sympy, mpmath.
+**General-purpose tool** (`max_shadow_generic.py`, in repo root):
+
+    python max_shadow_generic.py <n> <k> [--trials N] [--niter N] [--seed S]
+
+Searches over all k-dimensional subspaces of R^n (no structural assumptions)
+using basin-hopping with tight-frame normalization. Prints the maximum
+shadow volume, the k×n projection matrix, all n generators in R^k with
+norms and pairwise inner products, and the expected f-vector.
+
+All scripts use Python 3.11+ with numpy, scipy, sympy, mpmath, matplotlib.
