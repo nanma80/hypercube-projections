@@ -149,7 +149,7 @@ equal the global maximum over all 4D subspaces?
   that 30 basin-hopping trials with general 32-parameter optimization all
   converged to ≤ 7.844687820408, matching the sin/cos optimum
 
-**To finish verifying:** Run `test_sincos_conjecture.py` to completion
+**To finish verifying:** Run `verify_sincos_conjecture.py` to completion
 (takes ~20 min). If the general optimum matches, the conjecture is
 numerically supported. A rigorous proof would require showing that the
 2-parameter family is a critical submanifold of the Grassmannian.
@@ -166,6 +166,6 @@ block structure on P. What makes this block structure special?
 | `analyze_8_4_deep.py` | Minimal polynomial derivation, comprehensive symmetry search, polytope ID |
 | `analyze_8_4_final.py` | High-precision (mpmath) analysis, PSLQ, group identification |
 | `results_8_4_summary.py` | Self-contained summary with all key results as docstring + verification |
-| `test_sincos_conjecture.py` | Tests whether sin/cos family matches global max (needs full run) |
+| `verify_sincos_conjecture.py` | Tests whether sin/cos family matches global max (needs full run) |
 
 All scripts use Python 3.11+ with numpy, scipy, sympy, mpmath.
