@@ -292,16 +292,44 @@ are k = 1, 2, n−1, n−2.
 - The volume-maximizing zonotope is equilateral (all generators equal norm)
   for 4→3, 5→3, 6→3, 10→3 (in 3D) and 5→4, 6→4, 8→4 (in 4D), but
   NOT for 7→3, 8→3, 9→3, 7→4, 10→4.
-- 10→3 with icosahedral symmetry is genuinely surprising: 10 generators
-  in R³ forming an equilateral tight frame with I_h symmetry. These are
-  likely the 10 three-fold rotation axes of the icosahedron.
+
+### Result 13: 10→3 Produces the Rhombic Enneacontahedron
+
+The 10→3 max-volume projection is confirmed to use the **10 three-fold
+rotation axes of the icosahedron** (through the 20 face centers, 10
+antipodal pairs). The volume from these axes matches the optimizer output
+to full precision: 10.0840429737.
+
+**The 3D shape:** The **rhombic enneacontahedron** (90 rhombic faces).
+
+| Property | Value |
+|----------|-------|
+| f-vector | (92, 180, 90) — general position Z(10,3) |
+| Faces | 90 rhombuses (parallelograms) |
+| Symmetry | I_h (order 120) |
+| Generators | 10 three-fold axes of the icosahedron |
+| Free parameters | **0** (unique up to O(3) rotation) |
+
+**Free parameter analysis:** Both the 6→3 and 10→3 solutions have **zero
+free parameters**. In each case:
+- The generators form a **single orbit** under I_h
+- I_h-invariance forces all generators to have equal norm
+- There is no other I_h orbit with the same number of directions
+  (6 for five-fold axes, 10 for three-fold axes)
+- An I_h-symmetric perturbation can only scale all generators uniformly,
+  which does not change the subspace
+
+**Icosahedral zonohedra from n-cube projections:**
+
+| Case | Icosahedral axes | Zonohedron | Faces | Free params |
+|------|-----------------|------------|-------|-------------|
+| 6→3 | 6 five-fold (vertex pairs) | Rhombic triacontahedron | 30 | 0 |
+| 10→3 | 10 three-fold (face-center pairs) | Rhombic enneacontahedron | 90 | 0 |
+| 15→3? | 15 two-fold (edge-midpoint pairs) | ? | 210? | 0 |
 
 **Open questions from the survey:**
-- Is 10→3 truly the global max, or could a lower-symmetry solution beat it?
-  (Needs more optimization trials to confirm.)
-- Are there other non-trivial n→3 cases beyond 6 and 10 with icosahedral
-  symmetry? (15→3 and 21→3 are candidates — corresponding to 2-fold and
-  combined axes of the icosahedron.)
+- Is 15→3 also volume-maximizing with I_h symmetry? (Would complete
+  the icosahedral trilogy.)
 - For n→4, do any n > 8 produce high symmetry at the volume maximum?
 
 ## Files
