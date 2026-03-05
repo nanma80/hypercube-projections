@@ -68,7 +68,10 @@ norms and pairwise inner products, and the expected f-vector.
 | 6→4 | 3.732 = 2√3 | 24 | ✓ | Dual to 6→2 — trivially solved |
 | 7→4 | 5.604 | 4 | ✗ | Dual to 7→3 (also low symmetry) |
 | **8→4** | **7.845** | **16 (D₄×Z₂)** | ✓ | **Non-trivial. Modest symmetry. Degree-8 algebraic.** |
+| 9→4 | 10.314 | 4 | ✗ | Low symmetry (Z₂×Z₂?) |
 | 10→4 | 13.238 | 2 | ✗ | Minimal symmetry |
+| 11→4 | 16.438 | 2 | ✗ | Minimal symmetry |
+| 12→4 | 19.955 | 2 | ✗ | Minimal symmetry |
 
 ### Observations
 
