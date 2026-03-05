@@ -80,7 +80,7 @@ def maximize_shadow(n, k, n_trials=20, niter=150, verbose=True):
         try:
             res = basinhopping(neg_vol, x0, niter=niter,
                                minimizer_kwargs={'method': 'L-BFGS-B'},
-                               disp=False, seed=trial)
+                               disp=True, seed=trial)
             M = res.x.reshape(k, n)
             P = normalize_to_tight_frame(M, n, k)
             vol = shadow_volume_tight(P, n, k)

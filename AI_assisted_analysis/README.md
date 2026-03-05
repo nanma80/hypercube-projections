@@ -367,15 +367,21 @@ free parameters**. In each case:
 
 **Icosahedral zonohedra from n-cube projections:**
 
-| Case | Icosahedral axes | Zonohedron | Faces | Free params |
-|------|-----------------|------------|-------|-------------|
-| 6→3 | 6 five-fold (vertex pairs) | Rhombic triacontahedron | 30 | 0 |
-| 10→3 | 10 three-fold (face-center pairs) | Rhombic enneacontahedron | 90 | 0 |
-| 15→3? | 15 two-fold (edge-midpoint pairs) | ? | 210? | 0 |
+| Case | Icosahedral axes | Zonohedron | Faces | Optimal? |
+|------|-----------------|------------|-------|----------|
+| 6→3 | 6 five-fold (vertex pairs) | Rhombic triacontahedron | 30 | ✓ Yes |
+| 10→3 | 10 three-fold (face-center pairs) | Rhombic enneacontahedron | 90 | ✓ Yes |
+| **15→3** | **15 two-fold (edge-midpoint pairs)** | — | — | **✗ No (3.1% below)** |
 
-**Open questions from the survey:**
-- Is 15→3 also volume-maximizing with I_h symmetry? (Would complete
-  the icosahedral trilogy.)
+### Result 15: 15→3 Icosahedral Conjecture — REFUTED
+
+The conjecture that all three icosahedral orbit types maximize volume is false.
+The 15 two-fold axes (edge midpoints) give volume 18.497, but the numerical
+optimum is 19.090 — a **3.11% deficit**. The icosahedral pattern holds for
+five-fold axes (6→3) and three-fold axes (10→3) but breaks for two-fold axes (15→3).
+
+**Open questions:**
+- What is the structure of the actual 15→3 optimum?
 - For n→4, do any n > 8 produce high symmetry at the volume maximum?
 
 ## Files
@@ -392,6 +398,9 @@ free parameters**. In each case:
 | `investigate_orbit_symmetry.py` | Orbit under B₈, corrected symmetry, higher-symmetry search |
 | `survey_symmetric_projections.py` | Systematic n→3 and n→4 survey: volume optimization + symmetry computation |
 | `plot_zonotopes_3d.py` | Generate 3D plots of 10→3 and 8→3 zonotopes with documented generators |
+| `verify_10_3_icosahedral.py` | Verify 10→3 with predefined icosahedral 3-fold axes (no optimization) |
+| `verify_8_3_heptagonal.py` | Verify 8→3 with predefined 7+1 generators, re-optimizes h as cross-check |
+| `verify_15_3_icosahedral.py` | Test (refuted) 15→3 icosahedral conjecture: edge centers are 3.1% below optimum |
 | `../max_shadow_generic.py` | **General-purpose tool**: `python max_shadow_generic.py <n> <k>` computes max shadow for any n→k |
 
 **General-purpose tool** (`max_shadow_generic.py`, in repo root):
