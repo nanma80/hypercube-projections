@@ -311,6 +311,32 @@ def main():
     plt.tight_layout()
     plt.savefig('zonotope_8_3_top.png', dpi=150, bbox_inches='tight')
     print("Saved: zonotope_8_3_top.png")
+    plt.close()
+
+    # ── 12→3: O_h zonotope with silver ratio ──
+    SQRT2 = math.sqrt(2)
+    A12 = math.sqrt((5 - 2*SQRT2) / 17)
+    B12 = A12 * (1 + SQRT2)
+    vecs12 = set()
+    base12 = [A12, A12, B12]
+    for perm in itertools.permutations(range(3)):
+        for signs in itertools.product([1, -1], repeat=3):
+            v = tuple(signs[i] * base12[perm[i]] for i in range(3))
+            canonical = min(v, tuple(-x for x in v))
+            vecs12.add(canonical)
+    gens12 = np.array(sorted(vecs12))
+    proj12 = build_zonotope(gens12, 12)
+
+    fig4 = plt.figure(figsize=(8, 7))
+    ax4 = fig4.add_subplot(111, projection='3d')
+    plot_zonotope(ax4, proj12,
+                  "12-cube → 3D: O_h zonotope (silver ratio)\n"
+                  "O_h symmetry (order 48), 198 faces, b/a = 1+√2",
+                  'mediumseagreen', 'darkgreen')
+    ax4.view_init(elev=20, azim=35)
+    plt.tight_layout()
+    plt.savefig('zonotope_12_3.png', dpi=150, bbox_inches='tight')
+    print("Saved: zonotope_12_3.png")
 
 
 if __name__ == '__main__':

@@ -265,11 +265,13 @@ are k = 1, 2, n−1, n−2.
 |-----|--------|-----|-------|-------|--------|
 | 4→3 | 2.000 | 48 (O_h) | ✓ | ✓ | Dual to 4→1 — **trivially solved** |
 | 5→3 | 3.078 | 20 | ✓ | ✓ | Dual to 5→2 — **trivially solved** |
-| **6→3** | **4.353** | **120 (I_h)** | ✓ | ✓ | **First non-trivial case. Icosahedral!** |
+| **6→3** | **4.353** | **120 (I_h)** | ✓ | ✓ | **First non-trivial. Icosahedral!** |
 | 7→3 | 5.604 | 4 | ✗ | ✓ | Non-trivial. Low symmetry. |
-| 8→3 | 7.027 | 28 | ✗ | ✓ | Non-trivial. Moderate symmetry. |
+| **8→3** | **7.027** | **28 (D₇×Z₂)** | ✗ | ✓ | **Non-trivial. 7-fold axis. = (7→2)⊕z** |
 | 9→3 | 8.503 | 2 | ✗ | ✓ | Non-trivial. Minimal symmetry. |
-| **10→3** | **10.084** | **120 (I_h)** | ✓ | ✓ | **Non-trivial. Icosahedral again!** |
+| **10→3** | **10.084** | **120 (I_h)** | ✓ | ✓ | **Non-trivial. Icosahedral!** |
+| 11→3 | 11.744 | 2 | ✗ | ✓ | Non-trivial. Minimal symmetry. |
+| **12→3** | **13.510** | **48 (O_h)** | ✓ | ✓ | **Non-trivial. Full octahedral! Silver ratio.** |
 
 **n→4 projections** (max symmetry: |B_4| = 384):
 
@@ -285,13 +287,14 @@ are k = 1, 2, n−1, n−2.
 - Cases with k ∈ {1, 2, n−1, n−2} always have high symmetry, but this is
   a consequence of the n→k / n→(n−k) duality and the solved n→2 case.
 - Among genuinely non-trivial cases (k ≥ 3 and n−k ≥ 3):
-  - **6→3** (icosahedral, 120) and **10→3** (icosahedral, 120) stand out
-    as highly symmetric
+  - **6→3** (I_h, 120), **10→3** (I_h, 120), and **12→3** (O_h, 48) are
+    highly symmetric
+  - **8→3** (D₇×Z₂, 28) has notable 7-fold symmetry from (7→2)⊕z decomposition
   - **8→4** (D₄×Z₂, 16) has only modest symmetry
-  - Most other cases (7→3, 9→3, 7→4, 10→4) have low symmetry
-- The volume-maximizing zonotope is equilateral (all generators equal norm)
-  for 4→3, 5→3, 6→3, 10→3 (in 3D) and 5→4, 6→4, 8→4 (in 4D), but
-  NOT for 7→3, 8→3, 9→3, 7→4, 10→4.
+  - 7→3, 9→3, 11→3, 7→4, 10→4 have low symmetry
+- Equilateral tight frames (all generators equal norm) are optimal for
+  n = 4, 5, 6, 10, 12 in 3D, and n = 5, 6, 8 in 4D.
+  NOT equilateral for n = 7, 8, 9, 11 in 3D, and n = 7, 10 in 4D.
 
 ### Result 13: 10→3 Produces the Rhombic Enneacontahedron
 
@@ -380,6 +383,35 @@ The 15 two-fold axes (edge midpoints) give volume 18.497, but the numerical
 optimum is 19.090 — a **3.11% deficit**. The icosahedral pattern holds for
 five-fold axes (6→3) and three-fold axes (10→3) but breaks for two-fold axes (15→3).
 
+### Result 16: 12→3 Has Full Octahedral Symmetry with Silver Ratio
+
+The 12→3 max-volume projection has **O_h symmetry (order 48)** — the full
+octahedral group, which is the maximum possible symmetry in 3D.
+
+The 12 generators are the **O_h orbit of (a, a, b)** on the unit sphere,
+where **b/a = 1 + √2** (the silver ratio):
+
+    a² = (5 − 2√2) / 17
+    b  = a · (1 + √2)
+
+The orbit consists of all sign changes and permutations of (a, a, b):
+3 choices for which coordinate gets b × 8 sign combinations = 24 points
+= 12 antipodal pairs.
+
+| Property | Value |
+|----------|-------|
+| f-vector | (134, 264, 132) — Z(12,3) in general position |
+| Faces | 132 rhombuses |
+| Symmetry | O_h (order 48) — full octahedral |
+| Generators | O_h orbit of (a, a, b) with b/a = 1+√2 |
+| Free parameters | **0** (silver ratio uniquely determined) |
+| Volume | 13.5096139098 |
+
+The appearance of the **silver ratio** (1+√2) is notable — the same
+constant that appears in the 4→2 case (regular octagon). The 4→2
+optimal projection has generators at angles related to 1+√2, and now
+12→3 uses the same constant for the generator aspect ratio.
+
 **Open questions:**
 - What is the structure of the actual 15→3 optimum?
 - For n→4, do any n > 8 produce high symmetry at the volume maximum?
@@ -397,9 +429,10 @@ five-fold axes (6→3) and three-fold axes (10→3) but breaks for two-fold axes
 | `investigate_sincos_structure.py` | Structural analysis: block decomposition, alternative optima search |
 | `investigate_orbit_symmetry.py` | Orbit under B₈, corrected symmetry, higher-symmetry search |
 | `survey_symmetric_projections.py` | Systematic n→3 and n→4 survey: volume optimization + symmetry computation |
-| `plot_zonotopes_3d.py` | Generate 3D plots of 10→3 and 8→3 zonotopes with documented generators |
+| `plot_zonotopes_3d.py` | Generate 3D plots of 10→3, 8→3, and 12→3 zonotopes with documented generators |
 | `verify_10_3_icosahedral.py` | Verify 10→3 with predefined icosahedral 3-fold axes (no optimization) |
 | `verify_8_3_heptagonal.py` | Verify 8→3 with predefined 7+1 generators, re-optimizes h as cross-check |
+| `verify_12_3_octahedral.py` | Verify 12→3 with O_h orbit of (a,a,b), b/a = 1+√2 (silver ratio) |
 | `verify_15_3_icosahedral.py` | Test (refuted) 15→3 icosahedral conjecture: edge centers are 3.1% below optimum |
 | `../max_shadow_generic.py` | **General-purpose tool**: `python max_shadow_generic.py <n> <k>` computes max shadow for any n→k |
 
