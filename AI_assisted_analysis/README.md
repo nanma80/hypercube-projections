@@ -68,23 +68,42 @@ norms and pairwise inner products, and the expected f-vector.
 | 6→4 | 3.732 = 2√3 | 24 | ✓ | Dual to 6→2 — trivially solved |
 | 7→4 | 5.604 | 4 | ✗ | Dual to 7→3 (also low symmetry) |
 | **8→4** | **7.845** | **16 (D₄×Z₂)** | ✓ | **Non-trivial. Modest symmetry. Degree-8 algebraic.** |
-| 9→4 | 10.314 | 4 | ✗ | Low symmetry (Z₂×Z₂?) |
+| 9→4 | 10.314 | 4 | ✗ | Low symmetry |
 | 10→4 | 13.238 | 2 | ✗ | Minimal symmetry |
 | 11→4 | 16.438 | 2 | ✗ | Minimal symmetry |
 | 12→4 | 19.955 | 2 | ✗ | Minimal symmetry |
+
+### The 2n→n diagonal
+
+| 2n→n | Volume | Sym | Equil | Notes |
+|------|--------|-----|-------|-------|
+| 4→2 | 2+2√2 | 16 (D₈) | ✓ | Silver ratio. Regular octagon. |
+| 6→3 | 4.353 | 120 (I_h) | ✓ | Golden ratio. Rhombic triacontahedron. |
+| 8→4 | 7.845 | 16 (D₄×Z₂) | ✓ | Degree-8 algebraic. |
+| **10→5** | **14.475** | **20 (D₅×Z₂)** | ✗ | **5-fold axis. Self-dual case (n−k=k).** |
+
+Symmetry along the diagonal: 16 → 120 → 16 → 20. The spike at 6→3 is
+exceptional; the remaining cases have modest dihedral symmetry.
 
 ### Observations
 
 - Cases with k ∈ {1, 2, n−1, n−2} always have high symmetry (duality).
 - Equilateral tight frames are optimal for n = 4, 5, 6, 10, 12 in 3D,
   and n = 5, 6, 8 in 4D. NOT equilateral for n = 7, 8, 9, 11 in 3D,
-  and n = 7, 10 in 4D.
+  and n = 7, 9, 10, 11, 12 in 4D.
 - Among genuinely non-trivial cases (k ≥ 3 and n−k ≥ 3), the highly
   symmetric ones are: **6→3** (I_h), **10→3** (I_h), **12→3** (O_h),
   and **8→3** (D₇×Z₂).
-- The 2n→n "diagonal" pattern (4→2, 6→3, 8→4) has decreasing symmetry:
-  D₈ (16) → I_h (120) → D₄×Z₂ (16). The high symmetry at 6→3 is
-  exceptional, not the norm.
+- For n→4 with n ≥ 9, all cases tested have symmetry ≤ 4. The 4D
+  landscape is much less friendly to symmetry than 3D.
+
+### Closed-form volumes
+
+| Case | Volume (symbolic) |
+|------|------------------|
+| 4→2 | 2 + 2√2 |
+| 10→3 | 4(143√5 + 320) / (5(3√5 + 7)^{3/2}) |
+| 12→3 | 2(9 + 7√2) · √((5 − 2√2)/17) |
 
 ---
 
