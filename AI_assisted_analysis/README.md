@@ -48,7 +48,7 @@ norms and pairwise inner products, and the expected f-vector.
 
 | n→3 | Volume | Sym | Equil | Status |
 |-----|--------|-----|-------|--------|
-| 4→3 | 2.000 | 48 (O_h) | ✓ | Dual to 4→1 — trivially solved |
+| 4→3 | 2.000 | 48 (O_h) | ✓ | Dual to 4→1. Rhombic dodecahedron. |
 | 5→3 | 3.078 | 20 | ✓ | Dual to 5→2 — trivially solved |
 | **6→3** | **4.353** | **120 (I_h)** | ✓ | **Icosahedral. Rhombic triacontahedron.** |
 | 7→3 | 5.604 | 4 | ✗ | Low symmetry |
@@ -57,6 +57,8 @@ norms and pairwise inner products, and the expected f-vector.
 | **10→3** | **10.084** | **120 (I_h)** | ✓ | **Icosahedral. Rhombic enneacontahedron.** |
 | 11→3 | 11.744 | 2 | ✗ | Minimal symmetry |
 | **12→3** | **13.510** | **48 (O_h)** | ✓ | **Full octahedral. Silver ratio b/a = 1+√2.** |
+| 15→3 | 19.098 | 2 | ✗ | Minimal symmetry. Icosahedral conjecture refuted. |
+| 18→3 | 25.303 | 2 | ✗ | Minimal symmetry |
 
 ### n→4 projections (max symmetry: |B_4| = 384)
 
@@ -84,6 +86,19 @@ norms and pairwise inner products, and the expected f-vector.
 ---
 
 ## n→3 Special Cases
+
+### 4→3: Rhombic Dodecahedron (O_h, order 48)
+
+The 4 generators are the **body diagonals of the cube** (= vertices of a
+regular tetrahedron): (±1, ±1, ±1)/√3 with an even number of minus signs.
+
+| Property | Value |
+|----------|-------|
+| Volume | 2.0000000000 |
+| f-vector | (14, 24, 12) |
+| Symmetry | O_h (order 48) — full octahedral |
+| Generators | 4 body diagonals of cube |
+| Free parameters | **0** |
 
 ### 6→3: Rhombic Triacontahedron (I_h, order 120)
 
