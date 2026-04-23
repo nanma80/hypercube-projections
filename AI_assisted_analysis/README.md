@@ -162,6 +162,44 @@ This decomposition works for 8→3 but NOT for 7→3 (2.3% below) or 9→3
 (1.6% below). The xy-radius r = 4/√21 is fixed by the tight-frame
 condition; only h is optimized.
 
+**Exact algebraic values (in ℚ(ρ), ρ = 2cos(π/7)):**
+
+    h² = (2/21)(1 − ρ + ρ²)
+    b² = 2 + (2/3)ρ − (2/3)ρ²
+    h/b = (−1 + 6ρ − 2ρ²)/7
+
+All key quantities — h², r², b², and the ratio h/b — are in the heptagonal
+field ℚ(ρ). The field norm N(1−ρ+ρ²) = 7.
+
+**vZome realization (heptagonal field, exact):**
+
+The max-volume zonotope can be **exactly** modeled in vZome's heptagonal field.
+The key insight is that vZome's physical metric includes a shear transform
+(`embedInR3` in the source code), so the physical inner product in raw
+coordinates is ⟨u,v⟩ = u_x v_x + u_y v_y + u_z v_z + c(u_x v_y + u_y v_x)
+where c = (ρ²−ρ−1)/2 = 1/(2σ) ∈ ℚ(ρ). Under this metric, the shape-matching
+equations have solutions in ℚ(ρ), with:
+
+    μ  = 3ρ + (3/2)ρ²       (z-height of the 7 cone generators)
+    ν  = 12 + 12ρ + 3ρ²      (axial generator z-component)
+    w₀ = (−6−6ρ−6ρ², 6ρ², 0)  (seed vector for the 7-fold orbit)
+
+Generators G_k = R₇ᵏ(w₀) + (0,0,μ) for k=0,...,6 and G_7 = (0,0,ν), where R₇
+is the heptagonal rotation matrix. All coordinates are integers in vZome's
+(1, ρ, σ) encoding (after scaling by 2 to clear denominators):
+
+    G_0: -12 -6 -6   6  0  6  3  6 3
+    G_1:   6 -6 -12  0  0 -6  3  6 3
+    G_2:  -6 -6  6  -12 -6 -6  3  6 3
+    G_3:   6 12  0    6 -6 -12  3  6 3
+    G_4:   0  6 12   -6 -6  6  3  6 3
+    G_5:   6  0  6    6 12  0  3  6 3
+    G_6:   0  0 -6    0  6 12  3  6 3
+    G_7:   0  0  0    0  0  0 15 12 3
+
+Verified: Gram matrix matches optimal to machine precision (2×10⁻¹⁶),
+shadow volume = 7.0270375786 (exact optimal).
+
 ### 10→3: Rhombic Enneacontahedron (I_h, order 120)
 
 The 10 generators are the **three-fold rotation axes** of the icosahedron
@@ -357,6 +395,7 @@ highest-symmetry tight frame achieves only 99.2% of the maximum volume.
 - What is the structure of the 15→3 optimum?
 - For n→4, do any n > 8 produce high symmetry at the volume maximum?
 - Can the block decomposition V = V₁ ⊕ V₂ for 8→4 be proven necessary?
+- Which other n→k max-volume zonotopes are realizable in vZome's algebraic fields?
 
 ## Files
 
@@ -380,5 +419,7 @@ highest-symmetry tight frame achieves only 99.2% of the maximum volume.
 | `survey_symmetric_projections.py` | Systematic n→3 and n→4 survey |
 | `plot_zonotopes_3d.py` | 3D plots of 10→3, 8→3, and 12→3 zonotopes |
 | `../max_shadow_generic.py` | General-purpose tool: `python max_shadow_generic.py <n> <k>` |
+| **vZome models** (`../vZome/`) | |
+| `max-volume-8cube-to-3d.vZome` | 8→3 max-volume zonotope in heptagonal field (exact) |
 
 All scripts use Python 3.11+ with numpy, scipy, sympy, mpmath, matplotlib.
