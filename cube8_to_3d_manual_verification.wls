@@ -38,3 +38,17 @@ optimizationRatio = 2 r Sin[Pi/7] * 2/(2 h);
 
 (* 0 *)
 FullSimplify[ vZomeRatio - optimizationRatio ]
+
+(* volume *)
+s1 = 7(3Cos[Pi/14] + 5 Cos[3 Pi/14] + Sin[Pi/7]);
+s2 = 7(Cos[Pi/14] + Cos[3 Pi/14] + Sin[Pi/7]);
+volume[hvar_] := (r^2 hvar s1 + r^2  Sqrt[8/3 - 7 hvar^2] s2)/(8/3)^(3/2);
+
+(* 
+volume[h]:
+Root[-448 + 336*#1^2 - 56*#1^4 + #1^6 & , 6, 0]
+ *)
+
+Maximize[volume[hvar], hvar]
+
+(2/21)(1 − rho + rho^2) // N

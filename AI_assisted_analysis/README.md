@@ -14,7 +14,7 @@ duality).
 ## Methods and Tools
 
 **Volume computation:** For a k×n projection matrix P with rows spanning
-the subspace, the shadow volume is V = (1/det(PP^T)^{1/2}) Σ_{|S|=k} |det(P_S)|,
+the subspace, the shadow volume is V = Σ_{|S|=k} |det(P_S)| / det(PP^T)^{1/2},
 summing over all C(n,k) subsets of k columns.
 
 **Optimization:** Basin-hopping + L-BFGS-B on the space of k×n matrices,
@@ -57,7 +57,7 @@ norms and pairwise inner products, and the expected f-vector.
 | **10→3** | **10.084** | **120 (I_h)** | ✓ | **Icosahedral. Rhombic enneacontahedron.** |
 | 11→3 | 11.744 | 2 | ✗ | Minimal symmetry |
 | **12→3** | **13.510** | **48 (O_h)** | ✓ | **Full octahedral. Silver ratio b/a = 1+√2.** |
-| 15→3 | 19.098 | 2 | ✗ | Minimal symmetry. Icosahedral conjecture refuted. |
+| 15→3 | 19.098 | 2 | ✗ | Minimal symmetry. Icosahedral conjecture refuted |
 | 18→3 | 25.303 | 2 | ✗ | Minimal symmetry |
 
 ### n→4 projections (max symmetry: |B_4| = 384)
@@ -102,8 +102,10 @@ exceptional; the remaining cases have modest dihedral symmetry.
 | Case | Volume (symbolic) |
 |------|------------------|
 | 4→2 | 2 + 2√2 |
+| 6→3 | √(10 + 4√5) |
 | 10→3 | 4(143√5 + 320) / (5(3√5 + 7)^{3/2}) |
 | 12→3 | 2(9 + 7√2) · √((5 − 2√2)/17) |
+| 8→3 | Largest root of V⁶ − 56V⁴ + 336V² − 448 = 0 |
 
 ---
 
@@ -130,7 +132,7 @@ Zero free parameters.
 
 | Property | Value |
 |----------|-------|
-| Volume | 4.3525017990 = 5√5 / √(5³)... |
+| Volume | √(10 + 4√5) = 4.3525017990 |
 | f-vector | (32, 60, 30) |
 | Symmetry | I_h (order 120) — full icosahedral |
 | Generators | 6 five-fold axes of icosahedron |
@@ -138,15 +140,15 @@ Zero free parameters.
 
 ### 8→3: D₇ × Z₂ Zonotope (order 28)
 
-**Conjecture (numerical):** The 8→3 optimum has the (7→2) ⊕ (1→1)
-structure — seven equally spaced vectors in the xy-plane (the 7→2
-regular heptagon solution) lifted onto a cone, plus one axial vector
-along z. This is supported by basin-hopping, Nelder-Mead, and Stiefel
-gradient ascent over the full Grassmannian Gr(3,8) with no structural
-assumptions, but is **not proven** (k=3, n−k=5 falls outside the range
-of Ivanov's theorem).
+**Conjecture (numerical):** The 8→3 optimum has the (7+1) decomposition:
+seven equally spaced unit vectors lifted onto a cone, plus one axial vector.
+This is supported by basin-hopping, Nelder-Mead, and Stiefel gradient ascent
+over the full Grassmannian Gr(3,8) with no structural assumptions, but is
+**not proven** (k=3, n−k=5 falls outside the range of Ivanov's theorem).
 
-**Symbolic parameterization (assuming (7+1) structure):**
+**Conditional results (all below assume the (7+1) structure):**
+
+Parameterization:
 
     g_k = (r·cos(2πk/7), r·sin(2πk/7), h)   for k = 0,...,6
     g₇  = (0, 0, b)
@@ -160,13 +162,13 @@ of Ivanov's theorem).
 | f-vector | (58, 112, 56) |
 | Symmetry | D₇ × Z₂ (order 28) |
 | Free parameters | **1** (h ≈ 0.4826) |
-| Not equilateral | a ≈ 0.997, b ≈ 1.018 |
+| Not equilateral | cone ≈ 0.997, axial ≈ 1.018 |
 
-This decomposition works for 8→3 but NOT for 7→3 (2.3% below) or 9→3
-(1.6% below). The xy-radius r = 4/√21 is fixed by the tight-frame
-condition; only h is optimized.
+The (7+1) decomposition works for 8→3 but NOT for 7→3 (2.3% below)
+or 9→3 (1.6% below). The xy-radius r = 4/√21 is fixed by the
+tight-frame condition; only h is optimized.
 
-**Exact algebraic values (conditional on the (7+1) structure, proved):**
+**Exact algebraic values (proved, given the (7+1) structure):**
 
     r² = 16/21
     h² = (2/21)(1 − ρ + ρ²)
@@ -179,28 +181,27 @@ field ℚ(ρ). This is what makes exact vZome realization possible: the Gram
 matrix is entirely over ℚ(ρ). Note that r/h is NOT in ℚ(ρ) (field norm
 512/7 is not a perfect square), so the generators cannot be axis-aligned.
 
-**Derivation of the exact h (symbolic proof, conditional on (7+1) structure):**
+**Derivation of the exact h:**
 
-The zonotope volume decomposes into two cases by generator type:
+The sum of absolute 3×3 subdeterminants of the generator matrix is
 
-    V = r² h S₁ + r² b S₂
+    D(h) = r² h S₁ + r² b S₂
 
-where b = √(8/3 − 7h²) and the sums are over 3-element and 2-element
-subsets of the 7 cone generators:
+where b = √(8/3 − 7h²) and S₁, S₂ are trigonometric sums over subsets
+of the 7 cone generators:
 
-    S₁ = Σ_{i<j<k<7} |sin(δ_ij) + sin(δ_jk) − sin(δ_ik)|    (35 terms)
-    S₂ = Σ_{i<j<7}   |sin(δ_ij)|                              (21 terms)
+    S₁ = Σ_{i<j<k<7} |sin(δ_ij) + sin(δ_jk) − sin(δ_ik)|    (35 triple terms)
+    S₂ = Σ_{i<j<7}   |sin(δ_ij)|                              (21 pair terms)
 
-with δ_ij = 2π(j−i)/7. This follows from the determinant formulas:
+with δ_ij = 2π(j−i)/7. These arise from the 3×3 subdeterminants:
 
-    det([g_i | g_j | g_k]) = r²h (sin δ_ij + sin δ_jk − sin δ_ik)
-    det([g_i | g_j | g₇])  = r²b sin δ_ij
+    det([g_i | g_j | g_k]) = r²h (sin δ_ij + sin δ_jk − sin δ_ik)   (3 cone)
+    det([g_i | g_j | g₇])  = r²b sin δ_ij                           (2 cone + axial)
 
-Differentiating V with respect to h and setting dV/dh = 0:
+The shadow volume is V(h) = D(h) / (8/3)^{3/2}. Since the denominator is
+constant, maximizing D(h) suffices. Setting dD/dh = 0:
 
-    r²(S₁ − 7hS₂/b) = 0
     S₁ b = 7h S₂
-    S₁²(8/3 − 7h²) = 49h²S₂²
     h² = 8S₁² / (3(7S₁² + 49S₂²))
 
 Mathematica simplifies the trigonometric sums to:
@@ -208,31 +209,48 @@ Mathematica simplifies the trigonometric sums to:
     S₁ = 7(3cos(π/14) + 5cos(3π/14) + sin(π/7))
     S₂ = 7(  cos(π/14) +  cos(3π/14) + sin(π/7))
 
-and confirms **symbolically** (not just numerically) that:
+and confirms **symbolically** (not just numerically) that the optimal h²
+has the closed form:
 
-    8S₁² / (3(7S₁² + 49S₂²)) = (2/21)(1 − 2cos(π/7) + 4cos²(π/7))
-                                = (2/21)(1 − ρ + ρ²)
+    h² = 8S₁² / (3(7S₁² + 49S₂²)) = (2/21)(1 − ρ + ρ²)
 
-(Verified: `FullSimplify[h²_derived − h²_target] = 0` in Wolfram Language.
-See `verify_8_3_symbolic.wls`.)
+where ρ = 2cos(π/7). (Verified: `FullSimplify[h²_derived − h²_target] = 0`
+in Wolfram Language. See `verify_8_3_symbolic.wls`.)
 
-**vZome realization (heptagonal field, exact conditional on the conjecture):**
+**Shadow volume as a function of h:**
 
-The max-volume zonotope (assuming the (7+1) conjecture) can be **exactly**
-modeled in vZome's heptagonal field.
-The key insight is that vZome's physical metric includes a shear transform
-(`embedInR3` in the source code), so the physical inner product in raw
-coordinates is ⟨u,v⟩ = u_x v_x + u_y v_y + u_z v_z + c(u_x v_y + u_y v_x)
-where c = (ρ²−ρ−1)/2 = 1/(2σ) ∈ ℚ(ρ). Under this metric, the shape-matching
-equations have solutions in ℚ(ρ), with:
+    V(h) = √(2/3) cos(π/14) [√(24−63h²)(cos(π/7)+sin(π/14)) + 3h(−1+5cos(π/7)+sin(π/14))]
+
+valid for 0 < h < √(8/21). The maximum V = 7.0270375786 is the largest
+real root of
+
+    V⁶ − 56V⁴ + 336V² − 448 = 0
+
+i.e. V² satisfies the irreducible cubic y³ − 56y² + 336y − 448 = 0
+(discriminant 2¹²·7²·13²).
+Note: V is NOT in ℚ(ρ) — it generates a different cubic field.
+
+**vZome realization (exact, conditional on the conjecture):**
+
+The zonotope can be exactly modeled in vZome's heptagonal field ℚ(ρ).
+This is possible because the Gram matrix G_ij = ⟨g_i, g_j⟩ is entirely
+over ℚ(ρ) (see the algebraic values above). vZome's physical metric
+includes a shear transform (see `embedInR3` in `HeptagonalAntiprismSymmetry.java`):
+
+    x_phys = x_raw + y_raw/(2σ),  y_phys = y_raw·sin(3π/7),  z_phys = z_raw
+
+so the physical inner product in raw coordinates is
+⟨u,v⟩ = u_x v_x + u_y v_y + u_z v_z + c(u_x v_y + u_y v_x), where
+c = 1/(2σ) ∈ ℚ(ρ). Under this metric, the generators are:
 
     μ  = 3ρ + (3/2)ρ²       (z-height of the 7 cone generators)
     ν  = 12 + 12ρ + 3ρ²      (axial generator z-component)
     w₀ = (−6−6ρ−6ρ², 6ρ², 0)  (seed vector for the 7-fold orbit)
 
-Generators G_k = R₇ᵏ(w₀) + (0,0,μ) for k=0,...,6 and G_7 = (0,0,ν), where R₇
-is the heptagonal rotation matrix. All coordinates are integers in vZome's
-(1, ρ, σ) encoding (after dividing by GCD=3):
+Generators G_k = R₇ᵏ(w₀) + (0,0,μ) for k=0,...,6 and G_7 = (0,0,ν), where
+R₇ is the heptagonal rotation matrix. Since r/h ∉ ℚ(ρ), the generators
+are necessarily rotated relative to vZome's heptagonal frame axes. All
+vertex coordinates are integers in vZome's (1, ρ, σ) encoding:
 
     G_0: -4 -2 -2   2  0  2  1  2 1
     G_1:  2 -2 -4   0  0 -2  1  2 1
@@ -245,12 +263,12 @@ is the heptagonal rotation matrix. All coordinates are integers in vZome's
 
 The vZome file contains the full projected 8-cube (256 vertices, 1024 edges).
 
-**Verification:** Conditional on the (7+1) conjecture, h² = (2/21)(1−ρ+ρ²)
-is proved symbolically (`FullSimplify` gives exact 0 in Wolfram Language;
-see `verify_8_3_symbolic.wls`) and numerically (mpmath, 50 decimal places).
-Independent shape-ratio test (z_range/xy_diameter) comparing Euclidean
-generators vs vZome physical embedding matches to 2×10⁻¹⁶ (float64 machine
-precision). See `verify_8_3_vzome.py`.
+**Verification:** The formula h² = (2/21)(1−ρ+ρ²) is proved symbolically
+(`FullSimplify` = 0 in Wolfram Language; see `verify_8_3_symbolic.wls`)
+and numerically (mpmath, 50 digits). Independent shape-ratio test
+(z_range/xy_diameter) comparing Euclidean generators vs vZome physical
+embedding matches to 2×10⁻¹⁶ (float64 machine precision; see
+`verify_8_3_vzome.py`).
 
 ### 10→3: Rhombic Enneacontahedron (I_h, order 120)
 
@@ -395,11 +413,11 @@ Symmetry generators:
 The polytope has no standard name. It is NOT any regular, uniform, or
 root-system polytope.
 
-#### Sin/cos conjecture — VERIFIED
+#### Sin/cos conjecture — VERIFIED (numerical)
 
 The sin/cos family achieves the global maximum over all 4D subspaces.
-
-Verification (3 independent methods, no structural assumptions):
+This is verified numerically (3 independent methods, no structural
+assumptions) but not proved:
 - **Basin-hopping** (40 trials, 32 parameters): matches to 2.4×10⁻¹¹
 - **Nelder-Mead** (30 random starts): consistent
 - **Stiefel manifold gradient ascent** (20 trials): consistent
