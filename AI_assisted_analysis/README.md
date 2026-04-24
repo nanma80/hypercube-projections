@@ -138,11 +138,15 @@ Zero free parameters.
 
 ### 8→3: D₇ × Z₂ Zonotope (order 28)
 
-The 8→3 optimum decomposes as **(7→2) ⊕ (1→1)**: seven equally spaced
-vectors in the xy-plane (the 7→2 regular heptagon solution) lifted onto a
-cone, plus one axial vector along z.
+**Conjecture (numerical):** The 8→3 optimum has the (7→2) ⊕ (1→1)
+structure — seven equally spaced vectors in the xy-plane (the 7→2
+regular heptagon solution) lifted onto a cone, plus one axial vector
+along z. This is supported by basin-hopping, Nelder-Mead, and Stiefel
+gradient ascent over the full Grassmannian Gr(3,8) with no structural
+assumptions, but is **not proven** (k=3, n−k=5 falls outside the range
+of Ivanov's theorem).
 
-**Symbolic parameterization:**
+**Symbolic parameterization (assuming (7+1) structure):**
 
     g_k = (r·cos(2πk/7), r·sin(2πk/7), h)   for k = 0,...,6
     g₇  = (0, 0, b)
@@ -162,18 +166,60 @@ This decomposition works for 8→3 but NOT for 7→3 (2.3% below) or 9→3
 (1.6% below). The xy-radius r = 4/√21 is fixed by the tight-frame
 condition; only h is optimized.
 
-**Exact algebraic values (in ℚ(ρ), ρ = 2cos(π/7)):**
+**Exact algebraic values (conditional on the (7+1) structure, proved):**
 
+    r² = 16/21
     h² = (2/21)(1 − ρ + ρ²)
     b² = 2 + (2/3)ρ − (2/3)ρ²
+    h·b = 2/7 + (2/7)ρ − (2/21)ρ²
     h/b = (−1 + 6ρ − 2ρ²)/7
 
-All key quantities — h², r², b², and the ratio h/b — are in the heptagonal
-field ℚ(ρ). The field norm N(1−ρ+ρ²) = 7.
+All key quantities — r², h², b², and the product h·b — are in the heptagonal
+field ℚ(ρ). This is what makes exact vZome realization possible: the Gram
+matrix is entirely over ℚ(ρ). Note that r/h is NOT in ℚ(ρ) (field norm
+512/7 is not a perfect square), so the generators cannot be axis-aligned.
 
-**vZome realization (heptagonal field, exact):**
+**Derivation of the exact h (symbolic proof, conditional on (7+1) structure):**
 
-The max-volume zonotope can be **exactly** modeled in vZome's heptagonal field.
+The zonotope volume decomposes into two cases by generator type:
+
+    V = r² h S₁ + r² b S₂
+
+where b = √(8/3 − 7h²) and the sums are over 3-element and 2-element
+subsets of the 7 cone generators:
+
+    S₁ = Σ_{i<j<k<7} |sin(δ_ij) + sin(δ_jk) − sin(δ_ik)|    (35 terms)
+    S₂ = Σ_{i<j<7}   |sin(δ_ij)|                              (21 terms)
+
+with δ_ij = 2π(j−i)/7. This follows from the determinant formulas:
+
+    det([g_i | g_j | g_k]) = r²h (sin δ_ij + sin δ_jk − sin δ_ik)
+    det([g_i | g_j | g₇])  = r²b sin δ_ij
+
+Differentiating V with respect to h and setting dV/dh = 0:
+
+    r²(S₁ − 7hS₂/b) = 0
+    S₁ b = 7h S₂
+    S₁²(8/3 − 7h²) = 49h²S₂²
+    h² = 8S₁² / (3(7S₁² + 49S₂²))
+
+Mathematica simplifies the trigonometric sums to:
+
+    S₁ = 7(3cos(π/14) + 5cos(3π/14) + sin(π/7))
+    S₂ = 7(  cos(π/14) +  cos(3π/14) + sin(π/7))
+
+and confirms **symbolically** (not just numerically) that:
+
+    8S₁² / (3(7S₁² + 49S₂²)) = (2/21)(1 − 2cos(π/7) + 4cos²(π/7))
+                                = (2/21)(1 − ρ + ρ²)
+
+(Verified: `FullSimplify[h²_derived − h²_target] = 0` in Wolfram Language.
+See `verify_8_3_symbolic.wls`.)
+
+**vZome realization (heptagonal field, exact conditional on the conjecture):**
+
+The max-volume zonotope (assuming the (7+1) conjecture) can be **exactly**
+modeled in vZome's heptagonal field.
 The key insight is that vZome's physical metric includes a shear transform
 (`embedInR3` in the source code), so the physical inner product in raw
 coordinates is ⟨u,v⟩ = u_x v_x + u_y v_y + u_z v_z + c(u_x v_y + u_y v_x)
@@ -186,19 +232,25 @@ equations have solutions in ℚ(ρ), with:
 
 Generators G_k = R₇ᵏ(w₀) + (0,0,μ) for k=0,...,6 and G_7 = (0,0,ν), where R₇
 is the heptagonal rotation matrix. All coordinates are integers in vZome's
-(1, ρ, σ) encoding (after scaling by 2 to clear denominators):
+(1, ρ, σ) encoding (after dividing by GCD=3):
 
-    G_0: -12 -6 -6   6  0  6  3  6 3
-    G_1:   6 -6 -12  0  0 -6  3  6 3
-    G_2:  -6 -6  6  -12 -6 -6  3  6 3
-    G_3:   6 12  0    6 -6 -12  3  6 3
-    G_4:   0  6 12   -6 -6  6  3  6 3
-    G_5:   6  0  6    6 12  0  3  6 3
-    G_6:   0  0 -6    0  6 12  3  6 3
-    G_7:   0  0  0    0  0  0 15 12 3
+    G_0: -4 -2 -2   2  0  2  1  2 1
+    G_1:  2 -2 -4   0  0 -2  1  2 1
+    G_2: -2 -2  2  -4 -2 -2  1  2 1
+    G_3:  2  4  0   2 -2 -4  1  2 1
+    G_4:  0  2  4  -2 -2  2  1  2 1
+    G_5:  2  0  2   2  4  0  1  2 1
+    G_6:  0  0 -2   0  2  4  1  2 1
+    G_7:  0  0  0   0  0  0  5  4 1
 
-Verified: Gram matrix matches optimal to machine precision (2×10⁻¹⁶),
-shadow volume = 7.0270375786 (exact optimal).
+The vZome file contains the full projected 8-cube (256 vertices, 1024 edges).
+
+**Verification:** Conditional on the (7+1) conjecture, h² = (2/21)(1−ρ+ρ²)
+is proved symbolically (`FullSimplify` gives exact 0 in Wolfram Language;
+see `verify_8_3_symbolic.wls`) and numerically (mpmath, 50 decimal places).
+Independent shape-ratio test (z_range/xy_diameter) comparing Euclidean
+generators vs vZome physical embedding matches to 2×10⁻¹⁶ (float64 machine
+precision). See `verify_8_3_vzome.py`.
 
 ### 10→3: Rhombic Enneacontahedron (I_h, order 120)
 
@@ -401,25 +453,39 @@ highest-symmetry tight frame achieves only 99.2% of the maximum volume.
 
 | File | Description |
 |------|-------------|
-| **Verification scripts** | |
+| **General tools** | |
+| `../max_shadow_generic.py` | General-purpose optimizer: `python max_shadow_generic.py <n> <k>` |
+| `survey/survey_symmetric_projections.py` | Systematic n→3 and n→4 survey |
+| **`n_to_3/` — n→3 investigation** | |
 | `verify_10_3_icosahedral.py` | 10→3: predefined icosahedral 3-fold axes, no optimization |
-| `verify_8_3_heptagonal.py` | 8→3: predefined 7+1 generators, re-optimizes h as cross-check |
 | `verify_12_3_octahedral.py` | 12→3: O_h orbit of (a,a,b), b/a = 1+√2 (silver ratio) |
 | `verify_15_3_icosahedral.py` | 15→3: tests (and refutes) icosahedral edge-center conjecture |
-| `verify_sincos_conjecture.py` | 8→4: original sin/cos conjecture test |
-| `verify_sincos_conjecture_v2.py` | 8→4: comprehensive verification (3 methods) |
-| **8→4 analysis** | |
+| `investigate_n_3.py` | Explore n→3 cases for various n |
+| **`n_to_4/` — n→4 investigation** | |
+| `investigate_n_4.py` | Explore n→4 cases for various n |
+| `investigate_10_5.py` | 10→5 (self-dual diagonal case) |
+| **`8_to_3_vzome/` — 8→3 exact solution and vZome model** | |
+| `verify_8_3_heptagonal.py` | Predefined 7+1 generators, re-optimizes h as cross-check |
+| `verify_8_3_symbolic.wls` | Symbolic proof that h²=(2/21)(1−ρ+ρ²) (Wolfram Language) |
+| `verify_8_3_vzome.py` | Independent shape-ratio test (Euclidean vs vZome embedding) |
+| `verify_gram_symbolic.wls` | Symbolic verification: all Gram entries in ℚ(ρ), axis inner products |
+| `solve_hb.wls` | Solve for h·b in ℚ(ρ) |
+| `../../vZome/max-volume-8cube-to-3d.vZome` | Full projected 8-cube in heptagonal field (exact) |
+| **`8_to_4_sincos/` — 8→4 sin/cos family analysis** | |
+| `verify_sincos_conjecture.py` | Original sin/cos conjecture test |
+| `verify_sincos_conjecture_v2.py` | Comprehensive verification (3 methods) |
 | `analyze_8_4_comprehensive.py` | Optimization, symbolic volume, hull, symmetry, volume ID |
 | `analyze_8_4_deep.py` | Minimal polynomial derivation, comprehensive symmetry search |
 | `analyze_8_4_final.py` | High-precision (mpmath) analysis, PSLQ, group identification |
 | `results_8_4_summary.py` | Self-contained summary with all key results + verification |
 | `investigate_sincos_structure.py` | Block decomposition, alternative optima search |
 | `investigate_orbit_symmetry.py` | Orbit under B₈, corrected symmetry, higher-symmetry search |
-| **Survey and visualization** | |
-| `survey_symmetric_projections.py` | Systematic n→3 and n→4 survey |
+| **`visualization/` — plots and results** | |
 | `plot_zonotopes_3d.py` | 3D plots of 10→3, 8→3, and 12→3 zonotopes |
-| `../max_shadow_generic.py` | General-purpose tool: `python max_shadow_generic.py <n> <k>` |
-| **vZome models** (`../vZome/`) | |
-| `max-volume-8cube-to-3d.vZome` | 8→3 max-volume zonotope in heptagonal field (exact) |
+| `results_*.txt` | Numerical results for various (n,k) cases |
+| `zonotope_*.png` | Rendered zonotope images |
+| **Other** | |
+| `manual_verification.wls` | Manual cross-checks of vZome vertex geometry |
 
 All scripts use Python 3.11+ with numpy, scipy, sympy, mpmath, matplotlib.
+Wolfram Language scripts (`.wls`) require Mathematica or wolframscript.
