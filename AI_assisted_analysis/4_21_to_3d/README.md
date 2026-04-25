@@ -19,11 +19,13 @@ basin-hopping over ℝ³ˣ⁸ matrices.
 
 ## Result
 
-**Max volume ≈ 7.0553368295**, computed with the basis-orthonormalization
-convention (each E₈ root has length √2 in ℝ⁸, projection basis is
-orthonormal). Reproducible with seeds 7 and 42; 30 basin-hopping trials
-all converged to this value (a few stuck at the slightly lower local
-maximum 7.04630881).
+**Max volume = 8√7 / 3 ≈ 7.0553368295**, computed with the
+basis-orthonormalization convention (each E₈ root has length √2 in ℝ⁸,
+projection basis is orthonormal). Reproducible with seeds 7 and 42;
+30 basin-hopping trials all converged to this value (a few stuck at
+the slightly lower local maximum 7.04630881). The closed form
+8√7/3 was identified analytically (see "Closed-form solution" below)
+and verified to ∼15 digits.
 
 | Projection                           | Vol      | Ratio  |
 |--------------------------------------|----------|--------|
@@ -173,8 +175,50 @@ Hull vertices line up in 5 layers along the C₃ (=z) axis:
 | −1.0911    |   3   | 1.3628      | small triangle, twisted 60° |
 
 The numerical constants 1/√2, 1/√6, √2, etc. that appear in the
-canonicalized generators strongly suggest a closed algebraic form for
-the volume 7.05533683…, which remains an open question.
+canonicalized generators turn out to extend to a fully algebraic
+optimum — see next section.
+
+### Closed-form solution
+
+Symbolically, the canonicalized generators are
+
+      g_0  = (+1/√2,  0,       +3/(4√21))
+      g_1  = (−1/√2,  0,       +3/(4√21))
+      g_2  = ( 0,    −1/√6,    +7/(4√21))
+      g_3  = ( 0,    +1/√6,   −13/(4√21))
+      g_4=g_5=g_6=g_7
+           = ( 0,    +1/√6,    +5/(4√21))
+
+i.e. all four z-components share the denominator **4√21**, with
+integer numerators **(3, 3, 7, −13, 5, 5, 5, 5)** that sum to zero
+(centering condition), satisfy the y/z-orthogonality `−7 + (−13) + 4·5 = 0`,
+and have squared sum `2·9 + 49 + 169 + 4·25 = 336 = 16·21` so that
+each column of Q is a unit vector.
+
+**Maximum volume:** plugging these exact generators into the 18-vertex
+hull formula yields
+
+> **V_max = 8√7 / 3**
+
+(verify: V² = 448/9, matched to 15 digits by both basin-hopping and
+direct evaluation of `ConvexHull` on the symbolic vertices).
+
+**Two key parameters.** With `h = z_top = 4d` and `k = z_mid = a − c`,
+the 18 hull vertex positions depend only on (h, k), and the orthonormality
+of Q forces them onto the constraint ellipse
+
+> **h² − hk + k² ≤ 1**.
+
+The maximum lies on the boundary, at **h = 5/√21**, **k = 4/√21**
+(equivalently the simple ratio **h : k = 5 : 4**), where the
+discriminant of the quadratic for c collapses to zero and pins c
+uniquely to **−13/(4√21)**.
+
+The 18-vertex polyhedron in those coordinates:
+- equatorial regular hexagon at z = 0, radius √2;
+- four C₃-symmetric triangles at z = ±h = ±5/√21 (radius √(2/3),
+  vertex angles 30°, 150°, 270°) and z = ±k = ±4/√21 (same radius,
+  angles 90°, 210°, 330°).
 
 ## Open questions
 
@@ -184,7 +228,9 @@ the volume 7.05533683…, which remains an open question.
    18-vertex set. The group decomposes as 1 identity + 2 C₃ rotations
    + 3 C₂ rotations + 6 improper (including −I). The shape itself is
    not a named polyhedron.
-2. Does the volume `7.05533683…` admit an algebraic closed form?
+2. ~~Does the volume `7.05533683…` admit an algebraic closed form?~~
+   **Answer: yes, V_max = 8√7/3.** The optimum has h = 5/√21,
+   k = 4/√21, and integer-numerator z-components (3, 7, −13, 5)/(4√21).
 3. Is the 5D intermediate (83-point set) a recognizable polytope?
 4. Does this 4-axis-coalescence pattern generalize? (E.g. for 4_21 → 4D,
    do some axes coalesce at the optimum? `e8.py` did not check.)

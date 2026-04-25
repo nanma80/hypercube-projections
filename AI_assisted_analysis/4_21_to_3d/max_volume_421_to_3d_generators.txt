@@ -1,5 +1,5 @@
 # Max-volume 3D projection of the 4_21 polytope
-# Volume: 7.0553368285
+# Volume: 8 sqrt(7) / 3 = 7.05533682950557...   (closed form)
 # Orthonormal projection basis Q (8x3): rows are the 8 generators g_0..g_7
 # The 240 4_21 vertices in 3D are:
 #   integer roots:    +-g_i +- g_j  (i != j)              -> 112
@@ -7,6 +7,15 @@
 # Canonicalized: C_3 axis = +z, one C_2 axis = +x
 # Symmetry: D_3d (order 12)
 # Hull: 18 vertices, 32 triangulated facets
+#
+# Closed-form generators (z-components share denominator 4*sqrt(21),
+# integer numerators 3, 3, 7, -13, 5, 5, 5, 5):
+#   g_0 = (+1/sqrt(2),  0,         +3 /(4 sqrt(21)))
+#   g_1 = (-1/sqrt(2),  0,         +3 /(4 sqrt(21)))
+#   g_2 = ( 0,         -1/sqrt(6), +7 /(4 sqrt(21)))
+#   g_3 = ( 0,         +1/sqrt(6), -13/(4 sqrt(21)))
+#   g_4 = g_5 = g_6 = g_7 = ( 0, +1/sqrt(6), +5/(4 sqrt(21)))
+# Constraint-ellipse parameters: h = z_top = 5/sqrt(21), k = z_mid = 4/sqrt(21).
 
 g_0: +0.707107243627031, +0.000026472738235, +0.163662343304188
 g_1: -0.707106317651863, -0.000026677246372, +0.163662343304187
