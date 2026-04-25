@@ -143,6 +143,51 @@ not the global maximum.
 - `../../vZome/heptagonal-421-to-3d.vZome` — the 7-fold (D₇d) model
   in vZome, used as the 3D baseline above.
 - `../../vZome/gen_421_to_3d.py` — generator for that vZome model.
+- `generate_stl.py` — builds STL meshes of the max-volume 18-vertex hull
+  (vertices as balls, edges as cylinders) and the bare convex-hull
+  surface, using `trimesh`.
+- `max_volume_421_to_3d_balls_sticks.stl` — ball-and-stick STL
+  (vertex spheres + edge cylinders) for 3D printing or external viewers.
+- `max_volume_421_to_3d_solid.stl` — the bare 32-triangle convex-hull
+  surface as STL.
+
+### Why the max-volume shape is **not** constructible exactly in vZome
+
+The 18 hull-vertex coordinates live in **Q(√2, √3, √7)** (degree 8 over Q):
+- x ∈ {0, ±1/√2, ±√2}            → needs √2
+- y ∈ {0, ±1/√6, ±√6/3, ±√6/2}    → needs √6 = √2·√3
+- z ∈ {0, ±4/√21, ±5/√21}         → needs √21 = √3·√7
+
+The killer is **√7**. None of vZome's standard fields contains √7:
+
+| Field        | Generator        | Contains √7? |
+|--------------|------------------|--------------|
+| Golden       | √5 (φ)           | no           |
+| Root-2       | √2               | no           |
+| Root-3       | √3               | no           |
+| Heptagonal   | 2·cos(π/7) (degree 3) | **no**  |
+| SnubDodec, Plastic, SqrtPhi, …                  | no           |
+
+The heptagonal field — which one might naively expect to "contain √7" —
+in fact does not. It is the maximal real subfield of Q(ζ₇), and the only
+quadratic subfield of Q(ζ₇) is Q(√(−7)) (because 7 ≡ 3 mod 4), which is
+purely imaginary.
+
+Crucially, the field requirement is **isometry-invariant**: rotating the
+shape into a different orientation cannot eliminate any of √2, √3, √7
+from the coordinate set. (All squared inter-vertex distances are
+rationals with denominator 7, and the rank-3 rational Gram matrix
+forces realization in Q(√d₁, √d₂, √d₃) with Cholesky pivots 2, 6, 21.)
+The ⁄7 flavour is baked into the maximum because
+
+> V_max² = 448/9 = 64·7/9,  hence V_max = 8√7/3.
+
+So a faithful vZome model would require a Q(√2, √3, √7) field that does
+not currently exist. Practical fall-backs (e.g. anisotropic z-stretch
+to put z in Q while keeping xy in Q(√2,√3); or numerical placement in
+the golden field) preserve only combinatorics or only approximate
+geometry. For exact 3D visualization we therefore use STL instead
+(see files above).
 
 ### Construction recipe (for reproducing the shape)
 
