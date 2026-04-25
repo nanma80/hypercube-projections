@@ -220,6 +220,43 @@ The 18-vertex polyhedron in those coordinates:
   vertex angles 30°, 150°, 270°) and z = ±k = ±4/√21 (same radius,
   angles 90°, 210°, 330°).
 
+### Methodology: numerical-first, then conjecture-and-verify
+
+The closed form was *not* derived from first principles. The flow
+that produced it was:
+
+1. **Numerical maximum.** Run basin-hopping over the full 24-parameter
+   3×8 projection matrix (`max_shadow_421_to_3d.py`) → V ≈ 7.05533683.
+2. **Observe structure.** Canonicalize the optimum
+   (`viz_421_to_3d.py`) and inspect: x,y components look like
+   1/√2, 1/√6; four input axes coalesce; the symmetry group is D₃d.
+3. **Conjecture a parametric ansatz.** Freeze the x,y components at
+   the recognized exact values, leaving only four z-components
+   (a, b, c, d). Apply orthonormality of Q to cut two more parameters
+   (`−b + c + 4d = 0` and the unit-norm constraint), reducing to
+   **two free parameters** (h, k).
+4. **Re-optimize within the ansatz.** Maximize on the feasibility
+   ellipse `h² − h k + k² ≤ 1` and confirm the volume matches the
+   numerical max — this confirms the ansatz captures the optimum.
+5. **Spot rational signatures.** In the 2-parameter optimum,
+   `k/h = 0.80000…`, `h² = 1.19047… ≈ 25/21`, `(h−k)/(h+k) = 0.11111…`
+   → conjecture **h = 5/√21, k = 4/√21** (h : k = 5 : 4).
+6. **Push through symbolically.** With those h, k the c-quadratic's
+   discriminant is exactly zero, so c is pinned to −13/(4√21); the
+   z-components turn out to be integers (3, 7, −13, 5)/(4√21).
+7. **Recognize the volume.** V² ≈ 49.7777… = 448/9 → conjecture
+   **V = 8√7/3**.
+8. **Verify.** Plug the symbolic generators back through ConvexHull
+   in 50-digit mpmath; the volume agrees with 8√7/3 to 15 digits and
+   Q is exactly orthonormal.
+
+Strictly speaking this proves only that 8√7/3 is the value at a
+specific D₃d critical point, not that it is the global maximum over
+all 3D subspaces. But it agrees with every basin-hopping run, so the
+conjecture-and-verify chain is strong evidence. A full proof would
+require ruling out other symmetry classes and hull combinatorial
+types — see open questions below.
+
 ## Open questions
 
 1. ~~What is the **symmetry group** of the max-volume 3D shadow?~~
