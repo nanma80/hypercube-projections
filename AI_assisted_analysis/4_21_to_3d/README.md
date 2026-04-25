@@ -220,20 +220,60 @@ The 18-vertex polyhedron in those coordinates:
   vertex angles 30°, 150°, 270°) and z = ±k = ±4/√21 (same radius,
   angles 90°, 210°, 330°).
 
-### Closed-form vertices, edges and faces of the hull
+### Closed-form vertex list (all 18)
 
-The 18 hull vertices fall into **3 orbits of 6** (under D₃d):
+In the canonical orientation (C₃ axis along +z, one C₂ axis along +x):
 
-| Orbit | Count | Coordinates                                                                  | Vertex norm |
-|-------|-------|------------------------------------------------------------------------------|-------------|
-| Hexagon `H₀…H₅`      | 6 | √2·(cos 60°·i, sin 60°·i, 0),  i = 0…5                                | √2 = √(14/7) |
-| Top/bot tris `T,B`   | 3+3 | √(2/3)·(cos θ, sin θ, 0) ± (0, 0, **5/√21**); θ ∈ {30°,150°,270°} (T) or {90°,210°,330°} (B) | √(13/7)     |
-| Mid tris `M,N`       | 3+3 | √(2/3)·(cos θ, sin θ, 0) ± (0, 0, **4/√21**); θ ∈ {90°,210°,330°} (M) or {30°,150°,270°} (N) | √(10/7)     |
+**Hexagon, z = 0** (vertex norm √2):
 
-(Note `vertex norm² ∈ {14/7, 13/7, 10/7}` — the same family of numerators
-that shows up in the edge lengths below.)
+| label | x       | y      | z |
+|-------|---------|--------|---|
+| H₀    | +√2     | 0      | 0 |
+| H₁    | +1/√2   | +√6/2  | 0 |
+| H₂    | −1/√2   | +√6/2  | 0 |
+| H₃    | −√2     | 0      | 0 |
+| H₄    | −1/√2   | −√6/2  | 0 |
+| H₅    | +1/√2   | −√6/2  | 0 |
 
-The hull has
+**Top apex triangle, z = +5/√21** (vertex norm √(13/7)):
+
+| label | x       | y       | z       |
+|-------|---------|---------|---------|
+| T₀    | +1/√2   | +1/√6   | +5/√21  |
+| T₁    | −1/√2   | +1/√6   | +5/√21  |
+| T₂    | 0       | −√6/3   | +5/√21  |
+
+**Upper mid triangle, z = +4/√21** (vertex norm √(10/7)):
+
+| label | x       | y       | z       |
+|-------|---------|---------|---------|
+| M₀    | 0       | +√6/3   | +4/√21  |
+| M₁    | −1/√2   | −1/√6   | +4/√21  |
+| M₂    | +1/√2   | −1/√6   | +4/√21  |
+
+**Lower mid triangle, z = −4/√21** (vertex norm √(10/7)):
+
+| label | x       | y       | z       |
+|-------|---------|---------|---------|
+| N₀    | +1/√2   | +1/√6   | −4/√21  |
+| N₁    | −1/√2   | +1/√6   | −4/√21  |
+| N₂    | 0       | −√6/3   | −4/√21  |
+
+**Bottom apex triangle, z = −5/√21** (vertex norm √(13/7)):
+
+| label | x       | y       | z       |
+|-------|---------|---------|---------|
+| B₀    | 0       | +√6/3   | −5/√21  |
+| B₁    | −1/√2   | −1/√6   | −5/√21  |
+| B₂    | +1/√2   | −1/√6   | −5/√21  |
+
+Useful identities: `√(2/3) = √6/3`, `√6/2 = √(3/2)`. Central
+inversion gives B = −T and N = −M; the mid layers are rotated 60°
+relative to the apex layers. All x,y coordinates lie in
+`{0, ±1/√2, ±1/√6, ±√6/3, ±√6/2, ±√2}`; all z values in
+`{0, ±4/√21, ±5/√21}`.
+
+### Closed-form edges and faces of the hull
 
 > **18 vertices, 48 edges, 32 faces — all triangles.**
 
