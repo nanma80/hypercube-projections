@@ -146,10 +146,68 @@ not the global maximum.
 - `generate_stl.py` — builds STL meshes of the max-volume 18-vertex hull
   (vertices as balls, edges as cylinders) and the bare convex-hull
   surface, using `trimesh`.
-- `max_volume_421_to_3d_balls_sticks.stl` — ball-and-stick STL
-  (vertex spheres + edge cylinders) for 3D printing or external viewers.
+- `max_volume_421_to_3d_balls_sticks.stl` — ball-and-stick STL of the
+  hull only (18 vertex spheres + 48 edge cylinders, all uniform size).
 - `max_volume_421_to_3d_solid.stl` — the bare 32-triangle convex-hull
   surface as STL.
+- `generate_stl_all_struts.py` — builds the richer "all 4_21 struts
+  projected into the hull interior" STL (49 balls + 432 cylinders),
+  with sizes scaled by **multiplicity** (see next section).
+- `max_volume_421_to_3d_all_struts.stl` — STL of the full projected
+  4_21 strut graph: every distinct projected vertex and every distinct
+  projected edge, including those interior to the hull.
+
+### Visualizing all projected 4_21 struts (`*_all_struts.stl`)
+
+The 4_21 polytope has **240 vertices and 6720 edges** (one for each
+pair of E₈ roots with dot product 1). Under the max-volume projection,
+many of these collapse:
+
+- **240 → 49 distinct 3D points**: 18 of them are the hull vertices,
+  the other 31 lie *inside* the hull.
+- **6720 edges → 432 distinct nonzero 3D segments** (672 edges
+  collapse to zero length).
+
+Each 3D point and each 3D segment has a well-defined **multiplicity**
+= the number of 8D objects that map to it. We use the multiplicity to
+set a small number of discrete sizes, so the visualization shows
+which points / struts are "richer".
+
+**Vertex (ball) multiplicities — three values, sizes 1.0× / 1.5× / 2.0×
+of base radius:**
+
+| 8D root multiplicity | # of 3D points | Ball size | Where               |
+|----------------------|----------------|-----------|---------------------|
+| 1                    | 24             | 1.0×      | all 18 hull verts + 6 interior |
+| 8                    | 24             | 1.5×      | interior            |
+| 24                   | 1              | 2.0×      | the **origin**      |
+
+(Sum check: 24·1 + 24·8 + 1·24 = 240 ✓.)
+
+**Strut (cylinder) multiplicities — four values, sizes 1.0× / 1.5× /
+2.0× / 2.5× of base radius:**
+
+| 8D edge multiplicity | # of 3D struts | Strut size | 8D edges contributed |
+|----------------------|----------------|------------|----------------------|
+| 1                    | 96             | 1.0×       | 96                   |
+| 8                    | 216            | 1.5×       | 1728                 |
+| 32                   | 96             | 2.0×       | 3072                 |
+| 48                   | 24             | 2.5×       | 1152                 |
+
+(Sum check: 96·1 + 216·8 + 96·32 + 24·48 = 6048 = 6720 − 672 ✓.)
+
+**Striking pattern.** Every strut whose length matches one of the four
+hull-edge lengths (√(5/7), √(10/7), √(13/7), √2) decomposes as
+**24 mult-1 + 18 mult-8** struts. The five interior-only lengths
+(0.327, 0.655, 0.824, 0.926, 0.982) have multiplicities only in
+{8, 32, 48} — no strut interior to the hull is hit by a single E₈
+edge. So mult-1 struts are exactly those whose endpoints are both
+hull-orbit (mult-1) vertices. The biggest "highway" struts (mult 48)
+all pass through the origin or near-origin region.
+
+The constants `base_ball_r` and `base_stick_r` at the top of
+`generate_stl_all_struts.py` control overall thickness; the per-bin
+multipliers `(1.0, 1.5, 2.0, 2.5)` control the relative emphasis.
 
 ### Why the max-volume shape is **not** constructible exactly in vZome
 
