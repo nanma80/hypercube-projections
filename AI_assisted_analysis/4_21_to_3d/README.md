@@ -220,6 +220,52 @@ The 18-vertex polyhedron in those coordinates:
   vertex angles 30°, 150°, 270°) and z = ±k = ±4/√21 (same radius,
   angles 90°, 210°, 330°).
 
+### Closed-form vertices, edges and faces of the hull
+
+The 18 hull vertices fall into **3 orbits of 6** (under D₃d):
+
+| Orbit | Count | Coordinates                                                                  | Vertex norm |
+|-------|-------|------------------------------------------------------------------------------|-------------|
+| Hexagon `H₀…H₅`      | 6 | √2·(cos 60°·i, sin 60°·i, 0),  i = 0…5                                | √2 = √(14/7) |
+| Top/bot tris `T,B`   | 3+3 | √(2/3)·(cos θ, sin θ, 0) ± (0, 0, **5/√21**); θ ∈ {30°,150°,270°} (T) or {90°,210°,330°} (B) | √(13/7)     |
+| Mid tris `M,N`       | 3+3 | √(2/3)·(cos θ, sin θ, 0) ± (0, 0, **4/√21**); θ ∈ {90°,210°,330°} (M) or {30°,150°,270°} (N) | √(10/7)     |
+
+(Note `vertex norm² ∈ {14/7, 13/7, 10/7}` — the same family of numerators
+that shows up in the edge lengths below.)
+
+The hull has
+
+> **18 vertices, 48 edges, 32 faces — all triangles.**
+
+(Euler: 18 − 48 + 32 = 2 ✓.) All four distinct **edge lengths** are
+square roots of rationals with denominator 7:
+
+| Edge type                                            | Length     | Count |
+|------------------------------------------------------|------------|-------|
+| H–H (hexagon side) and T–T, B–B (top/bot tri sides)  | **√2 = √(14/7)** | 12 |
+| H–T and H–B  (hexagon to top/bot apex tri)           | **√(13/7)**       | 12 |
+| H–M and H–N  (hexagon to middle apex tri)            | **√(10/7)**       | 12 |
+| T–M and B–N  (top to mid; bottom to mid)             | **√(5/7)**        | 12 |
+
+The 32 triangular faces fall into **5 D₃d-orbits**:
+
+| Face type (vertex labels)         | Orbit size | Description                                          |
+|-----------------------------------|------------|------------------------------------------------------|
+| (T,T,T) / (B,B,B)                 | 1+1 = 2    | the equilateral cap at the top and bottom            |
+| (T,T,M) / (B,B,N)                 | 3+3 = 6    | between an apex-tri edge and a mid-tier vertex       |
+| (M,T,T) ✗ already listed          |            |                                                      |
+| (H,H,T) / (H,H,B)                 | 3+3 = 6    | upward/downward triangles, hexagon edge to apex tri  |
+| (H,H,M) / (H,H,N)                 | 3+3 = 6    | hexagon edge to mid-tier vertex                      |
+| (H,M,T) / (H,N,B)                 | 6+6 = 12   | skew triangles spanning all three latitudes          |
+
+Total: 2 + 6 + 6 + 6 + 12 = 32. (No quadrilateral or pentagonal faces;
+no merged coplanar triangles either — every triangulated facet is its
+own flat face.)
+
+**Vertex degrees:** the hexagonal vertices and the top/bot apex-tri
+vertices all have degree 6 (each touches 6 triangles). The mid-tier
+vertices `M, N` have degree 4. (Verified: 6·6 + 6·6 + 6·4 = 96 = 2·48.)
+
 ### Methodology: numerical-first, then conjecture-and-verify
 
 The closed form was *not* derived from first principles. The flow
