@@ -273,7 +273,64 @@ relative to the apex layers. All x,y coordinates lie in
 `{0, ±1/√2, ±1/√6, ±√6/3, ±√6/2, ±√2}`; all z values in
 `{0, ±4/√21, ±5/√21}`.
 
+### Geometric structure: a "squashed cuboctahedron" with six tents
+
+A satisfying geometric description of the 18-vertex hull:
+
+**Step 1 — drop the M, N orbit.** The 12 remaining vertices `{H, T, B}`
+form a polytope that is **combinatorially a cuboctahedron**: 12 vertices,
+24 edges, **8 triangles + 6 quadrilaterals**, with the same vertex-figure
+incidence as the Archimedean cuboctahedron.
+
+But it is **not metrically** a cuboctahedron:
+
+| Quantity                         | Our `{H,T,B}` polytope    | True cuboctahedron |
+|----------------------------------|---------------------------|--------------------|
+| Hexagon radius                   | √2                        | √2                 |
+| Apex-triangle xy-radius          | √(2/3)                    | √(2/3)             |
+| Apex-triangle z-height           | **5/√21 ≈ 1.0911**        | 2/√3 ≈ 1.1547      |
+| Vertex norms                     | {√2, √(13/7)}             | √2 (uniform)       |
+| Hexagon and apex-tri edge        | √2                        | 1 (after rescaling)|
+| Lateral H–T / H–B edge           | **√(13/7) ≠ √2**          | equal to other     |
+| Six "square" faces               | **rectangles** √2 × √(13/7) | true squares     |
+
+So `{H, T, B}` is a triangular gyrobicupola **squashed along its C₃ axis**
+by the factor **5/(2√7) ≈ 0.945** relative to the regular Archimedean
+cuboctahedron. Its quad faces are rectangles with aspect ratio
+√(13/14) ≈ 0.964, not squares. (Direct check: the lateral edges of each
+quad are perpendicular to both the hexagon edge and the apex-triangle
+edge, confirming "rectangle", not "isosceles trapezoid".)
+
+**Step 2 — add a tent over each rectangle.** Each of the 6 mid vertices
+`M`/`N` sits **directly along the outward radial axis through the centre
+of one rectangle face**, at radius bigger than the rectangle's centroid:
+
+- `M₀ = (0, √6/3, 4/√21)` lies along the radial line of the rectangle
+  (H₁, T₀, T₁, H₂) (whose centroid is (0, √6/3, 5/(2√21)), same x and y).
+  Since 4/√21 > 5/(2√21), `M₀` is pushed *outward* of the rectangle.
+- The other M, N vertices play the same role for the other five rectangle
+  faces (3 covered by M's, 3 by N's, alternating around the equator).
+
+So the max-volume hull is built by **erecting 6 four-sided pyramids
+("tents") over the 6 rectangle faces of the squashed cuboctahedron**,
+each tent's apex being one of the M / N vertices.
+
+**Face/edge accounting through this lens:**
+
+- 8 triangle faces of the cuboctahedron skeleton survive untouched
+  (1 top cap + 1 bottom cap + 6 lateral H–H–T / H–H–B).
+- Each of the 6 rectangles is replaced by **4 triangles** of the tent,
+  giving 6 × 4 = 24 new triangle faces.
+- Total: 8 + 24 = **32 triangles** ✓.
+- Edges: 24 (cuboctahedron skeleton) + 4·6 = 24 (tent ridge-edges
+  M–H, M–T or N–H, N–B) = **48** ✓.
+- Vertices: 12 (skeleton) + 6 (tent apices) = **18** ✓.
+
+This decomposition also makes the volume easy to organise as
+`V = V_squashed_cubocta + 6·V_tent`.
+
 ### Closed-form edges and faces of the hull
+
 
 > **18 vertices, 48 edges, 32 faces — all triangles.**
 
