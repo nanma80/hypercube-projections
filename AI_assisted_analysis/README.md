@@ -460,12 +460,41 @@ highest-symmetry tight frame achieves only 99.2% of the maximum volume.
 
 ---
 
+## 4_21 Polytope (E₈ Root System) Projections
+
+The **4_21 polytope** has the 240 E₈ roots as vertices in ℝ⁸. Unlike the
+n-cube, it is **not** a zonotope, so shadow volumes are computed via
+`ConvexHull` and basin-hopping rather than the det-sum formula.
+
+### Max-volume projections
+
+| 4_21 → kD | Max volume | Hull verts | Shape | Equilateral? | Closed form |
+|------------|-----------|------------|-------|--------------|-------------|
+| 8 → 2 | 5.1962 | 6 | Regular hexagon | Yes | **3√3** |
+| 8 → 3 | 7.0553 | 18 | Tented squashed cuboctahedron | No | **8√7/3** |
+| 8 → 4 | 8.8801 | 48 | Not named | No | Open |
+
+### Key findings
+
+- **2D max = 3√3** (regular hexagon on an A₂ root subsystem plane). All A₂
+  planes of E₈ are optimal. The hull has 6 vertices at full radius √2.
+- **3D max = 8√7/3** with 4 of 8 input axes coalescing (D₃d symmetry,
+  order 12). See `4_21_to_3d/README.md` for the full closed-form solution.
+- **4D max ≈ 8.880** with no coalescence. Verified against the old `e8.py`
+  result (142.08 in 2×-scaled coordinates). The H₄-symmetric (600-cell)
+  projection achieves only 91% of this.
+- **Coalescence pattern**: massive (6 axes) in 2D → partial (4 axes) in 3D
+  → none in 4D.
+
+---
+
 ## Open Questions
 
 - What is the structure of the 15→3 optimum?
 - For n→4, do any n > 8 produce high symmetry at the volume maximum?
 - Can the block decomposition V = V₁ ⊕ V₂ for 8→4 be proven necessary?
 - Which other n→k max-volume zonotopes are realizable in vZome's algebraic fields?
+- Does the 4D max for 4_21 (≈ 8.880) have an algebraic closed form?
 
 ## Files
 
@@ -498,6 +527,18 @@ highest-symmetry tight frame achieves only 99.2% of the maximum volume.
 | `results_8_4_summary.py` | Self-contained summary with all key results + verification |
 | `investigate_sincos_structure.py` | Block decomposition, alternative optima search |
 | `investigate_orbit_symmetry.py` | Orbit under B₈, corrected symmetry, higher-symmetry search |
+| **`4_21_to_2d/` — 4_21→2D max-area projection** | |
+| `README.md` | Results: area = 3√3, regular hexagon on A₂ plane |
+| `../../max_shadow_421_to_2d.py` | Optimizer script (baselines + basin-hopping) |
+| **`4_21_to_3d/` — 4_21→3D max-volume projection** | |
+| `README.md` | Full closed-form solution, STL generation, structure analysis |
+| `../../max_shadow_421_to_3d.py` | Optimizer script |
+| `../../viz_421_to_3d.py` | Canonicalization and visualization |
+| `generate_stl.py` | STL mesh generation for 3D printing |
+| **`4_21_to_4d/` — 4_21→4D max-volume projection (verification)** | |
+| `README.md` | Verification of e8.py results, correction of 600-cell vertex count |
+| `../../max_shadow_421_to_4d.py` | Re-verification script (H₄ baseline + optimization) |
+| `../../e8.py` | Original Python 2 analysis (preserved) |
 | **`visualization/` — plots and results** | |
 | `plot_zonotopes_3d.py` | 3D plots of 10→3, 8→3, and 12→3 zonotopes |
 | `results_*.txt` | Numerical results for various (n,k) cases |

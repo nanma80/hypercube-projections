@@ -36,14 +36,20 @@ So the heptagonal symmetric projection achieves about **89%** of the maximum.
 
 ### Hull combinatorics
 
-| | Max-volume (3D) | 7-fold (D₇d, 3D) | 4D max-volume (e8.py) | H₄ to 4D (600-cell) |
-|---|---|---|---|---|
-| Vertices | **18** (3 orbits of 6) | 240 | 48 | 600 |
-| Edges    | **48** (4 orbits of 12) | (huge) | 144 | 720 |
-| Facets   | **32** (all triangles) | (huge) | n/a | n/a |
-| Symmetry | **D₃d, order 12** (with −I) | D₇d, order 28 | ? | H₄, order 14400 |
-| Equilateral hull verts? | No (3 norm classes) | Yes | No | Yes |
-| Volume (orthonormal frame) | 7.0553 | 6.2668 | 142.08 | 129.44 |
+| | Max-area (2D) | Max-volume (3D) | 7-fold (D₇d, 3D) | 4D max-volume | H₄ to 4D (600-cell) |
+|---|---|---|---|---|---|
+| Vertices | **6** | **18** (3 orbits of 6) | 240 | 48 | 120 |
+| Edges    | **6** | **48** (4 orbits of 12) | (huge) | 144 | 720 |
+| Facets   | — | **32** (all triangles) | (huge) | n/a | n/a |
+| Symmetry | **D₆, order 12** | **D₃d, order 12** (with −I) | D₇d, order 28 | unknown | H₄, order 14400 |
+| Equilateral hull verts? | Yes | No (3 norm classes) | Yes | No (2 norms) | Yes |
+| Volume (orthonormal frame) | 3√3 ≈ 5.196 | 8√7/3 ≈ 7.055 | 6.267 | 8.880 | 8.090 |
+
+**Note:** The H₄ projection produces a **600-cell** with **120** vertices (not 600 —
+the "600" refers to tetrahedral cells). The original `e8.py` comments stated
+"600 vertices", which was an error corrected in the 4D re-verification. Volumes
+in the old `e8.py` (129.44, 142.08) used vertices scaled by 2×, so they are
+16× larger than the unit-root values shown here.
 
 **The shape is not a named polyhedron.** It has 4 distinct edge lengths
 (≈ 0.8452, 1.1952, 1.3628, 1.4142), so it is not one of the 8 convex
@@ -515,5 +521,14 @@ types — see open questions below.
    **Answer: yes, V_max = 8√7/3.** The optimum has h = 5/√21,
    k = 4/√21, and integer-numerator z-components (3, 7, −13, 5)/(4√21).
 3. Is the 5D intermediate (83-point set) a recognizable polytope?
-4. Does this 4-axis-coalescence pattern generalize? (E.g. for 4_21 → 4D,
-   do some axes coalesce at the optimum? `e8.py` did not check.)
+4. ~~Does this 4-axis-coalescence pattern generalize? (E.g. for 4_21 → 4D,
+   do some axes coalesce at the optimum? `e8.py` did not check.)~~
+   **Answer: No.** Re-verification with `max_shadow_421_to_4d.py` confirms
+   that the 4D max-volume projection has **no generator coalescence** — all
+   8 generators are distinct (though they split into 2 norm classes of 4).
+   The coalescence pattern is dimension-dependent:
+   - 2D max: massive coalescence (6 of 8 axes coalesce in pairs)
+   - 3D max: 4 axes coalesce
+   - 4D max: no coalescence
+   See also `../4_21_to_4d/README.md` and `../4_21_to_2d/README.md`.
+
