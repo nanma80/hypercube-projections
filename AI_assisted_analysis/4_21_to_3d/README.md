@@ -43,7 +43,7 @@ So the heptagonal symmetric projection achieves about **89%** of the maximum.
 | Facets   | — | **32** (all triangles) | (huge) | n/a | n/a |
 | Symmetry | **D₆, order 12** | **D₃d, order 12** (with −I) | D₇d, order 28 | **W(F₄), order 1152** | H₄, order 14400 |
 | Equilateral hull verts? | Yes | No (3 norm classes) | Yes | No (2 norms) | Yes |
-| Volume (orthonormal frame) | 3√3 ≈ 5.196 | 8√7/3 ≈ 7.055 | 6.267 | 8.880 | 8.090 |
+| Volume (orthonormal frame) | 3√3 ≈ 5.196 | 8√7/3 ≈ 7.055 | 6.267 | (17+7√7)/4 ≈ 8.880 | 8.090 |
 
 **Note:** The H₄ projection produces a **600-cell** with **120** vertices (not 600 —
 the "600" refers to tetrahedral cells). The original `e8.py` comments stated

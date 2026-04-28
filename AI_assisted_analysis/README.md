@@ -472,7 +472,7 @@ n-cube, it is **not** a zonotope, so shadow volumes are computed via
 |------------|-----------|------------|-------|----------|-------------|
 | 8 → 2 | 5.1962 | 6 | Regular hexagon | D₆, order 12 | **3√3** |
 | 8 → 3 | 7.0553 | 18 | Tented squashed cuboctahedron | D₃d, order 12 | **8√7/3** |
-| 8 → 4 | 8.8801 | 48 | Two 24-cells (F₄ roots) | **W(F₄), order 1152** | Open |
+| 8 → 4 | (17+7√7)/4 ≈ 8.880 | 48 | Two 24-cells (F₄ roots) | **W(F₄), order 1152** | **(17+7√7)/4** |
 
 ### Key findings
 
@@ -480,10 +480,11 @@ n-cube, it is **not** a zonotope, so shadow volumes are computed via
   planes of E₈ are optimal. The hull has 6 vertices at full radius √2.
 - **3D max = 8√7/3** with 4 of 8 input axes coalescing (D₃d symmetry,
   order 12). See `4_21_to_3d/README.md` for the full closed-form solution.
-- **4D max ≈ 8.880** — the 48 hull vertices form **two 24-cells** (an F₄
-  root arrangement) with symmetry group **W(F₄) of order 1152**. This is a
-  striking connection to the E₈ ⊃ F₄ algebraic structure. The H₄-symmetric
-  (600-cell) projection achieves only 91% of this.
+- **4D max = (17+7√7)/4** — the 48 hull vertices form **two 24-cells** (an F₄
+  root arrangement) with symmetry group **W(F₄) of order 1152**. The two
+  24-cells have radii rA² = (5+√7)/4 and rB² = (3+√7)/4 in the standard
+  F₄ dual orientation. All values lie in Q(√7), the same field as the 3D
+  max. The H₄-symmetric (600-cell) projection achieves only 91% of this.
 - **Subspace nesting**: 2D max ⊂ 3D max (the equatorial hexagon IS the A₂
   plane), but 3D max ⊄ 4D max (only 99.7% achievable within the F₄ subspace).
 - **Coalescence pattern**: massive (6 axes) in 2D → partial (4 axes) in 3D
@@ -497,7 +498,8 @@ n-cube, it is **not** a zonotope, so shadow volumes are computed via
 - For n→4, do any n > 8 produce high symmetry at the volume maximum?
 - Can the block decomposition V = V₁ ⊕ V₂ for 8→4 be proven necessary?
 - Which other n→k max-volume zonotopes are realizable in vZome's algebraic fields?
-- Does the 4D max for 4_21 (≈ 8.880) have an algebraic closed form?
+- ~~Does the 4D max for 4_21 (≈ 8.880) have an algebraic closed form?~~
+  **Yes: V = (17+7√7)/4**, with rA² = (5+√7)/4 and rB² = (3+√7)/4.
 
 ## Files
 

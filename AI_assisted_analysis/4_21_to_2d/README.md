@@ -117,7 +117,7 @@ The three optimal subspaces are:
 |------------|-------------|---------------|-------|----------|
 | **8 → 2** | **3√3 ≈ 5.196** | **6** | **Regular hexagon** | **D₆, order 12** |
 | 8 → 3 | 8√7/3 ≈ 7.055 | 18 | Tented squashed cuboctahedron | D₃d, order 12 |
-| 8 → 4 | ≈ 8.880 | 48 | Two 24-cells (F₄ root arrangement) | W(F₄), order 1152 |
+| 8 → 4 | (17+7√7)/4 ≈ 8.880 | 48 | Two 24-cells (F₄ root arrangement) | W(F₄), order 1152 |
 
 ## Files
 

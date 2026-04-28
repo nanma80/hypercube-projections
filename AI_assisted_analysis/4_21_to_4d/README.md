@@ -75,8 +75,8 @@ The projection basis from `e8.py` (φ = (1+√5)/2):
 
 | Property | Value |
 |----------|-------|
-| Volume (unit roots) | 8.8800647944 |
-| Volume (2× roots) | 142.0810367 |
+| **Volume (unit roots)** | **(17 + 7√7)/4 ≈ 8.8800647944** |
+| Volume (2× roots) | 68 + 28√7 ≈ 142.0810367 |
 | Hull vertices | 48 |
 | Hull simplices (triangulated 3-faces) | 192 |
 | Edges (nearest-neighbor) | 144 |
@@ -84,6 +84,60 @@ The projection basis from `e8.py` (φ = (1+√5)/2):
 | Equilateral hull vertices | **No** (2 norm classes) |
 | Generator coalescence | **None** (all 8 generators distinct) |
 | **Symmetry group** | **W(F₄), order 1152** |
+
+### Closed-form solution
+
+The 48 hull vertices are the **F₄ root system** in a canonical coordinate frame:
+
+**Orbit A (24 "long" roots):** all permutations of **(±a, ±a, 0, 0)** where
+
+    a = √((5+√7)/8)
+
+These form a **24-cell** of circumradius rA = √((5+√7)/4) ≈ 1.3825.
+
+**Orbit B (24 "short" roots):** all permutations of **(±b, 0, 0, 0)** together
+with all **(±b/2, ±b/2, ±b/2, ±b/2)** where
+
+    b = √((3+√7)/4)
+
+These form a **dual 24-cell** of circumradius rB = √((3+√7)/4) ≈ 1.1880.
+
+**Key algebraic relations:**
+
+    rA² = (5 + √7)/4
+    rB² = (3 + √7)/4
+    rA² − rB² = 1/2         (exact)
+    rA²/rB² = 4 − √7        (norm² ratio)
+    V = (17 + 7√7)/4         (volume, conjectured)
+
+All values lie in Q(√7) — the same field as the 3D max volume 8√7/3.
+The appearance of √7 in both the 3D and 4D optima suggests a deep connection
+to the E₈ algebraic structure.
+
+**Verification:** The standard F₄ root system constructed with these radii
+reproduces all 10 pairwise distance classes of the numerical hull exactly,
+including the cross-orbit minimum distance of 1.0. The volume matches the
+conjectured (17+7√7)/4 to 13 significant digits.
+
+### The two 24-cells: sizes and orientation
+
+The two 24-cells are **different sizes** (rA/rB ≈ 1.164, as opposed to √2 ≈ 1.414
+in the standard F₄ root system). They are in the **standard F₄ dual orientation**:
+orbit A consists of "D₄ roots" (permutations of (±a,±a,0,0)) and orbit B consists
+of "dual D₄ roots" (axis vertices (±b,0,0,0) plus all-half vertices (±b/2)⁴).
+The relative rotation between the two 24-cells involves a 45° rotation in a
+2D plane combined with a reflection, which is exactly the D₄ triality
+transformation relating the D₄ root system to its dual.
+
+| | Orbit A ("long") | Orbit B ("short") |
+|---|---|---|
+| **Vertex form** | perms of (±a, ±a, 0, 0) | perms of (±b, 0, 0, 0) + (±b/2)⁴ |
+| |v|² | (5+√7)/4 ≈ 1.911 | (3+√7)/4 ≈ 1.411 |
+| # vertices | 24 | 24 |
+| Within-orbit edges | 96 | 96 |
+| Within-orbit distances | 4 classes | 4 classes |
+| E₈ integer roots | 8 | 12 |
+| E₈ half-integer roots | 16 | 12 |
 
 ### Symmetry: the Weyl group of F₄
 
@@ -111,32 +165,16 @@ Element orders and counts:
 
 ### The hull is two 24-cells: an F₄ root arrangement
 
-The 48 hull vertices split into **two orbits of 24** under W(F₄), each
-forming a **24-cell** (the self-dual regular 4-polytope with 24 vertices,
-96 edges, 96 triangular faces, 24 octahedral cells):
+The 48 hull vertices split into **two orbits of 24** under W(F₄). The 144
+nearest-neighbor edges of the full hull connect vertices **between** the two
+orbits (cross-orbit distance 1.0 < any within-orbit distance). This is the
+same combinatorial structure as the **F₄ root system** (48 roots = 24 long +
+24 short, each orbit a 24-cell).
 
-| | Orbit A (large) | Orbit B (small) |
-|---|---|---|
-| Vertices | 24 | 24 |
-| |v|² | 1.911 | 1.411 |
-| |v| | 1.383 | 1.188 |
-| Within-orbit edges | 96 | 96 |
-| Nearest neighbors | 8 per vertex | 8 per vertex |
-| Normalized inner products | {−1, −½, 0, +½} | {−1, −½, 0, +½} |
-| Matches 24-cell | **Yes** | **Yes** |
-| E₈ integer roots on orbit | 8 | 12 |
-| E₈ half-integer roots on orbit | 16 | 12 |
-
-The two 24-cells are **dually positioned** (one is rotated relative to the
-other), with the 144 nearest-neighbor edges of the full hull connecting
-vertices **between** the two orbits (cross-orbit distance 1.0 < any
-within-orbit distance). This is the same combinatorial structure as the
-**F₄ root system** (48 roots = 24 long + 24 short, each orbit a 24-cell).
-
-The norm² ratio is 1.911/1.411 ≈ 1.354, which differs from the standard
-F₄ ratio of 2:1. This means the 4D max-volume projection produces a
-non-standard-scale realization of the F₄ root arrangement, preserving the
-combinatorial and group-theoretic structure but with a different metric.
+The norm² ratio rA²/rB² = 4−√7 ≈ 1.354 differs from the standard F₄ ratio
+of 2:1. The 4D max-volume projection produces a non-standard-scale realization
+of the F₄ root system, where the two 24-cell radii are determined by the
+optimization and lie in Q(√7).
 
 ### Why F₄ appears: E₈ ⊃ F₄
 
