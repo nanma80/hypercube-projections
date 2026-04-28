@@ -41,7 +41,7 @@ So the heptagonal symmetric projection achieves about **89%** of the maximum.
 | Vertices | **6** | **18** (3 orbits of 6) | 240 | 48 | 120 |
 | Edges    | **6** | **48** (4 orbits of 12) | (huge) | 144 | 720 |
 | Facets   | — | **32** (all triangles) | (huge) | n/a | n/a |
-| Symmetry | **D₆, order 12** | **D₃d, order 12** (with −I) | D₇d, order 28 | unknown | H₄, order 14400 |
+| Symmetry | **D₆, order 12** | **D₃d, order 12** (with −I) | D₇d, order 28 | **W(F₄), order 1152** | H₄, order 14400 |
 | Equilateral hull verts? | Yes | No (3 norm classes) | Yes | No (2 norms) | Yes |
 | Volume (orthonormal frame) | 3√3 ≈ 5.196 | 8√7/3 ≈ 7.055 | 6.267 | 8.880 | 8.090 |
 
@@ -65,9 +65,22 @@ shortened by projection).
 
 The previous 4D study in `e8.py` already revealed that the H₄-symmetric
 projection (whose hull is the 600-cell) is **not** the 4D max-volume
-projection — the 4D max gives 48 vertices and is non-equilateral. The
-3D situation is analogous: the max-volume hull is non-equilateral and
-has only 18 vertices.
+projection — the 4D max gives 48 vertices (two 24-cells, an F₄ root
+arrangement with W(F₄) symmetry of order 1152). The 3D situation is
+analogous: the max-volume hull is non-equilateral and has only 18 vertices.
+
+### The 2D max-area plane is the equatorial plane of the 3D max
+
+The 6 hull vertices at z = 0 (the equatorial hexagon) form a **regular
+hexagon** inscribed in a circle of radius √2 — this is exactly the
+max-area 2D projection (area = 3√3, see `../4_21_to_2d/README.md`).
+The xy-plane of the canonicalized 3D projection is an A₂ root subsystem
+plane of E₈. The 3D optimum "builds on" the 2D optimum by adding a
+z-direction to capture more volume via the tented caps.
+
+This nesting is special: the 3D max does **not** embed in the 4D max
+(the best 3D volume within the 4D subspace is 7.033, only 99.7% of the
+true 3D max 8√7/3 ≈ 7.055).
 
 ## Striking structural finding: 4 axes coalesce
 

@@ -468,11 +468,11 @@ n-cube, it is **not** a zonotope, so shadow volumes are computed via
 
 ### Max-volume projections
 
-| 4_21 → kD | Max volume | Hull verts | Shape | Equilateral? | Closed form |
-|------------|-----------|------------|-------|--------------|-------------|
-| 8 → 2 | 5.1962 | 6 | Regular hexagon | Yes | **3√3** |
-| 8 → 3 | 7.0553 | 18 | Tented squashed cuboctahedron | No | **8√7/3** |
-| 8 → 4 | 8.8801 | 48 | Not named | No | Open |
+| 4_21 → kD | Max volume | Hull verts | Shape | Symmetry | Closed form |
+|------------|-----------|------------|-------|----------|-------------|
+| 8 → 2 | 5.1962 | 6 | Regular hexagon | D₆, order 12 | **3√3** |
+| 8 → 3 | 7.0553 | 18 | Tented squashed cuboctahedron | D₃d, order 12 | **8√7/3** |
+| 8 → 4 | 8.8801 | 48 | Two 24-cells (F₄ roots) | **W(F₄), order 1152** | Open |
 
 ### Key findings
 
@@ -480,9 +480,12 @@ n-cube, it is **not** a zonotope, so shadow volumes are computed via
   planes of E₈ are optimal. The hull has 6 vertices at full radius √2.
 - **3D max = 8√7/3** with 4 of 8 input axes coalescing (D₃d symmetry,
   order 12). See `4_21_to_3d/README.md` for the full closed-form solution.
-- **4D max ≈ 8.880** with no coalescence. Verified against the old `e8.py`
-  result (142.08 in 2×-scaled coordinates). The H₄-symmetric (600-cell)
-  projection achieves only 91% of this.
+- **4D max ≈ 8.880** — the 48 hull vertices form **two 24-cells** (an F₄
+  root arrangement) with symmetry group **W(F₄) of order 1152**. This is a
+  striking connection to the E₈ ⊃ F₄ algebraic structure. The H₄-symmetric
+  (600-cell) projection achieves only 91% of this.
+- **Subspace nesting**: 2D max ⊂ 3D max (the equatorial hexagon IS the A₂
+  plane), but 3D max ⊄ 4D max (only 99.7% achievable within the F₄ subspace).
 - **Coalescence pattern**: massive (6 axes) in 2D → partial (4 axes) in 3D
   → none in 4D.
 

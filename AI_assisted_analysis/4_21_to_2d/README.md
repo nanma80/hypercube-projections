@@ -85,13 +85,39 @@ where a ⊥ b. The kernel of the projection is 6-dimensional (rank 2 from
 rank 8), with a highly symmetric 4-dimensional subspace arising from the
 5-fold coalescence of axes 1,4,5,6,7.
 
+## The 2D max-area plane nests inside the 3D max-volume subspace
+
+The 3D max-volume shadow (see `../4_21_to_3d/README.md`) has an equatorial
+regular hexagon at z = 0 with 6 vertices at norm √2. Projecting the 3D
+shadow to its xy-plane gives **exactly the same regular hexagon** with area
+3√3 — the 2D maximum.
+
+This works because the xy-plane of the canonicalized 3D projection IS an A₂
+root subsystem plane. The 8 generators projected to xy are:
+
+    g₀_xy = (+1/√2, 0),  g₁_xy = (−1/√2, 0)       [|g| = 1/√2]
+    g₂_xy = (0, −1/√6)                              [|g| = 1/√6]
+    g₃_xy = g₄_xy = g₅_xy = g₆_xy = g₇_xy = (0, +1/√6)  [|g| = 1/√6]
+
+The two E₈ roots ±(e₁ − e₂) project to (±√2, 0) on the hexagon, and four
+half-integer roots project to the remaining four hexagonal vertices at 60°
+intervals — confirming A₂ structure.
+
+**The nesting is one-way.** The 2D max embeds in the 3D max, but the 3D
+max does NOT embed in the 4D max: the best 3D volume achievable within
+the 4D max-volume subspace is only 7.033 (99.7% of the true 3D max 7.055).
+Similarly, the best 2D area within the 4D subspace is 4.966 (95.6% of 3√3).
+The three optimal subspaces are:
+
+    2D (A₂ plane) ⊂ 3D (D₃d subspace) ⊄ 4D (F₄ subspace)
+
 ## Comparison across dimensions
 
 | 4_21 → kD | Volume/Area | Hull vertices | Shape | Symmetry |
 |------------|-------------|---------------|-------|----------|
 | **8 → 2** | **3√3 ≈ 5.196** | **6** | **Regular hexagon** | **D₆, order 12** |
 | 8 → 3 | 8√7/3 ≈ 7.055 | 18 | Tented squashed cuboctahedron | D₃d, order 12 |
-| 8 → 4 | ≈ 8.880 | 48 | Not a named polytope | Unknown |
+| 8 → 4 | ≈ 8.880 | 48 | Two 24-cells (F₄ root arrangement) | W(F₄), order 1152 |
 
 ## Files
 
