@@ -258,3 +258,34 @@ that shape the 2D and 3D optima.
   computes the H₄ baseline, runs basin-hopping over ℝ⁴ˣ⁸ matrices, and
   cross-checks against the old `e8.py` optimal bases.
 - `../../e8.py` — the original Python 2 analysis (preserved for reference).
+- `generate_stl.py` — builds ball-and-stick STL wireframes from the closed-form
+  F₄ vertices, projected to 3D via two dual viewpoints.
+- `max_volume_421_to_4d_short_root_view.stl` — 4D→3D projection along the
+  short-root direction (1,1,1,1)/2. An orbit B vertex at the pole. S₄ symmetry
+  (order 24) in the 3D projection.
+- `max_volume_421_to_4d_long_root_view.stl` — 4D→3D projection along the
+  long-root direction (1,1,0,0)/√2. An orbit A vertex at the pole. D₄×Z₂
+  symmetry (order 16) in the 3D projection. This is the "dual" viewpoint
+  where the roles of the two 24-cells are exchanged.
+
+### Projection coordinates
+
+The two STL views use the following orthonormal 3D bases within the 4D
+space (columns of the 4×3 projection matrix):
+
+**Short-root view** (project along (1,1,1,1)/2):
+
+    x = (1, −1, 0, 0) / √2
+    y = (1, 1, −2, 0) / √6
+    z = (1, 1, 1, −3) / √12
+
+**Long-root view** (project along (1,1,0,0)/√2):
+
+    x = (1, −1, 0, 0) / √2
+    y = (0, 0, 1, 0)
+    z = (0, 0, 0, 1)
+
+Both views produce 7 depth layers with 33 distinct 3D points. In the
+short-root view, orbit B vertices sit at the deepest layers (pole/antipole);
+in the long-root view, orbit A vertices take that role — a clean swap
+reflecting the F₄ long/short root duality.

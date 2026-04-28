@@ -1,15 +1,37 @@
-"""Generate STL of the max-volume 4_21->4D hull, projected to 3D as a wireframe.
+"""Generate STL wireframes of the max-volume 4_21->4D hull (F4 root system).
 
 The 48 hull vertices are the F4 root system with closed-form coordinates:
-  Orbit A (24 "long"): perms of (+-a, +-a, 0, 0), a = sqrt((5+sqrt(7))/8)
-  Orbit B (24 "short"): perms of (+-b, 0, 0, 0) + (+-b/2)^4, b = sqrt((3+sqrt(7))/4)
 
-We project from 4D to 3D via an orthographic projection along a generic
-direction (slightly off-axis to avoid degeneracy), then build balls + sticks.
-The two orbits are given different ball sizes for visual distinction.
+  Orbit A — 24 "long" roots, |v|^2 = (5+sqrt(7))/4:
+    All permutations of (+-a, +-a, 0, 0) where a = sqrt((5+sqrt(7))/8)
+
+  Orbit B — 24 "short" roots, |v|^2 = (3+sqrt(7))/4:
+    All permutations of (+-b, 0, 0, 0)           (8 vertices)
+    All sign choices (+-b/2, +-b/2, +-b/2, +-b/2) (16 vertices)
+    where b = sqrt((3+sqrt(7))/4)
+
+Two orthographic 4D->3D projections are generated, one for each type of
+root at the "pole" (i.e. along the projection direction):
+
+  Short-root view: project along (1,1,1,1)/2 (an orbit B direction).
+    - An orbit B vertex sits at the pole/antipole.
+    - Preserved symmetry: S4 (all permutations of coords), order 24.
+    - 3D complement basis: (1,-1,0,0)/sqrt(2), (1,1,-2,0)/sqrt(6),
+      (1,1,1,-3)/sqrt(12).
+
+  Long-root view: project along (1,1,0,0)/sqrt(2) (an orbit A direction).
+    - An orbit A vertex sits at the pole/antipole.
+    - Preserved symmetry: D4 x Z2 (reflections in all 3 axes + yz swap
+      + C4 in yz plane + inversion), order 16.
+    - 3D complement basis: (1,-1,0,0)/sqrt(2), (0,0,1,0), (0,0,0,1).
+
+Both views have 7 depth layers (symmetric about 0) and produce 33 distinct
+3D points from the 48 vertices. Orbit A balls are larger (0.06) and orbit B
+balls smaller (0.045).
 
 Outputs:
-  max_volume_421_to_4d_wireframe.stl
+  max_volume_421_to_4d_short_root_view.stl
+  max_volume_421_to_4d_long_root_view.stl
 """
 import itertools
 import numpy as np
@@ -82,65 +104,70 @@ for i, j in edges_4d:
     elens[d] = elens.get(d, 0) + 1
 print(f"  Edge length distribution: {dict(sorted(elens.items()))}")
 
-# ---- Project 4D -> 3D ----
-# Use a slightly tilted projection to reveal structure.
-# Drop the 4th coordinate after a small rotation to avoid degeneracy.
-theta1 = 0.3   # tilt angles (radians)
-theta2 = 0.2
-# Rotation in the (0,3) plane
-R1 = np.eye(4)
-R1[0,0] = np.cos(theta1); R1[0,3] = -np.sin(theta1)
-R1[3,0] = np.sin(theta1); R1[3,3] = np.cos(theta1)
-# Rotation in the (1,3) plane
-R2 = np.eye(4)
-R2[1,1] = np.cos(theta2); R2[1,3] = -np.sin(theta2)
-R2[3,1] = np.sin(theta2); R2[3,3] = np.cos(theta2)
+# ---- Define both projection views ----
+views = [
+    {
+        "name": "short_root_view",
+        "desc": "Short-root pole: (1,1,1,1)/2 — S4 symmetry, orbit B at pole",
+        "basis": np.column_stack([
+            np.array([1, -1, 0, 0]) / np.sqrt(2),
+            np.array([1, 1, -2, 0]) / np.sqrt(6),
+            np.array([1, 1, 1, -3]) / np.sqrt(12),
+        ]),
+    },
+    {
+        "name": "long_root_view",
+        "desc": "Long-root pole: (1,1,0,0)/√2 — D4×Z2 symmetry, orbit A at pole",
+        "basis": np.column_stack([
+            np.array([1, -1, 0, 0]) / np.sqrt(2),
+            np.array([0, 0, 1, 0]),
+            np.array([0, 0, 0, 1]),
+        ]),
+    },
+]
 
-V4_rot = V4 @ (R1 @ R2).T
-V3 = V4_rot[:, :3]  # orthographic projection: drop 4th coordinate
-print(f"\n3D projected vertices: {len(V3)}")
-
-# ---- Build STL: balls + sticks ----
+# ---- Build STL for each view ----
 ball_radius_A = 0.06   # larger for orbit A
 ball_radius_B = 0.045  # smaller for orbit B
 stick_radius = 0.015
-
-meshes = []
-
-# Vertex balls
-for idx in range(len(V3)):
-    r = ball_radius_A if idx < 24 else ball_radius_B
-    s = trimesh.creation.icosphere(subdivisions=2, radius=r)
-    s.apply_translation(V3[idx])
-    meshes.append(s)
-
-# Edge cylinders
 z_axis = np.array([0., 0., 1.])
-for i, j in edges_4d:
-    p, q = V3[i], V3[j]
-    seg = q - p
-    L = np.linalg.norm(seg)
-    if L < 1e-6:
-        continue
-    cyl = trimesh.creation.cylinder(radius=stick_radius, height=L, sections=12)
-    direction = seg / L
-    if np.allclose(direction, z_axis):
-        R = np.eye(4)
-    elif np.allclose(direction, -z_axis):
-        R = trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0])
-    else:
-        axis = np.cross(z_axis, direction)
-        axis /= np.linalg.norm(axis)
-        angle = np.arccos(np.clip(np.dot(z_axis, direction), -1, 1))
-        R = trimesh.transformations.rotation_matrix(angle, axis)
-    cyl.apply_transform(R)
-    cyl.apply_translation((p + q) / 2.0)
-    meshes.append(cyl)
-
-result = trimesh.util.concatenate(meshes)
 out_dir = Path(__file__).parent
-out_file = out_dir / "max_volume_421_to_4d_wireframe.stl"
-result.export(out_file)
-print(f"\nWrote {out_file}")
-print(f"  {len(result.faces)} triangles, {len(result.vertices)} mesh vertices")
-print(f"  48 balls ({ball_radius_A:.3f} / {ball_radius_B:.3f}) + {len(edges_4d)} sticks ({stick_radius:.3f})")
+
+for view in views:
+    print(f"\n--- {view['desc']} ---")
+    V3 = V4 @ view["basis"]
+    print(f"3D projected vertices: {len(V3)}")
+
+    meshes = []
+    for idx in range(len(V3)):
+        r = ball_radius_A if idx < 24 else ball_radius_B
+        s = trimesh.creation.icosphere(subdivisions=2, radius=r)
+        s.apply_translation(V3[idx])
+        meshes.append(s)
+
+    for i, j in edges_4d:
+        p, q = V3[i], V3[j]
+        seg = q - p
+        L = np.linalg.norm(seg)
+        if L < 1e-6:
+            continue
+        cyl = trimesh.creation.cylinder(radius=stick_radius, height=L, sections=12)
+        direction = seg / L
+        if np.allclose(direction, z_axis):
+            R = np.eye(4)
+        elif np.allclose(direction, -z_axis):
+            R = trimesh.transformations.rotation_matrix(np.pi, [1, 0, 0])
+        else:
+            axis = np.cross(z_axis, direction)
+            axis /= np.linalg.norm(axis)
+            angle = np.arccos(np.clip(np.dot(z_axis, direction), -1, 1))
+            R = trimesh.transformations.rotation_matrix(angle, axis)
+        cyl.apply_transform(R)
+        cyl.apply_translation((p + q) / 2.0)
+        meshes.append(cyl)
+
+    result = trimesh.util.concatenate(meshes)
+    out_file = out_dir / f"max_volume_421_to_4d_{view['name']}.stl"
+    result.export(out_file)
+    print(f"Wrote {out_file}")
+    print(f"  {len(result.faces)} triangles, {len(result.vertices)} mesh vertices")
