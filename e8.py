@@ -251,7 +251,7 @@ for index, vertex in enumerate(hull_vertices):
 
 # 4_21:
 # bases based on phi: Volume of the known bases:  129.4427191
-# convex hull of the known bases: 600 cell. 600 vertices, 720 edges, all same norm
+# convex hull of the known bases: 600 cell. 120 vertices, 720 edges, all same norm
 # optimal bases: Volume of max shadow:  142.08103671
 # Max achieving bases:
 # array([[-0.20428321, -0.59858509,  0.06389811, -0.59506347,  0.24978869,

@@ -27,9 +27,9 @@ shadow).
 |-------------------------------------------|-----------|--------|
 | **Max-area (A₂ plane, this work)**        | 5.1962    | 1.000  |
 | B₈ Petrie plane (regular 8-gon)           | 4.6447    | 0.894  |
-| 2 + 2√2 (8-cube max, local max for 4_21) | 4.8284    | 0.929  |
+| 8-cube max plane (area 2 + 2√2, a local max for 4_21) | 4.8284 | 0.929  |
 | D₈ Petrie plane                           | 4.5306    | 0.872  |
-| E₈ phi-based 2D (first 2 rows of H₄)     | 4.0652    | 0.782  |
+| E₈ phi-based 2D (first 2 rows of H₄)      | 4.0652    | 0.782  |
 
 ### Hull combinatorics
 
@@ -50,9 +50,13 @@ The E₈ root system contains **A₂** as a root subsystem: any three E₈ roots
 generate a 2D plane containing 6 roots forming a regular hexagon:
 {±r₁, ±r₂, ±r₃}.
 
-For example, r₁ = e₁ + e₂ = (1,1,0,0,0,0,0,0), r₂ = e₁ − e₃ = (1,0,−1,0,0,0,0,0),
-r₃ = e₂ + e₃ = (0,1,1,0,0,0,0,0). These are all E₈ integer roots at mutual
-inner product 1 (= |r|²cos 60° = 2 · ½).
+For example, the plane spanned by basis₁, basis₂ below contains the
+following A₂ trio of E₈ roots, at mutual inner product 1
+(= |r|²cos 60° = 2 · ½):
+
+    r₁ = e₀ − e₁ = ( 1, −1,  0,  0,  0,  0,  0,  0)            (integer root)
+    r₂ = (1/2) · ( 1, −1, −1,  1,  1,  1,  1,  1)               (half-integer root)
+    r₃ = r₁ − r₂ = (1/2) · ( 1, −1,  1, −1, −1, −1, −1, −1)    (half-integer root)
 
 Projecting all 240 E₈ roots onto this 2D plane:
 - The 6 A₂ roots project to the hexagon vertices (at full norm √2)
@@ -71,37 +75,42 @@ All A₂ subsystem planes of E₈ are conjugate under the Weyl group W(E₈),
 so the maximum is achieved by any such plane and the orbit under W(E₈) gives
 all optimal projections.
 
-## Generator coalescence: 1 + 5 + 1 + 1 pattern
+## Explicit 2×8 projection basis
 
-The optimal 2×8 projection matrix Q has generators g_i = Q[i,:] (row i)
-falling into just 2 directions:
+A canonical 2×8 orthonormal projection Q whose image of the 240 E₈ roots is
+the regular hexagon above:
 
-    g₀ = +a                          |a| = 1/√6
-    g₁ = g₄ = g₅ = g₆ = g₇ = −a    (5 coalesced axes)
-    g₂ = +b                          |b| = 1/√2
-    g₃ = −b
+    basis₁ = (1/√2) · (+1, −1,  0,  0,  0,  0,  0,  0)
+    basis₂ = (1/√6) · ( 0,  0, −1, +1, +1, +1, +1, +1)
 
-where a ⊥ b. The kernel of the projection is 6-dimensional (rank 2 from
-rank 8), with a highly symmetric 4-dimensional subspace arising from the
-5-fold coalescence of axes 1,4,5,6,7.
+Both basis vectors are unit length and orthogonal (Q Qᵀ = I). They have
+disjoint support: basis₁ on axes 0, 1 (a pair) and basis₂ on axes 2–7
+(a sextet, with a 1+5 sign split).
 
-## The 2D max-area plane nests inside the 3D max-volume subspace
+These are exactly the **first two rows** of the 3D max-volume projection
+basis (see `../4_21_to_3d/README.md`), so the 2D max plane sits literally
+inside the 3D max subspace.
 
-The 3D max-volume shadow (see `../4_21_to_3d/README.md`) has an equatorial
-regular hexagon at z = 0 with 6 vertices at norm √2. Projecting the 3D
-shadow to its xy-plane gives **exactly the same regular hexagon** with area
-3√3 — the 2D maximum.
+**Generator coalescence (1 + 5 + 1 + 1 pattern).** The columns of Q give
+the 8 generators g_i (image of E₈ axis i in ℝ²), and they fall into just
+**2 distinct directions**:
 
-This works because the xy-plane of the canonicalized 3D projection IS an A₂
-root subsystem plane. The 8 generators projected to xy are:
+- axes 0, 1 contribute opposite generators (±1/√2, 0) along the basis₁
+  direction (1 + 1 split);
+- axis 2 contributes (0, −1/√6) and axes 3, 4, 5, 6, 7 all coalesce to
+  (0, +1/√6) along the basis₂ direction (1 + 5 split).
 
-    g₀_xy = (+1/√2, 0),  g₁_xy = (−1/√2, 0)       [|g| = 1/√2]
-    g₂_xy = (0, −1/√6)                              [|g| = 1/√6]
-    g₃_xy = g₄_xy = g₅_xy = g₆_xy = g₇_xy = (0, +1/√6)  [|g| = 1/√6]
+The kernel of the projection is 6-dimensional (rank 2 from rank 8), and
+contains a highly symmetric 4-dimensional subspace arising from the
+5-fold coalescence of axes 3, 4, 5, 6, 7.
 
-The two E₈ roots ±(e₁ − e₂) project to (±√2, 0) on the hexagon, and four
-half-integer roots project to the remaining four hexagonal vertices at 60°
-intervals — confirming A₂ structure.
+## The 2D max plane sits inside the 3D and 4D subspaces (one-way only)
+
+Since the 2D basis is literally the first two rows of the 3D max-volume
+projection basis (see `../4_21_to_3d/README.md`), the equatorial xy-plane
+of the canonicalized 3D shadow IS this A₂ plane, and projecting the 3D
+shadow to its xy-plane gives **exactly the same regular hexagon** with
+area 3√3.
 
 **The nesting is one-way.** The 2D max embeds in the 3D max, but the 3D
 max does NOT embed in the 4D max: the best 3D volume achievable within

@@ -39,7 +39,7 @@ So the heptagonal symmetric projection achieves about **89%** of the maximum.
 | | Max-area (2D) | Max-volume (3D) | 7-fold (D₇d, 3D) | 4D max-volume | H₄ to 4D (600-cell) |
 |---|---|---|---|---|---|
 | Vertices | **6** | **18** (3 orbits of 6) | 240 | 48 | 120 |
-| Edges    | **6** | **48** (4 orbits of 12) | (huge) | 144 | 720 |
+| Edges    | **6** | **48** (4 orbits of 12) | (huge) | 240 | 720 |
 | Facets   | — | **32** (all triangles) | (huge) | n/a | n/a |
 | Symmetry | **D₆, order 12** | **D₃d, order 12** (with −I) | D₇d, order 28 | **W(F₄), order 1152** | H₄, order 14400 |
 | Equilateral hull verts? | Yes | No (3 norm classes) | Yes | No (2 norms) | Yes |
@@ -84,11 +84,11 @@ true 3D max 8√7/3 ≈ 7.055).
 
 ## Striking structural finding: 4 axes coalesce
 
-The optimal 3×8 projection matrix Q (orthonormal columns) consistently
-has **four identical rows**, e.g. (different runs may permute which
+The optimal 3×8 projection matrix Q (orthonormal rows) consistently
+has **four identical columns**, e.g. (different runs may permute which
 4 of the 8 indices are involved):
 
-    row a = row b = row c = row d ≈ (0.1565, -0.0989, 0.4547)
+    column a = column b = column c = column d ≈ (0.1565, -0.0989, 0.4547)
 
 In other words: **4 of the 8 ℝ⁸ axes project to a single direction in ℝ³.**
 
@@ -99,7 +99,7 @@ inside the 4-dimensional coordinate subspace {axes a, b, c, d}. The full
 kernel is 5-dimensional (since the projection has rank 3); K₀ accounts
 for 3 of those 5 dimensions, the other 2 are "generic".
 
-## Factorization 8 → 5 → 3 (answers user question)
+## Factorization 8 → 5 → 3
 
 **Yes**: because K₀ ⊂ ker(π), the optimal 3D projection π : ℝ⁸ → ℝ³
 factors through ℝ⁸/K₀ ≅ ℝ⁵:
@@ -110,7 +110,7 @@ where A is the **explicit "coalesce 4 axes"** linear map (R⁵-orthonormal
 columns):
 
     column 0 of A = (½, ½, ½, ½, 0, 0, 0, 0)ᵀ      ← coalesced 4 axes
-    column 1..4 of A = e₅, e₆, e₇, e₈              ← kept axes
+    columns 1..4 of A = e₄, e₅, e₆, e₇             ← kept axes
 
 and B is some 3D subspace of ℝ⁵.
 
@@ -268,7 +268,7 @@ geometry. For exact 3D visualization we therefore use STL instead
 
 ### Construction recipe (for reproducing the shape)
 
-The 8 canonicalized generators (rows of the 8×3 orthonormal matrix Q,
+The 8 canonicalized generators (columns of the 3×8 orthonormal matrix Q,
 recorded numerically in `max_volume_421_to_3d_generators.txt`):
 
       g_0  ≈ (+1/√2,  0,       +0.16366)        (~half-norm 0.7258)
@@ -302,20 +302,20 @@ optimum — see next section.
 
 ### Closed-form solution
 
-Symbolically, the canonicalized generators are
+Symbolically, the canonicalized projection Q has rows
 
-      g_0  = (+1/√2,  0,       +3/(4√21))
-      g_1  = (−1/√2,  0,       +3/(4√21))
-      g_2  = ( 0,    −1/√6,    +7/(4√21))
-      g_3  = ( 0,    +1/√6,   −13/(4√21))
-      g_4=g_5=g_6=g_7
-           = ( 0,    +1/√6,    +5/(4√21))
+    basis₁ = (1/√2)    · (+1, −1,  0,  0,  0,  0,  0,  0)
+    basis₂ = (1/√6)    · ( 0,  0, −1, +1, +1, +1, +1, +1)
+    basis₃ = (1/(4√21)) · (+3, +3, +7, −13, +5, +5, +5, +5)
 
-i.e. all four z-components share the denominator **4√21**, with
-integer numerators **(3, 3, 7, −13, 5, 5, 5, 5)** that sum to zero
-(centering condition), satisfy the y/z-orthogonality `−7 + (−13) + 4·5 = 0`,
-and have squared sum `2·9 + 49 + 169 + 4·25 = 336 = 16·21` so that
-each column of Q is a unit vector.
+Each basis_i is unit length and the three pairwise dot products vanish
+(basis₁ · basis₂ = 0 by disjoint support; basis₁ · basis₃ = (3 − 3)/(√2·4√21)
+= 0; basis₂ · basis₃ = (−7 − 13 + 4·5)/(√6·4√21) = 0). The columns of Q
+are the eight 3D generators g₀…g₇ above.
+
+The integer numerators **(3, 3, 7, −13, 5, 5, 5, 5)** of basis₃ satisfy
+the y/z-orthogonality `−7 + (−13) + 4·5 = 0` and have squared sum
+`2·9 + 49 + 169 + 4·25 = 336 = 16·21` (the unit-norm condition for basis₃).
 
 **Maximum volume:** plugging these exact generators into the 18-vertex
 hull formula yields

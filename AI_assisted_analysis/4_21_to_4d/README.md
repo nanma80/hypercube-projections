@@ -34,22 +34,6 @@ instead of √2. In 4D, this multiplies volumes by 2⁴ = 16:
 | H₄ volume | 129.4427191 | 8.0901699437 | 16.00 |
 | Max volume | 142.0810367 | 8.8800647944 | 16.00 |
 
-### Correction: old e8.py comment error
-
-The old `e8.py` comments stated:
-
-> "convex hull of the known bases: 600 cell. **600 vertices**, 720 edges"
-
-This is **incorrect**. The 600-cell has **120 vertices**, 720 edges, 1200
-triangular faces, and 600 tetrahedral cells. The "600" in "600-cell" refers
-to the number of cells, not vertices. Our verification confirms:
-
-- **120 hull vertices** (not 600)
-- 720 edges ✓
-- All hull vertices equilateral (norm 1.203 in orthonormal frame) ✓
-- Only 120 of the 240 E₈ roots lie on the hull boundary; the other 120
-  project to interior points of the 600-cell
-
 ## Detailed results
 
 ### H₄ (phi-based) projection: the 600-cell
@@ -78,9 +62,9 @@ The projection basis from `e8.py` (φ = (1+√5)/2):
 | **Volume (unit roots)** | **(17 + 7√7)/4 ≈ 8.8800647944** |
 | Volume (2× roots) | 68 + 28√7 ≈ 142.0810367 |
 | Hull vertices | 48 |
-| Hull simplices (triangulated 3-faces) | 192 |
-| Edges (nearest-neighbor) | 144 |
-| Vertex degree | 6 (uniform) |
+| f-vector | (48, 240, 384, 192) |
+| Edges | 240 = 144 (length 1, A–B) + 96 (length √((5+√7)/4), A–A) |
+| Vertex degree | 20 (orbit A), 12 (orbit B) |
 | Equilateral hull vertices | **No** (2 norm classes) |
 | Generator coalescence | **None** (all 8 generators distinct) |
 | **Symmetry group** | **W(F₄), order 1152** |
@@ -119,25 +103,64 @@ reproduces all 10 pairwise distance classes of the numerical hull exactly,
 including the cross-orbit minimum distance of 1.0. The volume matches the
 conjectured (17+7√7)/4 to 13 significant digits.
 
-### The two 24-cells: sizes and orientation
-
-The two 24-cells are **different sizes** (rA/rB ≈ 1.164, as opposed to √2 ≈ 1.414
-in the standard F₄ root system). They are in the **standard F₄ dual orientation**:
-orbit A consists of "D₄ roots" (permutations of (±a,±a,0,0)) and orbit B consists
-of "dual D₄ roots" (axis vertices (±b,0,0,0) plus all-half vertices (±b/2)⁴).
-The relative rotation between the two 24-cells involves a 45° rotation in a
-2D plane combined with a reflection, which is exactly the D₄ triality
-transformation relating the D₄ root system to its dual.
+**Orbit comparison:**
 
 | | Orbit A ("long") | Orbit B ("short") |
 |---|---|---|
 | **Vertex form** | perms of (±a, ±a, 0, 0) | perms of (±b, 0, 0, 0) + (±b/2)⁴ |
-| |v|² | (5+√7)/4 ≈ 1.911 | (3+√7)/4 ≈ 1.411 |
+| \|v\|² | (5+√7)/4 ≈ 1.911 | (3+√7)/4 ≈ 1.411 |
 | # vertices | 24 | 24 |
 | Within-orbit edges | 96 | 96 |
 | Within-orbit distances | 4 classes | 4 classes |
 | E₈ integer roots | 8 | 12 |
 | E₈ half-integer roots | 16 | 12 |
+
+**Orientation.** The two 24-cells are in the standard F₄ **dual**
+orientation: orbit A consists of "D₄ roots" (perms of (±a,±a,0,0)) and
+orbit B consists of "dual D₄ roots" (axis vertices (±b,0,0,0) plus all-half
+vertices (±b/2)⁴). The relative rotation between them is a 45° rotation in
+a 2D plane combined with a reflection — the D₄ triality transformation.
+
+**Non-standard scale.** The norm² ratio rA²/rB² = 4 − √7 ≈ 1.354 differs
+from both the standard F₄ ratio (2:1) and the equal-radii ratio (1:1). The
+4D max-volume projection produces a non-standard-scale realization of the
+F₄ root system, with the two 24-cell radii determined by the optimization
+and lying in Q(√7). The 144 nearest-neighbor (length-1) edges connect
+vertices **between** the two orbits — the same combinatorial pattern as the
+F₄ root system (48 roots = 24 long + 24 short, each orbit a 24-cell).
+
+### Explicit 4×8 projection basis
+
+A canonical 4×8 orthonormal projection M whose action on the 240 E₈ roots
+yields the F₄ hull above (in the canonical 4D frame) has all entries equal
+to ±c or ±d with
+
+    c = √((5 + √7)/32) = a/2          ≈ 0.488805
+    d = √((3 − √7)/32) = 1/(8b)        ≈ 0.105215
+
+(equivalently c² + d² = 1/4 and c² − d² = (1+√7)/16). One such matrix:
+
+    basis₁ = ( +d, −c, −d, +c, −d, −d, −c, −c )
+    basis₂ = ( +d, −c, +d, +c, −d, +d, +c, +c )
+    basis₃ = ( −c, +d, +c, +d, −c, −c, +d, −d )
+    basis₄ = ( +d, −c, +d, −c, +d, −d, +c, −c )
+
+Properties:
+- Each basis vector has 4 entries of magnitude c and 4 of magnitude d;
+  norm² = 4c² + 4d² = 1 (the four basis vectors are orthonormal, M Mᵀ = I).
+- Each column has either {1·c, 3·d} (columns 1,3,5,6) — call these "small"
+  generators with norm² = c² + 3d² = (7−√7)/16 ≈ 0.272, or
+  {3·c, 1·d} (columns 2,4,7,8) — "large" generators with norm² =
+  3c² + d² = (9+√7)/16 ≈ 0.728.
+- Total Σ_j |g_j|² = 4·(7−√7)/16 + 4·(9+√7)/16 = 64/16 = 4 ✓
+  (= ambient dim 4 since the basis is orthonormal).
+- The 4+4 split into two generator-norm classes matches the "no generator
+  coalescence but two norm classes" observation noted earlier.
+
+The matrix is unique only up to W(F₄) (order 1152) acting on the basis
+vectors (rotations/reflections in the 4D image) and S₈ × {±1}⁸ on columns
+(relabelling/sign-flipping of E₈ axes). Many sign patterns give equally
+valid bases — the table above is one specific representative.
 
 ### Symmetry: the Weyl group of F₄
 
@@ -162,21 +185,6 @@ Element orders and counts:
 | 8 | 144 |
 | 12 | 96 |
 | **Total** | **1152** |
-
-### The hull is two 24-cells: an F₄ root arrangement
-
-The 48 hull vertices split into **two orbits of 24** under W(F₄): orbit A
-(perms of (±a, ±a, 0, 0)) forming one 24-cell, and orbit B (axis perms of
-(±b, 0, 0, 0) plus all (±b/2, ±b/2, ±b/2, ±b/2)) forming the dual 24-cell.
-The 144 nearest-neighbor edges of the hull connect vertices **between** the
-two orbits (cross-orbit distance 1.0 < any within-orbit distance). This is
-the same combinatorial pattern as the **F₄ root system** (48 roots = 24 long
-+ 24 short, each orbit a 24-cell).
-
-The norm² ratio rA²/rB² = 4−√7 ≈ 1.354 differs from both the standard F₄
-ratio (2:1) and the equal-radii ratio (1:1). The 4D max-volume projection
-produces a non-standard-scale realization of the F₄ root system, where the
-two 24-cell radii are determined by the optimization and lie in Q(√7).
 
 ### f-vector and combinatorics
 
@@ -223,6 +231,34 @@ Geometrically: take the orbit-A 24-cell and erect a tetrahedral cap on
 **both sides** of each of its 96 triangular faces (96 × 2 = 192 caps). Each
 cap's apex is an orbit-B vertex. The orbit-B 24-cell sits inside but its
 own faces and edges are not visible on the boundary.
+
+### Cell shape: right regular trigonal pyramid
+
+All 192 cells are **congruent** (same edge multiset: three of length 1 and
+three of length L = √((5+√7)/4) ≈ 1.3825). Each is a **right pyramid over
+an equilateral triangle** — i.e. the orbit-B apex sits exactly above the
+centroid of the equilateral A-triangle base. Symmetry group of one cell is
+**C₃ᵥ** (order 6).
+
+| Quantity | Closed form | Value |
+|---|---|---|
+| Base edge (A–A) | L = √((5+√7)/4) | 1.3825 |
+| Apex edge (A–B) | 1 (exactly) | 1.0000 |
+| Apex height above base | h = √((7−√7)/12) | 0.6024 |
+| Apex angle (at B, between two apex edges) | arccos((3−√7)/8) | 87.462° |
+| Vertex angle at A in side face | arccos(L/2) | 46.269° |
+| Dihedral along A–A edge | arccos(0.5523) | 56.473° |
+| Dihedral along A–B edge | arccos(0.0424) | 87.570° |
+| Cell 3-volume | V_cell = √((77+19√7)/4608) | 0.1662 |
+
+The apex angle and the A–B dihedral are both close to (but not exactly) 90°
+— both would equal 90° if L² = 2; here L² = (5+√7)/4 ≈ 1.911. The cell is
+**not a regular tetrahedron**, **not a classical isoceles tetrahedron**
+(opposite-edge-equal), and **not orthocentric** — just a generic regular
+trigonal pyramid scaled by the volume-maximizing edge ratio. Hull volume
+check: with all 192 cells congruent and W(F₄)-equivalent, the inradius
+(common distance from origin to each cell hyperplane) is r_in² = (35+13√7)/56,
+and (1/4)·192·V_cell·r_in = (17+7√7)/4 ✓.
 
 ### Comparison with the disphenoidal 288-cell
 
@@ -271,13 +307,11 @@ E₈ roots that project to the boundary, arranged as two 24-cells.
 
 ### Generator structure
 
-The 8 generators fall into **2 norm classes** (but no coalescence):
-- 4 generators with |g| ≈ 0.853 (axes 0, 4, 6, 7 in one run)
-- 4 generators with |g| ≈ 0.522 (axes 1, 2, 3, 5)
-
-This 4+4 split is reminiscent of the block decomposition V = V₁ ⊕ V₂ found
-in the 8→4 max-shadow **zonotope** (8-cube projection), though the 4_21 is
-not a zonotope so the structural interpretation differs.
+The 4+4 split of the 8 generators into two norm classes (|g| = √((9+√7)/16) ≈
+0.853 and √((7−√7)/16) ≈ 0.522, see the explicit basis above) is reminiscent
+of the block decomposition V = V₁ ⊕ V₂ found in the 8→4 max-shadow
+**zonotope** (8-cube projection), though the 4_21 is not a zonotope so the
+structural interpretation differs.
 
 ### Local maxima
 
@@ -373,7 +407,7 @@ Q(√2, √3, √7), which would have to be added to vZome as a custom field.
   symmetry (order 16) in the 3D projection. This is the "dual" viewpoint
   where the roles of the two 24-cells are exchanged.
 
-### Projection coordinates
+### Projection coordinates (4D → 3D, for STL views)
 
 The two STL views use the following orthonormal 3D bases within the 4D
 space (columns of the 4×3 projection matrix):
