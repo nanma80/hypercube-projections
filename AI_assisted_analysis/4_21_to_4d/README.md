@@ -252,6 +252,27 @@ The F₄ connection suggests the 4D optimum is governed by the E₈ ⊃ F₄
 algebraic structure rather than the lower-dimensional geometric constraints
 that shape the 2D and 3D optima.
 
+## vZome impossibility
+
+Like the 3D max-volume hull, the 4D F₄ hull is **not constructible in any of
+vZome's standard fields**. The 48 vertex coordinates depend on
+
+- a² = (5 + √7)/8   (orbit A)
+- b² = (3 + √7)/4   (orbit B)
+
+and the ratio (b/a)² = (8 + 2√7)/9 still lies in Q(√7), so no global rescaling
+can clear √7. Projecting to 3D via either the long-root or short-root view
+introduces only √2, √3, √6 from the basis, leaving the projected coordinates
+in Q(√2, √3, √7).
+
+vZome's built-in fields — rational, golden Q(φ), root2 Q(√2), root3 Q(√3),
+heptagonal Q(2cos π/7), snubDodec, snubCube — none contain √7. (The
+heptagonal field is a totally real cubic with discriminant 49, but its only
+quadratic subfield is Q(√−7), not Q(√7).) Since the field requirement is
+isometry-invariant, no rotation or choice of projection direction can remove
+√7. The smallest field that supports both the 3D and 4D max-volume hulls is
+Q(√2, √3, √7), which would have to be added to vZome as a custom field.
+
 ## Files
 
 - `../../max_shadow_421_to_4d.py` — main script. Builds the 240 E₈ roots,

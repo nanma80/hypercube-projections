@@ -73,7 +73,7 @@ print(f"4D vertices: {len(V4)} (24 + 24)")
 hull4 = ConvexHull(V4)
 V_target = (17 + 7*s7) / 4
 print(f"4D hull volume: {hull4.volume:.10f}")
-print(f"Target (17+7√7)/4: {V_target:.10f}")
+print(f"Target (17+7*sqrt(7))/4: {V_target:.10f}")
 print(f"Hull has {len(hull4.vertices)} vertices, {len(hull4.simplices)} simplices")
 
 # ---- Get the 4D edges (ridges shared by exactly 2 facets) ----
@@ -108,7 +108,7 @@ print(f"  Edge length distribution: {dict(sorted(elens.items()))}")
 views = [
     {
         "name": "short_root_view",
-        "desc": "Short-root pole: (1,1,1,1)/2 — S4 symmetry, orbit B at pole",
+        "desc": "Short-root pole: (1,1,1,1)/2 - S4 symmetry, orbit B at pole",
         "basis": np.column_stack([
             np.array([1, -1, 0, 0]) / np.sqrt(2),
             np.array([1, 1, -2, 0]) / np.sqrt(6),
@@ -117,7 +117,7 @@ views = [
     },
     {
         "name": "long_root_view",
-        "desc": "Long-root pole: (1,1,0,0)/√2 — D4×Z2 symmetry, orbit A at pole",
+        "desc": "Long-root pole: (1,1,0,0)/sqrt(2) - D4xZ2 symmetry, orbit A at pole",
         "basis": np.column_stack([
             np.array([1, -1, 0, 0]) / np.sqrt(2),
             np.array([0, 0, 1, 0]),
