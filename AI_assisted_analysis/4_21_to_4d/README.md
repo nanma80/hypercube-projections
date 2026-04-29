@@ -165,16 +165,100 @@ Element orders and counts:
 
 ### The hull is two 24-cells: an F₄ root arrangement
 
-The 48 hull vertices split into **two orbits of 24** under W(F₄). The 144
-nearest-neighbor edges of the full hull connect vertices **between** the two
-orbits (cross-orbit distance 1.0 < any within-orbit distance). This is the
-same combinatorial structure as the **F₄ root system** (48 roots = 24 long +
-24 short, each orbit a 24-cell).
+The 48 hull vertices split into **two orbits of 24** under W(F₄): orbit A
+(perms of (±a, ±a, 0, 0)) forming one 24-cell, and orbit B (axis perms of
+(±b, 0, 0, 0) plus all (±b/2, ±b/2, ±b/2, ±b/2)) forming the dual 24-cell.
+The 144 nearest-neighbor edges of the hull connect vertices **between** the
+two orbits (cross-orbit distance 1.0 < any within-orbit distance). This is
+the same combinatorial pattern as the **F₄ root system** (48 roots = 24 long
++ 24 short, each orbit a 24-cell).
 
-The norm² ratio rA²/rB² = 4−√7 ≈ 1.354 differs from the standard F₄ ratio
-of 2:1. The 4D max-volume projection produces a non-standard-scale realization
-of the F₄ root system, where the two 24-cell radii are determined by the
-optimization and lie in Q(√7).
+The norm² ratio rA²/rB² = 4−√7 ≈ 1.354 differs from both the standard F₄
+ratio (2:1) and the equal-radii ratio (1:1). The 4D max-volume projection
+produces a non-standard-scale realization of the F₄ root system, where the
+two 24-cell radii are determined by the optimization and lie in Q(√7).
+
+### f-vector and combinatorics
+
+For the max-volume hull (rA²/rB² = 4 − √7):
+
+| k | element | count |
+|---|---|---|
+| 0 | vertices         | **48**  (24 in orbit A + 24 in orbit B) |
+| 1 | edges            | **240** |
+| 2 | 2-faces (triangles) | **384** |
+| 3 | 3-cells (tetrahedra)| **192** |
+
+Euler check: V − E + F − C = 48 − 240 + 384 − 192 = 0 ✓.
+
+**Edges (2 length classes):**
+
+| length (exact) | length (≈) | count | type |
+|---|---|---|---|
+| **1** | 1.0000 | 144 | A–B (cross-orbit, nearest-neighbor) |
+| **√((5+√7)/4)** | 1.3825 | 96 | A–A (24-cell edges of orbit A) |
+
+No B–B edges. Every orbit-A vertex has 12 A–B edges + 8 A–A edges = degree 20.
+Every orbit-B vertex has 12 A–B edges + 0 within = degree 12.
+
+**2-faces (all triangles, 2 shapes):**
+
+| shape | side lengths | count |
+|---|---|---|
+| isoceles | (1, 1, √((5+√7)/4))  | 288 |
+| equilateral | (√((5+√7)/4))³    | 96  |
+
+The 96 equilateral triangles are exactly the 96 triangular faces of the
+orbit-A 24-cell.
+
+**3-cells (all 192 are tetrahedra of type 3A·1B):**
+
+Every cell has 3 orbit-A vertices forming an equilateral triangle (long
+edges) plus 1 orbit-B apex connected to the base by 3 unit-length A–B edges.
+This is an isoceles ("pyramidal") tetrahedron, not a regular one. Each
+orbit-B vertex is the apex of 192/24 = 8 cells; each orbit-A vertex is in
+192·3/24 = 24 cells.
+
+Geometrically: take the orbit-A 24-cell and erect a tetrahedral cap on
+**both sides** of each of its 96 triangular faces (96 × 2 = 192 caps). Each
+cap's apex is an orbit-B vertex. The orbit-B 24-cell sits inside but its
+own faces and edges are not visible on the boundary.
+
+### Comparison with the disphenoidal 288-cell
+
+The **disphenoidal 288-cell** is the convex hull of the same 48-vertex
+union of two dual 24-cells when **both 24-cells share a common circumradius**
+(rA = rB). It is a uniform polytope, vertex-transitive under W(F₄), and is
+the dual of the bitruncated 24-cell.
+
+| Feature | Disphenoidal 288-cell (rA = rB) | Max-volume hull (rA² = (4−√7)·rB²) |
+|---|---|---|
+| f-vector | (48, **336**, 576, 288)        | (48, **240**, 384, 192) |
+| edges    | 144 short + **192 long** = 336 | 144 short + **96 long** = 240 |
+| edge ratio long/short | 1.000 / 0.7654 ≈ 1.307 | 1.383 / 1.000 = 1.383 |
+| 2-face shapes | 576 isoceles (one shape)   | 288 isoceles + 96 equilateral |
+| 3-cells  | 288 disphenoids (irregular tets) | 192 isoceles tetrahedra |
+| Symmetry on vertices | transitive (one orbit of 48) | two orbits of 24 |
+| Cells per A-vertex / B-vertex | 24 / 24 (transitive) | 24 / 8 |
+| Field of coordinates | Q (rational up to scale) | Q(√7) |
+
+Why the long-edge count drops from 192 → 96: when rA = rB, every "long"
+edge of the disphenoidal 288-cell connects two A-vertices that are 24-cell
+edge-neighbors **across** an A–A "diagonal pair" of the outer 24-cell. As
+rA increases past rB, the orbit-A vertices push outward; pairs that were
+just barely connected on the rA = rB hull now have midpoints lying interior
+to the orbit-B vertex on the same radial direction, and they cease to be
+edges. Specifically, the midpoint of the would-be edge from (a,a,0,0) to
+(a,−a,0,0) is (a,0,0,0); it lies inside the hull iff a < b, i.e. iff
+rA²/2 < rB², i.e. iff rA²/rB² < 2. Since 4 − √7 ≈ 1.354 < 2, all 96
+"face-diagonal" A–A pairs in the outer 24-cell drop off the hull.
+
+The disphenoidal 288-cell has higher symmetry and a tidier combinatorial
+structure (fully transitive on vertices, edges, and cells), but **smaller
+projected volume**: it corresponds to an F₄-symmetric subspace where the
+two 24-cell scales are forced equal, which is not the volume-maximizing
+configuration. The optimization breaks the rA ↔ rB symmetry and pays for
+the loss of uniformity with extra volume.
 
 ### Why F₄ appears: E₈ ⊃ F₄
 
